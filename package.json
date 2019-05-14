@@ -1,0 +1,18 @@
+{
+  "name": "typera",
+  "version": "0.1.0",
+  "description": "TYPEd Route Assistant",
+  "main": "lib/index.js",
+  "repository": "https://github.com/akheron/typera",
+  "author": "Petri Lehtinen <petri@digip.org>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/koa": "^2.0.48",
+    "@types/koa-bodyparser": "^4.2.2",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "io-ts": "^1.8.6",
+    "koa": "^2.7.0"
+  }
+}
