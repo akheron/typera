@@ -7,12 +7,17 @@
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^24.0.13",
     "@types/koa": "^2.0.48",
     "@types/koa-bodyparser": "^4.2.2",
+    "jest": "^24.8.0",
+    "prettier": "^1.17.1",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.4.5"
   },
   "dependencies": {
     "io-ts": "^1.8.6",
-    "koa": "^2.7.0"
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1"
   }
 }
