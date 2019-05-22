@@ -1,16 +1,14 @@
 {
     "compilerOptions": {
+        "allowJs": true,
         "module": "commonjs",
         "target": "es6",
         "strict": true,
-        "declaration": true,
         "sourceMap": true,
         "outDir": "lib"
     },
     "include": [
-        "src/*.ts"
-    ],
-    "exclude": [
-        "src/*.spec.ts"
+        "src/*.ts",
+        "src/*.js"
     ]
 }
