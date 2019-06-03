@@ -6,51 +6,34 @@ export const Response = {
   notFound: body => ({ status: 404, body }),
 }
 
-export function routeHandler(...args) {
-  const codecs = Object.fromEntries(args)
-  return function(handler) {
-    return function(ctx) {
-      const routeParams = codecs.routeParams
-        ? codecs.routeParams.decode(ctx.params).getOrElseL(() => ctx.throw(404))
-        : undefined
-      const query = codecs.query
-        ? codecs.query
-            .decode(ctx.request.query)
-            .getOrElseL(() => ctx.throw(400, 'Invalid query'))
-        : undefined
-      const body = codecs.body
-        ? codecs.body
-            .decode(ctx.request.body)
-            .getOrElseL(() => ctx.throw(400, 'Invalid body'))
-        : undefined
-
-      const request = {
-        routeParams,
-        query,
-        body,
-        ctx,
-      }
-      return handler(request)
-    }
-  }
+export const routeHandler = (...args) => {
+  const parseRequest = ctx => ({
+    ...args.reduce((acc, parser) => ({ ...acc, ...parser(ctx) }), {}),
+    ctx,
+  })
+  return handler => ctx => handler(parseRequest(ctx))
 }
 
-export function run(routeHandler) {
-  return async function(ctx) {
-    const response = await routeHandler(ctx)
-    ctx.response.status = response.status
-    ctx.response.body = response.body
-  }
+export const run = routeHandler => async ctx => {
+  const response = await routeHandler(ctx)
+  ctx.response.status = response.status
+  ctx.response.body = response.body
 }
 
-export function body(codec) {
-  return ['body', codec]
-}
+export const routeParams = codec => ctx =>
+  codec
+    .decode(ctx.params)
+    .map(routeParams => ({ routeParams }))
+    .getOrElseL(() => ctx.throw(404))
 
-export function routeParams(codec) {
-  return ['routeParams', codec]
-}
+export const query = codec => ctx =>
+  codec
+    .decode(ctx.request.query)
+    .map(query => ({ query }))
+    .getOrElseL(() => ctx.throw(400, 'Invalid query'))
 
-export function query(codec) {
-  return ['query', codec]
-}
+export const body = codec => ctx =>
+  codec
+    .decode(ctx.request.body)
+    .map(body => ({ body }))
+    .getOrElseL(() => ctx.throw(400, 'Invalid body'))

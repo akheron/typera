@@ -103,7 +103,6 @@ TODO
 
 - Find a way to write the implementation in TS, not just types
 - Support Express in addition to Koa
-- Allow arbitrary data to be decoded into the `request` object
 - Customize errors for request decoding
 - Take request decoding errors into account in route handler response
   types

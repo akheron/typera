@@ -33,86 +33,55 @@ export namespace Response {
   ): NotFound<ResponseBody>
 }
 
-// Basic request and response types
-
-export interface Request<RequestRouteParams, RequestQuery, RequestBody> {
-  routeParams: RequestRouteParams
-  query: RequestQuery
-  body: RequestBody
-  ctx: koa.Context
-}
-
 // A request handler takes a request and produces a response
 
-export type RequestHandler<
-  RequestRouteParams,
-  RequestQuery,
-  RequestBody,
-  Response
-> = (
-  request: Request<RequestRouteParams, RequestQuery, RequestBody>
+export type RequestHandler<Request, Response> = (
+  request: Request
 ) => Response | Promise<Response>
 
-// Codecs validate the input (route params, query params, request body)
-
-interface RequestCodecs {
-  routeParams?: t.Type<any, any, any>
-  query?: t.Type<any, any, any>
-  body?: t.Type<any, any, any>
-}
-
-type CodecType<
-  K extends keyof RequestCodecs,
-  Codecs extends RequestCodecs
-> = Codecs[K] extends t.Type<infer T, any, any> ? T : undefined
+// Request parsers validate the input (route params, query params, request body)
 
 declare function body<Codec extends t.Type<any, any, any>>(
   codec: Codec
-): ['body', Codec]
+): Codec extends t.Type<infer T, any, any>
+  ? (ctx: koa.Context) => { body: T }
+  : never
 
 declare function routeParams<Codec extends t.Type<any, any, any>>(
   codec: Codec
-): ['routeParams', Codec]
+): Codec extends t.Type<infer T, any, any>
+  ? (ctx: koa.Context) => { routeParams: T }
+  : never
 
 declare function query<Codec extends t.Type<any, any, any>>(
   codec: Codec
-): ['query', Codec]
+): Codec extends t.Type<infer T, any, any>
+  ? (ctx: koa.Context) => { query: T }
+  : never
 
 // Create a route handler from a function that takes a request and
 // returns a response
 
-type CodecName = keyof RequestCodecs
-type SetCodec<
-  K extends keyof RequestCodecs,
-  T,
-  Codecs extends RequestCodecs
-> = Codecs & Record<K, t.Type<T, any, any>>
+type RequestParser = (ctx: koa.Context) => {}
 
-type CodecTuple<T extends t.Type<T, any, any>> = [CodecName, T]
-
-type RequestCodecsFromTuples<Args extends CodecTuple<any>[]> = {
-  0: Head<Args> extends [infer K, t.Type<infer T, any, any>]
-    ? RequestCodecsFromTuples<Tail<Args>> extends infer U
-      ? SetCodec<Cast<K, CodecName>, T, U>
+type RequestFromArgs<Args extends RequestParser[]> = {
+  0: ReturnType<Cast<Head<Args>, RequestParser>> extends infer T
+    ? RequestFromArgs<Tail<Args>> extends infer U
+      ? T & U
       : never
     : never
-  1: {}
+  1: { ctx: koa.Context }
 }[Length<Args> extends 0 ? 1 : 0]
 
 type RouteHandler<Response extends Response.Generic> = (
   ctx: koa.Context
 ) => Promise<Response>
 
-declare function routeHandler<Args extends CodecTuple<any>[]>(
+declare function routeHandler<Args extends RequestParser[]>(
   ...args: Args
-): RequestCodecsFromTuples<Args> extends infer Codecs
+): RequestFromArgs<Args> extends infer Req
   ? <Response extends Response.Generic>(
-      handler: RequestHandler<
-        CodecType<'routeParams', Codecs>,
-        CodecType<'query', Codecs>,
-        CodecType<'body', Codecs>,
-        Response
-      >
+      handler: RequestHandler<Req, Response>
     ) => RouteHandler<Response>
   : never
 
