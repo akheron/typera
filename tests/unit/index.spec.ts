@@ -1,6 +1,6 @@
 import * as koa from 'koa'
 import * as t from 'io-ts'
-import * as ra from '../lib/index'
+import * as typera from '../../lib/index'
 
 const testContext = (
   opts: {
@@ -17,25 +17,27 @@ const testContext = (
 
 describe('routeHandler', () => {
   it('decodes request', () => {
-    const handler: ra.RouteHandler<ra.Response.NoContent> = ra.routeHandler(
-      ra.routeParams(t.boolean),
-      ra.query(t.string),
-      ra.body(t.number)
+    const handler: typera.RouteHandler<
+      typera.Response.NoContent
+    > = typera.routeHandler(
+      typera.routeParams(t.boolean),
+      typera.query(t.string),
+      typera.body(t.number)
     )(request => {
       expect(request.routeParams).toEqual(true)
       expect(request.query).toEqual('foo')
       expect(request.body).toEqual(42)
-      return ra.Response.noContent()
+      return typera.Response.noContent()
     })
     handler(testContext({ params: true, query: 'foo', body: 42 }))
   })
 
   it('passes response through', () => {
-    const handler: ra.RouteHandler<ra.Response.Ok<string>> = ra.routeHandler()(
-      _ => {
-        return ra.Response.ok('foo')
-      }
-    )
+    const handler: typera.RouteHandler<
+      typera.Response.Ok<string>
+    > = typera.routeHandler()(_ => {
+      return typera.Response.ok('foo')
+    })
     const response = handler(testContext())
     expect(response).toEqual({ status: 200, body: 'foo' })
   })
