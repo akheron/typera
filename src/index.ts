@@ -52,14 +52,14 @@ export type RequestHandler<Request, Response> = (
 
 type ParserOutput<
   K extends string,
-  Codec extends t.Type<any, any, any>
-> = Codec extends t.Type<infer T, any, any> ? { [KK in K]: T } : never
+  Codec extends t.Type<any>
+> = Codec extends t.Type<infer T> ? { [KK in K]: T } : never
 
-type RequestParser<K extends string, Codec extends t.Type<any, any, any>> = (
+type RequestParser<K extends string, Codec extends t.Type<any>> = (
   ctx: koa.Context
 ) => ParserOutput<K, Codec>
 
-export function body<Codec extends t.Type<any, any, any>>(
+export function body<Codec extends t.Type<any>>(
   codec: Codec
 ): RequestParser<'body', Codec> {
   type Output = ParserOutput<'body', Codec>
@@ -71,7 +71,7 @@ export function body<Codec extends t.Type<any, any, any>>(
   }
 }
 
-export function routeParams<Codec extends t.Type<any, any, any>>(
+export function routeParams<Codec extends t.Type<any>>(
   codec: Codec
 ): RequestParser<'routeParams', Codec> {
   type Output = ParserOutput<'routeParams', Codec>
@@ -82,7 +82,7 @@ export function routeParams<Codec extends t.Type<any, any, any>>(
       .getOrElseL(() => ctx.throw(404))
 }
 
-export function query<Codec extends t.Type<any, any, any>>(
+export function query<Codec extends t.Type<any>>(
   codec: Codec
 ): RequestParser<'query', Codec> {
   type Output = ParserOutput<'query', Codec>
