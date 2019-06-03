@@ -7,8 +7,10 @@
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && cp src/index.d.ts lib/",
-    "test": "yarn build && jest"
+    "build": "tsc",
+    "test": "yarn run test:unit && yarn run test:typing",
+    "test:unit": "jest",
+    "test:typing": "node run-typing-tests.js"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",

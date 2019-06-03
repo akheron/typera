@@ -101,7 +101,6 @@ router
 TODO
 ----
 
-- Find a way to write the implementation in TS, not just types
 - Support Express in addition to Koa
 - Customize errors for request decoding
 - Take request decoding errors into account in route handler response

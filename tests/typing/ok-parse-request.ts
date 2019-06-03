@@ -1,4 +1,4 @@
-import * as typera from '../../lib'
+import * as typera from '../../src'
 import * as t from 'io-ts'
 
 interface ResponseBody {

@@ -1,6 +1,6 @@
 import * as koa from 'koa'
 import * as t from 'io-ts'
-import * as typera from '../../lib/index'
+import * as typera from '../../src'
 
 const testContext = (
   opts: {
