@@ -1,4 +1,4 @@
-import * as typera from '../../src'
+import { Response, Parser, RouteHandler, routeHandler } from '../../src'
 import * as t from 'io-ts'
 
 interface ResponseBody {
@@ -7,26 +7,14 @@ interface ResponseBody {
   z: number
 }
 
-const routeCodec = t.type({
-  x: t.string,
-})
-
-const queryCodec = t.type({
-  y: t.boolean,
-})
-
-const bodyCodec = t.type({
-  z: t.number,
-})
-
-export const handler: typera.RouteHandler<
-  typera.Response.Ok<ResponseBody>
-> = typera.routeHandler(
-  typera.routeParams(routeCodec),
-  typera.query(queryCodec),
-  typera.body(bodyCodec)
+export const handler: RouteHandler<
+  Response.Ok<ResponseBody> | Response.NotFound | Response.BadRequest<string>
+> = routeHandler(
+  Parser.routeParams(t.type({ x: t.string })),
+  Parser.query(t.type({ y: t.boolean })),
+  Parser.body(t.type({ z: t.number }))
 )(req => {
-  return typera.Response.ok({
+  return Response.ok({
     x: req.routeParams.x,
     y: req.query.y,
     z: req.body.z,

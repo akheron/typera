@@ -102,6 +102,5 @@ TODO
 ----
 
 - Support Express in addition to Koa
-- Customize errors for request decoding
-- Take request decoding errors into account in route handler response
-  types
+- Reference docs
+- Run tests in CI

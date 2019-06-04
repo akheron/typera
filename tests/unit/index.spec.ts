@@ -1,6 +1,6 @@
 import * as koa from 'koa'
 import * as t from 'io-ts'
-import * as typera from '../../src'
+import { Parser, Response, RouteHandler, routeHandler, run } from '../../src'
 
 const testContext = (
   opts: {
@@ -17,28 +17,36 @@ const testContext = (
 
 describe('routeHandler', () => {
   it('decodes request', () => {
-    const handler: typera.RouteHandler<
-      typera.Response.NoContent
-    > = typera.routeHandler(
-      typera.routeParams(t.boolean),
-      typera.query(t.string),
-      typera.body(t.number)
+    const handler: RouteHandler<
+      Response.NoContent | Response.NotFound | Response.BadRequest<string>
+    > = routeHandler(
+      Parser.routeParams(t.boolean),
+      Parser.query(t.string),
+      Parser.body(t.number)
     )(request => {
       expect(request.routeParams).toEqual(true)
       expect(request.query).toEqual('foo')
       expect(request.body).toEqual(42)
-      return typera.Response.noContent()
+      return Response.noContent()
     })
     handler(testContext({ params: true, query: 'foo', body: 42 }))
   })
 
   it('passes response through', () => {
-    const handler: typera.RouteHandler<
-      typera.Response.Ok<string>
-    > = typera.routeHandler()(_ => {
-      return typera.Response.ok('foo')
+    const handler: RouteHandler<Response.Ok<string>> = routeHandler()(_ => {
+      return Response.ok('foo')
     })
     const response = handler(testContext())
     expect(response).toEqual({ status: 200, body: 'foo' })
+  })
+
+  it('returns errors from parsers', () => {
+    const handler: RouteHandler<
+      Response.NoContent | Response.BadRequest<string>
+    > = routeHandler(Parser.body(t.number))(_request => {
+      return Response.noContent()
+    })
+    const response = handler(testContext({ body: 'foo' }))
+    expect(response).toEqual({ status: 400, body: 'invalid body' })
   })
 })

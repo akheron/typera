@@ -1,6 +1,92 @@
+import { Either, either, right } from 'fp-ts/lib/Either'
+import { foldM } from 'fp-ts/lib/Foldable2v'
+import { array } from 'fp-ts/lib/Array'
+import { identity } from 'fp-ts/lib/function'
 import * as t from 'io-ts'
 import * as koa from 'koa'
 import 'koa-bodyparser' // Adds `.body` and `.rawBody` to ctx.request
+
+// Request parsers validate the input (route params, query params, request body)
+export namespace Parser {
+  export type Parser<
+    Output extends {},
+    ErrorResponse extends Response.Generic
+  > = (ctx: koa.Context) => Either<ErrorResponse, Output>
+
+  export type ErrorHandler<ErrorResponse extends Response.Generic> = (
+    errors: t.Errors
+  ) => ErrorResponse
+
+  export function bodyP<
+    Codec extends t.Type<any>,
+    ErrorResponse extends Response.Generic
+  >(
+    codec: Codec,
+    errorHandler: ErrorHandler<ErrorResponse>
+  ): Parser<ParserOutput<'body', Codec>, ErrorResponse> {
+    return (ctx: koa.Context) => {
+      return codec
+        .decode(ctx.request.body)
+        .bimap(errorHandler, body => ({ body } as ParserOutput<'body', Codec>))
+    }
+  }
+
+  export function body<Codec extends t.Type<any>>(
+    codec: Codec
+  ): Parser<ParserOutput<'body', Codec>, Response.BadRequest<string>> {
+    return bodyP(codec, _ => Response.badRequest('invalid body'))
+  }
+
+  export function routeParamsP<
+    Codec extends t.Type<any>,
+    ErrorResponse extends Response.Generic
+  >(
+    codec: Codec,
+    errorHandler: ErrorHandler<ErrorResponse>
+  ): Parser<ParserOutput<'routeParams', Codec>, ErrorResponse> {
+    return (ctx: koa.Context) =>
+      codec
+        .decode(ctx.params)
+        .bimap(
+          errorHandler,
+          routeParams => ({ routeParams } as ParserOutput<'routeParams', Codec>)
+        )
+  }
+
+  export function routeParams<Codec extends t.Type<any>>(
+    codec: Codec
+  ): Parser<ParserOutput<'routeParams', Codec>, Response.NotFound> {
+    return routeParamsP(codec, _ => Response.notFound(undefined))
+  }
+
+  export function queryP<
+    Codec extends t.Type<any>,
+    ErrorResponse extends Response.Generic
+  >(
+    codec: Codec,
+    errorHandler: ErrorHandler<ErrorResponse>
+  ): Parser<ParserOutput<'query', Codec>, ErrorResponse> {
+    return (ctx: koa.Context) =>
+      codec
+        .decode(ctx.request.query)
+        .bimap(
+          errorHandler,
+          query => ({ query } as ParserOutput<'query', Codec>)
+        )
+  }
+
+  export function query<Codec extends t.Type<any>>(
+    codec: Codec
+  ): Parser<ParserOutput<'query', Codec>, Response.BadRequest<string>> {
+    return queryP(codec, _ => Response.badRequest('Invalid query'))
+  }
+
+  // Helper
+  type ParserOutput<
+    K extends string,
+    Codec extends t.Type<any>
+  > = Codec extends t.Type<infer T> ? { [KK in K]: T } : never
+}
 
 export namespace Response {
   export type Response<ResponseStatus, ResponseBody> = {
@@ -48,51 +134,6 @@ export type RequestHandler<Request, Response> = (
   request: Request
 ) => Response | Promise<Response>
 
-// Request parsers validate the input (route params, query params, request body)
-
-type ParserOutput<
-  K extends string,
-  Codec extends t.Type<any>
-> = Codec extends t.Type<infer T> ? { [KK in K]: T } : never
-
-type RequestParser<K extends string, Codec extends t.Type<any>> = (
-  ctx: koa.Context
-) => ParserOutput<K, Codec>
-
-export function body<Codec extends t.Type<any>>(
-  codec: Codec
-): RequestParser<'body', Codec> {
-  type Output = ParserOutput<'body', Codec>
-  return function(ctx: koa.Context): Output {
-    return codec
-      .decode(ctx.request.body)
-      .map(body => ({ body } as Output))
-      .getOrElseL(() => ctx.throw(400, 'Invalid body'))
-  }
-}
-
-export function routeParams<Codec extends t.Type<any>>(
-  codec: Codec
-): RequestParser<'routeParams', Codec> {
-  type Output = ParserOutput<'routeParams', Codec>
-  return (ctx: koa.Context) =>
-    codec
-      .decode(ctx.params)
-      .map(routeParams => ({ routeParams } as Output))
-      .getOrElseL(() => ctx.throw(404))
-}
-
-export function query<Codec extends t.Type<any>>(
-  codec: Codec
-): RequestParser<'query', Codec> {
-  type Output = ParserOutput<'query', Codec>
-  return (ctx: koa.Context) =>
-    codec
-      .decode(ctx.request.query)
-      .map(query => ({ query } as Output))
-      .getOrElseL(() => ctx.throw(400, 'Invalid query'))
-}
-
 // Create a route handler from request parsers and a function that
 // takes a request and returns a response
 
@@ -100,16 +141,18 @@ export type RouteHandler<Response extends Response.Generic> = (
   ctx: koa.Context
 ) => Promise<Response>
 
-export function routeHandler<Parsers extends RequestParser<any, any>[]>(
+export function routeHandler<Parsers extends Parser.Parser<any, any>[]>(
   ...parsers: Parsers
 ): MakeRouteHandler<Parsers> {
-  const parseRequest = (ctx: koa.Context) => ({
-    ...parsers.reduce((acc, parser) => ({ ...acc, ...parser(ctx) }), {}),
-    ctx,
-  })
-  return <any>(
-    ((handler: any) => (ctx: koa.Context) => handler(parseRequest(ctx)))
-  )
+  const parseRequest = (ctx: koa.Context) =>
+    foldM(either, array)(parsers, right({ ctx }), (acc, parser) =>
+      parser(ctx).map(v => ({ ...acc, ...v }))
+    )
+
+  return <any>((handler: any) => (ctx: koa.Context) =>
+    parseRequest(ctx)
+      .map(handler)
+      .getOrElseL(identity))
 }
 
 // Turn a route handler to a koa-router's route callback
@@ -126,24 +169,34 @@ export function run<Response extends Response.Generic>(
 
 // Helpers
 
-type RequestFromParsers<Args extends RequestParser<any, any>[]> = {
-  0: ReturnType<Cast<Head<Args>, RequestParser<any, any>>> extends infer T
-    ? RequestFromParsers<Tail<Args>> extends infer U
-      ? T & U
-      : never
-    : never
-  1: { ctx: koa.Context }
-}[Length<Args> extends 0 ? 1 : 0]
-
 type MakeRouteHandler<
-  Args extends RequestParser<any, any>[]
-> = RequestFromParsers<Args> extends infer Req
+  Parsers extends Parser.Parser<any, any>[]
+> = TypesFromParsers<Parsers> extends ParserType<
+  infer Request,
+  infer ParserResponses
+>
   ? <Response extends Response.Generic>(
-      handler: RequestHandler<Req, Response>
-    ) => RouteHandler<Response>
+      handler: RequestHandler<Request, Response>
+    ) => RouteHandler<Response | ParserResponses>
   : never
 
-type Cast<T, U> = T extends U ? T : U
+interface ParserType<
+  Request extends {},
+  ParserResponse extends Response.Generic
+> {
+  _req: Request
+  _err: ParserResponse
+}
+
+type TypesFromParsers<Parsers extends Parser.Parser<any, any>[]> = {
+  0: Head<Parsers> extends Parser.Parser<infer R, infer E>
+    ? TypesFromParsers<Tail<Parsers>> extends ParserType<infer RR, infer EE>
+      ? ParserType<R & RR, E | EE>
+      : never
+    : never
+  1: ParserType<{ ctx: koa.Context }, never>
+}[Length<Parsers> extends 0 ? 1 : 0]
+
 type Length<T extends any[]> = T['length']
 type Head<T extends any[]> = T extends [infer U, ...any[]] ? U : never
 type Tail<T extends any[]> = ((...args: T) => any) extends ((
