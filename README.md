@@ -20,13 +20,15 @@ building web backends, there are quite a few `any`s involved:
   your routes always return responses from a known set of possible
   status code / body combinations.
 
-By default, the compiler cannot help you with any of this (pun
-intended). But with [typera], you're safe!
+By default, the compiler cannot help you with any (pun intended) of
+this. But with [typera], you're safe!
 
 Tutorial
 --------
 
-Install [typera] for [Koa] with or npm:
+Install [typera] with yarn or npm.
+
+For [Koa]:
 
 ```shell
 yarn add koa koa-router typera-koa
@@ -34,7 +36,7 @@ yarn add koa koa-router typera-koa
 npm install --save koa koa-router typera-koa
 ```
 
-Or for [Express]:
+For [Express]:
 
 ```shell
 yarn add express typera-express
@@ -73,6 +75,11 @@ const updateUser: RouteHandler<
   | Response.BadRequest<string>
 > = routeHandler(/* ... */)
 ```
+
+The types in the `typera.Response` namespace correspond to HTTP status
+codes, and their type parameter denotes the type of the response body.
+All the standard statuses are covered, and you can also have custom
+ones like this: `Response.Response<418, sting>`
 
 You should always annotate the route handler response types like
 above. The compiler infers the possible response types, but the result
@@ -117,7 +124,7 @@ you're going to write. The function gets as an argument the `request`
 that will contain the results of all the decoders you passed. And
 what's great is that the data is correctly typed!
 
-In the above example, `request` will have the following inferred type,
+In the example above, `request` will have the following inferred type,
 and changes to the validators will also update the type of `request`:
 
 ```typescript
@@ -140,8 +147,8 @@ interface MyRequest {
 ```
 
 (In reality the type won't be exatly as above, but a bit more complex
-intersection type. It can be used as if it was like above, editor
-autocomplete will work correctly, etc.)
+intersection type instead. In any case, it can be used as if it was
+like above, editor autocomplete will work correctly, etc.)
 
 Let's continue by writing the actual route logic:
 
@@ -158,11 +165,11 @@ const updateUser: RouteHandler<
   // user in the database. If the user does not exist, it returns null.
   const user = updateUserInDatabase(request.routeParams.id, request.body)
 
-  if (user == null) {
-    return Response.notFound(undefined)
+  if (user != null) {
+    return Response.ok({ id: user.id, name: user.name, age: user.age })
   }
 
-  return Response.ok({ id: user.id, name: user.name, age: user.age })
+  return Response.notFound(undefined)
 })
 ```
 
@@ -200,20 +207,28 @@ It's not required to use the response helpers like `Response.ok()` or
 status: 200, body: { ... } }`
 
 Did you notice that the `updateUser` route handler also had a
-`Response.BadRequest<string>` as a possible response? This is because
-the validation of the request data can fail. The `Parser.body()`
-helper produces a `400 Bad Request` response with a `string` body if
-the request body doesn't pass validation. Likewise, the
-`Parser.routeParams()` helper produces a `404 Not Found` with no body
-(`undefined` body) on invalid input, and this was also covered by the
-response types of the `updateUser` route handler. To customize the
+`Response.BadRequest<string>` as a possible response?
+
+```typescript
+const updateUser: RouteHandler<
+  // ...
+  | Response.BadRequest<string>
+>
+```
+
+This is because the validation of the request data can fail. The
+`Parser.body()` helper produces a `400 Bad Request` response with a
+`string` body if the request body doesn't pass validation. Likewise,
+the `Parser.routeParams()` helper produces a `404 Not Found` with no
+body (`undefined` body) on invalid input, and this was also covered by
+the response types of the `updateUser` route handler. To customize the
 returned error responses, use the `P` suffixed versions of the parser
 functions (`Parser.bodyP()`, `Parser.routeParamsP()`, etc.)
 
 There's one piece still missing: adding our route handlers to the
 router! For this, we need to pass the route handlers through the
 `run()` function. It handles converting the [typera] reponse object to
-the underlying frameworks response.
+the underlying framework's response.
 
 Here's an example for [Koa]:
 
@@ -240,14 +255,16 @@ app.post('/', run(createUser))
 app.put('/:id', run(updateUser))
 ```
 
-Remember how `updateUser` captured the `id` route parameter? The route
-definition in the above examples is where it comes from. If you need
-multiple route parameters, adjust the decoder passed to `routeParams`
-accordingly.
+Remember how the `updateUser` route handler used the `id` route
+parameter? The route definition in the above examples is where it
+comes from. If you need multiple route parameters, adjust the decoder
+passed to `routeParams` accordingly.
 
 TODO
 ----
 
+- Add more status codes to `typera.Response`
+- Decode an return headers
 - Support Express in addition to Koa, create `typera-koa` and `typera-express` packages
 - Add reference docs
 - Run tests in CI
