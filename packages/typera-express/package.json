@@ -1,0 +1,22 @@
+{
+  "name": "typera-express",
+  "version": "0.1.0",
+  "description": "TYPEd Route Assistant - for Express",
+  "main": "lib/index.js",
+  "repository": "https://github.com/akheron/typera",
+  "author": "Petri Lehtinen <petri@digip.org>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "yarn run test:unit && yarn run test:typing",
+    "test:unit": "jest",
+    "test:typing": "node run-typing-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "typera-common": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0"
+  }
+}
