@@ -1,0 +1,24 @@
+{
+  "name": "typera-koa",
+  "version": "0.1.0",
+  "description": "TYPEd Route Assistant - for Koa",
+  "main": "lib/index.js",
+  "repository": "https://github.com/akheron/typera",
+  "author": "Petri Lehtinen <petri@digip.org>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "yarn run test:unit && yarn run test:typing",
+    "test:unit": "jest",
+    "test:typing": "node run-typing-tests.js"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.0.48",
+    "@types/koa-bodyparser": "^4.2.2",
+    "typera-common": "0.1.0"
+  },
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1"
+  }
+}
