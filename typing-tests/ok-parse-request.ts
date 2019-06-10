@@ -1,4 +1,4 @@
-import { Response, Parser, RouteHandler, routeHandler } from '../../src'
+import { Response, Parser, RouteHandler, routeHandler } from 'typera-koa'
 import * as t from 'io-ts'
 
 interface ResponseBody {

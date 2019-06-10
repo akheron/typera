@@ -1,6 +1,6 @@
 import * as koa from 'koa'
 import * as t from 'io-ts'
-import { Parser, Response, RouteHandler, routeHandler, run } from '../../src'
+import { Parser, Response, RouteHandler, routeHandler, run } from '..'
 
 const testContext = (
   opts: {

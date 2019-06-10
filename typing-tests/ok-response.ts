@@ -1,4 +1,4 @@
-import * as typera from '../../src'
+import * as typera from 'typera-koa'
 
 export const handler: typera.RouteHandler<
   typera.Response.Ok<number>

@@ -1,7 +1,12 @@
 {
   "private": true,
   "workspaces": ["packages/*"],
+  "scripts": {
+    "test": "yarn workspaces run test && node run-typing-tests.js"
+  },
   "devDependencies": {
+    "typera-express": "0.1.0",
+    "typera-koa": "0.1.0",
     "prettier": "^1.17.1"
   }
 }

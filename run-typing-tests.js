@@ -1,7 +1,7 @@
 const child_process = require('child_process')
 const fs = require('fs')
 
-const testDir = 'tests/typing'
+const testDir = 'typing-tests'
 
 function runTestFile(fileName) {
   const match = fileName.match(/^(ok|error)-.*\.ts$/)

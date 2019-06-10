@@ -7,7 +7,7 @@ import {
   RouteHandler,
   routeHandler,
   run,
-} from '../../src'
+} from '..'
 
 const testContext = (
   opts: {
@@ -75,6 +75,6 @@ describe('run', () => {
     await run(handler)((<unknown>{}) as express.Request, res)
 
     expect(status).toHaveBeenCalledWith(200)
-    expect(send).toHaveBeenCalledWith('bar')
+    expect(send).toHaveBeenCalledWith('foo')
   })
 })

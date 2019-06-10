@@ -2,15 +2,11 @@
   "name": "typera-koa",
   "version": "0.1.0",
   "description": "TYPEd Route Assistant - for Koa",
-  "main": "lib/index.js",
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "test": "yarn run test:unit && yarn run test:typing",
-    "test:unit": "jest",
-    "test:typing": "node run-typing-tests.js"
+    "test": "jest --config ../../jest.config.js"
   },
   "devDependencies": {
     "@types/koa": "^2.0.48",
