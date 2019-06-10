@@ -169,7 +169,7 @@ const updateUser: RouteHandler<
     return Response.ok({ id: user.id, name: user.name, age: user.age })
   }
 
-  return Response.notFound(undefined)
+  return Response.notFound()
 })
 ```
 
