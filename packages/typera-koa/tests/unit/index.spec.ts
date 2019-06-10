@@ -50,3 +50,16 @@ describe('routeHandler', () => {
     expect(response).toEqual({ status: 400, body: 'invalid body' })
   })
 })
+
+describe('run', () => {
+  it('hands off the response to Koa', async () => {
+    const ctx = testContext()
+    const handler = (_ctx: koa.Context) =>
+      Promise.resolve({ status: 200, body: 'foo' })
+
+    await run(handler)(ctx)
+
+    expect(ctx.response.status).toEqual(200)
+    expect(ctx.response.body).toEqual('foo')
+  })
+})
