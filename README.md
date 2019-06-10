@@ -1,6 +1,8 @@
 typera - Type-safe routes
 =========================
 
+[![CircleCI](https://circleci.com/gh/akheron/typera.svg?style=shield)](https://circleci.com/gh/akheron/typera)
+
 Typera (**TYPE**d **R**outing **A**ssistant) helps you build route
 handlers in a type-safe manner by leveraging [io-ts] and some
 TypeScript type inference magic. It works with both [Express] and [Koa].
@@ -265,9 +267,7 @@ TODO
 
 - Add more status codes to `typera.Response`
 - Decode an return headers
-- Support Express in addition to Koa, create `typera-koa` and `typera-express` packages
 - Add reference docs
-- Run tests in CI
 - Publish to npm
 
 [typera]: https://github.com/akheron/typera
