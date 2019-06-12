@@ -1,7 +1,12 @@
 {
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/typera-common",
+    "packages/typera-express",
+    "packages/typera-koa"
+  ],
   "scripts": {
+    "build": "yarn workspaces run build",
     "test": "yarn workspaces run test && node run-typing-tests.js"
   },
   "devDependencies": {
