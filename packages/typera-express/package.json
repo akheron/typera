@@ -6,8 +6,7 @@
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
   "files": [
-    "lib",
-    "../../README.md"
+    "lib"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
