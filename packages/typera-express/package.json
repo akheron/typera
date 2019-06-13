@@ -5,17 +5,18 @@
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
-  "files": ["lib"],
+  "files": [
+    "lib",
+    "../../README.md"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest --config ../../jest.config.js"
   },
-  "devDependencies": {
-    "@types/express": "^4.17.0"
-  },
   "dependencies": {
+    "@types/express": "^4.17.0",
     "express": "^4.17.1",
     "typera-common": "0.1.0"
   }

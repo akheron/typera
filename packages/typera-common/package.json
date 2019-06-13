@@ -5,7 +5,10 @@
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
-  "files": ["lib"],
+  "files": [
+    "lib",
+    "../../README.md"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
