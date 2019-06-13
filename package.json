@@ -10,8 +10,8 @@
     "test": "yarn workspaces run test && node run-typing-tests.js"
   },
   "devDependencies": {
-    "typera-express": "0.1.1",
-    "typera-koa": "0.1.1",
+    "typera-express": "0.1.2",
+    "typera-koa": "0.1.2",
     "prettier": "^1.17.1"
   }
 }
