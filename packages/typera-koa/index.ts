@@ -59,6 +59,9 @@ export function run<Response extends common.Response.Generic>(
   return async ctx => {
     const response = await handler(ctx)
     ctx.response.status = response.status
+    if (response.headers != null) {
+      ctx.response.set(response.headers)
+    }
     ctx.response.body = response.body
   }
 }

@@ -54,12 +54,15 @@ describe('routeHandler', () => {
 describe('run', () => {
   it('hands off the response to Koa', async () => {
     const ctx = testContext()
+    ctx.response.set = jest.fn()
+
     const handler = (_ctx: koa.Context) =>
-      Promise.resolve({ status: 200, body: 'foo' })
+      Promise.resolve({ status: 200, body: 'foo', headers: { Bar: 'baz' } })
 
     await run(handler)(ctx)
 
     expect(ctx.response.status).toEqual(200)
+    expect(ctx.response.set).toHaveBeenCalledWith({ Bar: 'baz' })
     expect(ctx.response.body).toEqual('foo')
   })
 })

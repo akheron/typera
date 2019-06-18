@@ -12,12 +12,14 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "true"
+    "test": "true",
+    "generate-responses": "ts-node tools/generate-responses.ts > src/response.ts && prettier --write src/response.ts"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
     "typescript": "^3.4.5"
   },
   "dependencies": {

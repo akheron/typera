@@ -206,7 +206,7 @@ the second argument, the code won't compile before they also fix the
 
 It's not required to use the response helpers like `Response.ok()` or
 `Response.notFound()`. You can also return plain objects: `return {
-status: 200, body: { ... } }`
+status: 200, body: { ... }, headers: { ... } }`
 
 Did you notice that the `updateUser` route handler also had a
 `Response.BadRequest<string>` as a possible response?
@@ -265,10 +265,8 @@ passed to `routeParams` accordingly.
 TODO
 ----
 
-- Add more status codes to `typera.Response`
-- Decode an return headers
+- Decode headers
 - Add reference docs
-- Publish to npm
 
 [typera]: https://github.com/akheron/typera
 [io-ts]: https://github.com/gcanti/io-ts

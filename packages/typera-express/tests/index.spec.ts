@@ -64,17 +64,18 @@ describe('routeHandler', () => {
 describe('run', () => {
   it('hands off the response to Koa', async () => {
     const status = jest.fn()
+    const set = jest.fn()
     const send = jest.fn()
-    status.mockReturnValue({ send })
 
-    const res = (<unknown>{ status, send }) as express.Response
+    const res = (<unknown>{ status, send, set }) as express.Response
 
     const handler = (_ctx: ExpressContext) =>
-      Promise.resolve({ status: 200, body: 'foo' })
+      Promise.resolve({ status: 200, body: 'foo', headers: { Bar: 'baz' } })
 
     await run(handler)((<unknown>{}) as express.Request, res)
 
     expect(status).toHaveBeenCalledWith(200)
+    expect(set).toHaveBeenCalledWith({ Bar: 'baz' })
     expect(send).toHaveBeenCalledWith('foo')
   })
 })
