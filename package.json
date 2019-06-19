@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test"
+    "test": "jest && yarn workspace typing-tests test"
   },
   "devDependencies": {
     "prettier": "^1.17.1",

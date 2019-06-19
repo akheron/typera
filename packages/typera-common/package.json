@@ -12,7 +12,6 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "true",
     "generate-responses": "ts-node tools/generate-responses.ts > src/response.ts && prettier --write src/response.ts"
   },
   "devDependencies": {

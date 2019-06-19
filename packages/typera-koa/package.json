@@ -11,8 +11,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "jest --config ../../jest.config.js"
+    "build": "tsc"
   },
   "dependencies": {
     "@types/koa": "^2.0.48",
