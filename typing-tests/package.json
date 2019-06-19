@@ -7,7 +7,7 @@
     "test": "ts-node run-typing-tests.ts"
   },
   "dependencies": {
-    "typera-express": "0.1.3",
-    "typera-koa": "0.1.3"
+    "typera-express": "0.2.0",
+    "typera-koa": "0.2.0"
   }
 }
