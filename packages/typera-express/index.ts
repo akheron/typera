@@ -62,7 +62,13 @@ export function run<Response extends common.Response.Generic>(
   return async (req, res) => {
     const response = await handler({ req, res })
     res.status(response.status)
-    if (response.headers != null) res.set(response.headers)
-    res.send(response.body)
+    if (response.headers != null) {
+      res.set(response.headers)
+    }
+    if (response.body) {
+      res.send(response.body)
+    } else {
+      res.end()
+    }
   }
 }

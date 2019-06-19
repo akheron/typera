@@ -68,6 +68,6 @@ export function run<Response extends common.Response.Generic>(
     if (response.headers != null) {
       ctx.response.set(response.headers)
     }
-    ctx.response.body = response.body
+    ctx.response.body = response.body || ''
   }
 }
