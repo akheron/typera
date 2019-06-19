@@ -265,7 +265,6 @@ passed to `routeParams` accordingly.
 TODO
 ----
 
-- Decode headers
 - Add reference docs
 
 [typera]: https://github.com/akheron/typera

@@ -36,6 +36,12 @@ export namespace Parser {
   }
   export const queryP = common.Parser.queryP(getQuery)
   export const query = common.Parser.query(getQuery)
+
+  function getHeaders(e: ExpressContext): any {
+    return e.req.headers
+  }
+  export const headersP = common.Parser.headersP(getHeaders)
+  export const headers = common.Parser.headers(getHeaders)
 }
 
 export type RouteHandler<

@@ -102,6 +102,36 @@ namespace Parser {
     > => queryP(getQuery)(codec, _ => Response.badRequest('Invalid query'))
   }
 
+  export function headersP<Input>(getHeaders: (input: Input) => any) {
+    return function<
+      Codec extends t.Type<any>,
+      ErrorResponse extends Response.Generic
+    >(
+      codec: Codec,
+      errorHandler: ErrorHandler<ErrorResponse>
+    ): Parser<Input, ParserOutput<'headers', Codec>, ErrorResponse> {
+      return function(input: Input) {
+        return codec
+          .decode(getHeaders(input))
+          .bimap(
+            errorHandler,
+            headers => ({ headers } as ParserOutput<'headers', Codec>)
+          )
+      }
+    }
+  }
+
+  export function headers<Input>(getHeaders: (input: Input) => any) {
+    return <Codec extends t.Type<any>>(
+      codec: Codec
+    ): Parser<
+      Input,
+      ParserOutput<'headers', Codec>,
+      Response.BadRequest<string>
+    > =>
+      headersP(getHeaders)(codec, _ => Response.badRequest('Invalid headers'))
+  }
+
   // Helper
   export type ParserOutput<K extends string, Codec extends t.Type<any>> = {
     [KK in K]: t.TypeOf<Codec>

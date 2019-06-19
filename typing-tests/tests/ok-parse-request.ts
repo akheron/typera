@@ -4,7 +4,8 @@ import * as t from 'io-ts'
 interface ResponseBody {
   x: string
   y: boolean
-  z: number
+  z: string
+  w: number
 }
 
 export const handler: RouteHandler<
@@ -12,11 +13,13 @@ export const handler: RouteHandler<
 > = routeHandler(
   Parser.routeParams(t.type({ x: t.string })),
   Parser.query(t.type({ y: t.boolean })),
-  Parser.body(t.type({ z: t.number }))
+  Parser.headers(t.type({ z: t.string })),
+  Parser.body(t.type({ w: t.number }))
 )(req => {
   return Response.ok({
     x: req.routeParams.x,
     y: req.query.y,
-    z: req.body.z,
+    z: req.headers.z,
+    w: req.body.w,
   })
 })
