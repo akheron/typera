@@ -47,7 +47,10 @@ describe('routeHandler', () => {
       return Response.noContent()
     })
     const response = handler(testContext({ body: 'foo' }))
-    expect(response).toEqual({ status: 400, body: 'invalid body' })
+    expect(response).toEqual({
+      status: 400,
+      body: 'Invalid body: Invalid value "foo" supplied to : number',
+    })
   })
 })
 

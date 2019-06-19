@@ -1,5 +1,6 @@
-import { Either } from 'fp-ts/lib/Either'
+import { Either, left } from 'fp-ts/lib/Either'
 import * as t from 'io-ts'
+import { PathReporter } from 'io-ts/lib/PathReporter'
 
 import Response from './response'
 
@@ -42,7 +43,9 @@ namespace Parser {
       ParserOutput<'body', Codec>,
       Response.BadRequest<string>
     > => {
-      return bodyP(getBody)(codec, _ => Response.badRequest('invalid body'))
+      return bodyP(getBody)(codec, err =>
+        Response.badRequest(`Invalid body: ${errorsToString(err)}`)
+      )
     }
   }
 
@@ -99,7 +102,10 @@ namespace Parser {
       Input,
       ParserOutput<'query', Codec>,
       Response.BadRequest<string>
-    > => queryP(getQuery)(codec, _ => Response.badRequest('Invalid query'))
+    > =>
+      queryP(getQuery)(codec, err =>
+        Response.badRequest(`Invalid query: ${errorsToString(err)}`)
+      )
   }
 
   export function headersP<Input>(getHeaders: (input: Input) => any) {
@@ -129,12 +135,19 @@ namespace Parser {
       ParserOutput<'headers', Codec>,
       Response.BadRequest<string>
     > =>
-      headersP(getHeaders)(codec, _ => Response.badRequest('Invalid headers'))
+      headersP(getHeaders)(codec, err =>
+        Response.badRequest(`Invalid headers: ${errorsToString(err)}`)
+      )
   }
 
-  // Helper
+  // Helpers
+
   export type ParserOutput<K extends string, Codec extends t.Type<any>> = {
     [KK in K]: t.TypeOf<Codec>
+  }
+
+  function errorsToString(err: t.Errors) {
+    return PathReporter.report(left(err))
   }
 }
 
