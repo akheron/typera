@@ -1,5 +1,4 @@
-typera - Type-safe routes
-=========================
+# typera - Type-safe routes
 
 [![CircleCI](https://circleci.com/gh/akheron/typera.svg?style=shield)](https://circleci.com/gh/akheron/typera)
 
@@ -7,8 +6,18 @@ Typera (**TYPE**d **R**outing **A**ssistant) helps you build route
 handlers in a type-safe manner by leveraging [io-ts] and some
 TypeScript type inference magic. It works with both [Express] and [Koa].
 
-The Problem
------------
+## Table of Contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [The Problem](#the-problem)
+- [Tutorial](#tutorial)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## The Problem
 
 When you see an `any`, you cannot really be sure anymore. When
 building web backends, there are quite a few `any`s involved:
@@ -25,8 +34,7 @@ building web backends, there are quite a few `any`s involved:
 By default, the compiler cannot help you with any (pun intended) of
 this. But with [typera], you're safe!
 
-Tutorial
---------
+## Tutorial
 
 Install [typera] with yarn or npm.
 
@@ -261,11 +269,6 @@ Remember how the `updateUser` route handler used the `id` route
 parameter? The route definition in the above examples is where it
 comes from. If you need multiple route parameters, adjust the decoder
 passed to `routeParams` accordingly.
-
-TODO
-----
-
-- Add reference docs
 
 [typera]: https://github.com/akheron/typera
 [io-ts]: https://github.com/gcanti/io-ts

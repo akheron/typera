@@ -8,9 +8,11 @@
   ],
   "scripts": {
     "build": "yarn workspaces run build",
-    "test": "jest && yarn workspace typing-tests test"
+    "test": "jest && yarn workspace typing-tests test",
+    "doctoc": "doctoc README.md --title '## Table of Contents'"
   },
   "devDependencies": {
+    "doctoc": "^1.4.0",
     "prettier": "^1.17.1",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"
