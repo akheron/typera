@@ -6,8 +6,6 @@ Typera (**TYPE**d **R**outing **A**ssistant) helps you build route
 handlers in a type-safe manner by leveraging [io-ts] and some
 TypeScript type inference magic. It works with both [Express] and [Koa].
 
-## Table of Contents
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
