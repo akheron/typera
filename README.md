@@ -278,6 +278,9 @@ passed to `routeParams` accordingly.
 
 ### Responses
 
+All response related types and functions live in the `Response`
+namespace.
+
 ```typescript
 import { Response } from 'typera-koa'
 // or
@@ -340,6 +343,9 @@ For the full list of supported responses, see
 [response.ts](packages/typera-common/src/response.ts).
 
 ### Request Parsers
+
+All request parser related types and functions live in the `Parser`
+namespace.
 
 ```typescript
 import { Parser } from 'typera-koa'
@@ -498,6 +504,13 @@ const listHandler: RouteHandler<
   | Response.BadRequest<string>
 > = routeHandler(...)(async req => { ... })
 ```
+
+We avoid giving the accurate type of `routeHandler` here, because it's
+quite complex due to the type inference of `req` and response types.
+For interested users, refer to the code:
+[common](packages/typera-common/src/index.ts),
+[koa](packages/typera-koa/index.ts),
+[express](packages/typera-express/index.ts).
 
 ### Integration with the router
 
