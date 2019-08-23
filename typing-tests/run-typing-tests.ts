@@ -1,7 +1,7 @@
 import * as child_process from 'child_process'
 import * as fs from 'fs'
 import * as path from 'path'
-import { Either, either, left, right } from 'fp-ts/lib/Either'
+import { Either, either, left, right, isLeft } from 'fp-ts/lib/Either'
 import { array } from 'fp-ts/lib/Array'
 
 type TestFile =
@@ -31,21 +31,21 @@ function main(): number {
   const testDir = 'tests'
 
   const testFiles = parseTestFiles(testDir)
-  if (testFiles.isLeft()) {
+  if (isLeft(testFiles)) {
     console.log('Error reading test files:')
-    console.log(testFiles.value)
+    console.log(testFiles.left)
     return 1
   }
 
   const compileResult = compileProject()
-  if (compileResult.isLeft()) {
+  if (isLeft(compileResult)) {
     console.log('Error building test files:')
-    console.log(compileResult.value)
+    console.log(compileResult.left)
     return 1
   }
 
   let exitStatus = 0
-  checkTestResults(testFiles.value, compileResult.value).forEach(
+  checkTestResults(testFiles.right, compileResult.right).forEach(
     ({ ok, fileName, message, compileOutput }) => {
       console.log(`${fileName}: ${message}`)
       if (compileOutput != null) {

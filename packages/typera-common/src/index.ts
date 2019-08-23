@@ -1,5 +1,5 @@
-import { foldM } from 'fp-ts/lib/Foldable2v'
-import { Either, either, right } from 'fp-ts/lib/Either'
+import { foldM } from 'fp-ts/lib/Foldable'
+import { Either, either, right, getOrElse } from 'fp-ts/lib/Either'
 import { array } from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
 
@@ -33,13 +33,13 @@ export function routeHandler<
     foldM(either, array)(
       parsers,
       right(makeRequestBase(input)),
-      (acc, parser) => parser(input).map(v => ({ ...acc, ...v }))
+      (acc, parser) => either.map(parser(input), v => ({ ...acc, ...v }))
     )
 
-  return <any>((handler: any) => (input: Input) =>
-    parseRequest(input)
-      .map(handler)
-      .getOrElseL(identity))
+  return <any>(
+    ((handler: any) => (input: Input) =>
+      getOrElse(identity)(either.map(parseRequest(input), handler)))
+  )
 }
 
 // Helpers

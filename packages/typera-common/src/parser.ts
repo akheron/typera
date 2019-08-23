@@ -1,4 +1,4 @@
-import { Either, left } from 'fp-ts/lib/Either'
+import { Either, either, left } from 'fp-ts/lib/Either'
 import * as t from 'io-ts'
 import { PathReporter } from 'io-ts/lib/PathReporter'
 
@@ -26,12 +26,11 @@ namespace Parser {
       errorHandler: ErrorHandler<ErrorResponse>
     ): Parser<Input, ParserOutput<'body', Codec>, ErrorResponse> {
       return (input: Input) =>
-        codec
-          .decode(getBody(input))
-          .bimap(
-            errorHandler,
-            body => ({ body } as ParserOutput<'body', Codec>)
-          )
+        either.bimap(
+          codec.decode(getBody(input)),
+          errorHandler,
+          body => ({ body } as ParserOutput<'body', Codec>)
+        )
     }
   }
 
@@ -58,13 +57,11 @@ namespace Parser {
       errorHandler: ErrorHandler<ErrorResponse>
     ): Parser<Input, ParserOutput<'routeParams', Codec>, ErrorResponse> {
       return function(input: Input) {
-        return codec
-          .decode(getRouteParams(input))
-          .bimap(
-            errorHandler,
-            routeParams =>
-              ({ routeParams } as ParserOutput<'routeParams', Codec>)
-          )
+        return either.bimap(
+          codec.decode(getRouteParams(input)),
+          errorHandler,
+          routeParams => ({ routeParams } as ParserOutput<'routeParams', Codec>)
+        )
       }
     }
   }
@@ -85,12 +82,11 @@ namespace Parser {
       errorHandler: ErrorHandler<ErrorResponse>
     ): Parser<Input, ParserOutput<'query', Codec>, ErrorResponse> {
       return function(input: Input) {
-        return codec
-          .decode(getQuery(input))
-          .bimap(
-            errorHandler,
-            query => ({ query } as ParserOutput<'query', Codec>)
-          )
+        return either.bimap(
+          codec.decode(getQuery(input)),
+          errorHandler,
+          query => ({ query } as ParserOutput<'query', Codec>)
+        )
       }
     }
   }
@@ -117,12 +113,11 @@ namespace Parser {
       errorHandler: ErrorHandler<ErrorResponse>
     ): Parser<Input, ParserOutput<'headers', Codec>, ErrorResponse> {
       return function(input: Input) {
-        return codec
-          .decode(getHeaders(input))
-          .bimap(
-            errorHandler,
-            headers => ({ headers } as ParserOutput<'headers', Codec>)
-          )
+        return either.bimap(
+          codec.decode(getHeaders(input)),
+          errorHandler,
+          headers => ({ headers } as ParserOutput<'headers', Codec>)
+        )
       }
     }
   }
