@@ -3,8 +3,8 @@ import { Either, either, right, getOrElse } from 'fp-ts/lib/Either'
 import { array } from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
 
-import Parser from './parser'
-import Response from './response'
+import * as Parser from './parser'
+import * as Response from './response'
 
 export { Parser, Response }
 

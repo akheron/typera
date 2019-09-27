@@ -3,23 +3,16 @@
 const header = `\
 // This file is generated, do not edit! See ../tools/generate-responses.ts
 
-namespace Response {
-  type OptionalHeaders = { [key: string]: string } | undefined
+type OptionalHeaders = { [key: string]: string } | undefined
 
-  export type Response<Status, Body, Headers extends OptionalHeaders> = {
-    status: Status
-    body: Body
-    headers: Headers
-  }
-
-  export type Generic = Response<number, any, undefined>
-
-`
-
-const footer = `\
+export type Response<Status, Body, Headers extends OptionalHeaders> = {
+  status: Status
+  body: Body
+  headers: Headers
 }
 
-export default Response
+export type Generic = Response<number, any, OptionalHeaders>
+
 `
 
 type ResponseDef = {
@@ -29,13 +22,13 @@ type ResponseDef = {
 }
 
 const generateCode = ({ status, name, fnName }: ResponseDef): string => `\
-  export type ${name}<Body = undefined, Headers extends OptionalHeaders = undefined> = Response<${status}, Body, Headers>
-  export function ${fnName}<Body, Headers extends OptionalHeaders>(body: Body, headers: Headers): ${name}<Body, Headers>
-  export function ${fnName}<Body>(body: Body): ${name}<Body>
-  export function ${fnName}(): ${name}
-  export function ${fnName}(body = undefined, headers = undefined) {
-    return { status: ${status}, body, headers }
-  }
+export type ${name}<Body = undefined, Headers extends OptionalHeaders = undefined> = Response<${status}, Body, Headers>
+export function ${fnName}<Body, Headers extends OptionalHeaders>(body: Body, headers: Headers): ${name}<Body, Headers>
+export function ${fnName}<Body>(body: Body): ${name}<Body>
+export function ${fnName}(): ${name}
+export function ${fnName}(body = undefined, headers = undefined) {
+  return { status: ${status}, body, headers }
+}
 
 `
 
@@ -107,4 +100,3 @@ process.stdout.write(header)
 responses.forEach(r => {
   process.stdout.write(generateCode(r))
 })
-process.stdout.write(footer)
