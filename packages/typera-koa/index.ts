@@ -4,12 +4,20 @@ import 'koa-bodyparser' // Adds `body` to ctx.request
 import * as common from 'typera-common'
 export { Response, RequestHandler } from 'typera-common'
 
-export namespace Parser {
-  export type Parser<
-    Output extends {},
-    ErrorResponse extends common.Response.Generic
-  > = common.Parser.Parser<koa.Context, Output, ErrorResponse>
+export namespace Middleware {
+  export type Middleware<
+    Result extends {},
+    Response extends common.Response.Generic
+  > = common.Middleware.Middleware<koa.Context, Result, Response>
 
+  export type Generic = common.Middleware.Middleware<
+    koa.Context,
+    {},
+    common.Response.Generic
+  >
+}
+
+export namespace Parser {
   export type ErrorHandler<
     ErrorResponse extends common.Response.Generic
   > = common.Parser.ErrorHandler<ErrorResponse>
@@ -51,12 +59,10 @@ function makeRequestBase(ctx: koa.Context): KoaRequestBase {
   return { ctx }
 }
 
-export function routeHandler<
-  Parsers extends common.Parser.Parser<koa.Context, any, any>[]
->(
-  ...parsers: Parsers
-): common.MakeRouteHandler<koa.Context, KoaRequestBase, Parsers> {
-  return common.routeHandler(makeRequestBase, parsers)
+export function routeHandler<Middleware extends Middleware.Generic[]>(
+  ...middleware: Middleware
+): common.MakeRouteHandler<koa.Context, KoaRequestBase, Middleware> {
+  return common.routeHandler(makeRequestBase, middleware)
 }
 
 export function run<Response extends common.Response.Generic>(

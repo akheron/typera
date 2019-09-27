@@ -4,10 +4,11 @@ import * as Array from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
 import { pipe } from 'fp-ts/lib/pipeable'
 
+import * as Middleware from './middleware'
 import * as Parser from './parser'
 import * as Response from './response'
 
-export { Parser, Response }
+export { Middleware, Parser, Response }
 
 const foldM_E_A = Foldable.foldM(Either.either, Array.array)
 
@@ -17,8 +18,8 @@ export type RequestHandler<Request, Response> = (
   request: Request
 ) => Response | Promise<Response>
 
-// Create a route handler from request parsers and a function that
-// takes a request and returns a response
+// Create a route handler from middleware and a function that takes a
+// request and returns a response
 
 export type RouteHandler<Input, Response extends Response.Generic> = (
   input: Input
@@ -27,22 +28,28 @@ export type RouteHandler<Input, Response extends Response.Generic> = (
 export function routeHandler<
   Input,
   RequestBase extends {},
-  Parsers extends Parser.Parser<Input, any, any>[]
+  Middleware extends Middleware.Generic<Input>[]
 >(
   makeRequestBase: (input: Input) => RequestBase,
-  parsers: Parsers
-): MakeRouteHandler<Input, RequestBase, Parsers> {
-  const parseRequest = (input: Input) =>
-    foldM_E_A(parsers, Either.right(makeRequestBase(input)), (acc, parser) =>
-      pipe(
-        parser(input),
-        v => ({ ...acc, ...v })
-      )
+  middleware: Middleware
+): MakeRouteHandler<Input, RequestBase, Middleware> {
+  function runMiddleware(input: Input): Either.Either<Response.Generic, any> {
+    return foldM_E_A(
+      middleware,
+      makeRequestBase(input),
+      (acc, middlewareItem) =>
+        pipe(
+          middlewareItem(input),
+          Either.map(v => ({ ...acc, ...v }))
+        )
     )
+  }
 
-  return <any>((handler: any) => (input: Input) =>
+  return <any>(<Request extends any, Response extends Response.Generic>(
+    handler: (req: Request) => Response
+  ) => (input: Input) =>
     pipe(
-      parseRequest(input),
+      runMiddleware(input),
       Either.map(handler),
       Either.getOrElse(identity)
     ))
@@ -53,49 +60,41 @@ export function routeHandler<
 export type MakeRouteHandler<
   Input,
   RequestBase extends {},
-  Parsers extends Parser.Parser<any, any, any>[]
-> = TypesFromParsers<RequestBase, Parsers> extends ParserType<
-  infer Request,
-  infer ParserResponses
+  Middleware extends Middleware.Generic<Input>[]
+> = TypesFromMiddleware<Input, RequestBase, Middleware> extends MiddlewareType<
+  infer MiddlewareResult,
+  infer MiddlewareResponse
 >
   ? <Response extends Response.Generic>(
-      handler: RequestHandler<Request, Response>
-    ) => RouteHandler<Input, Response | ParserResponses>
+      handler: RequestHandler<MiddlewareResult, Response>
+    ) => RouteHandler<Input, Response | MiddlewareResponse>
   : never
 
-export type ParseRequest<
-  Input,
-  RequestBase extends {},
-  Parsers extends Parser.Parser<Input, any, any>[]
-> = TypesFromParsers<RequestBase, Parsers> extends ParserType<
-  infer Request,
-  infer ParserResponses
->
-  ? (input: Input) => Either.Either<ParserResponses, Request>
-  : never
-
-interface ParserType<
-  Request extends {},
-  ParserResponse extends Response.Generic
-> {
-  _req: Request
-  _err: ParserResponse
+interface MiddlewareType<Result extends {}, Response extends Response.Generic> {
+  _result: Result
+  _response: Response
 }
 
-type TypesFromParsers<
+type TypesFromMiddleware<
+  Input,
   RequestBase extends {},
-  Parsers extends Parser.Parser<any, any, any>[]
+  Middleware extends Middleware.Generic<Input>[]
 > = {
-  0: Head<Parsers> extends Parser.Parser<any, infer R, infer E>
-    ? TypesFromParsers<RequestBase, Tail<Parsers>> extends ParserType<
-        infer RR,
-        infer EE
-      >
-      ? ParserType<R & RR, E | EE>
+  0: Head<Middleware> extends Middleware.Middleware<
+    Input,
+    infer Result,
+    infer Response
+  >
+    ? TypesFromMiddleware<
+        Input,
+        RequestBase,
+        Tail<Middleware>
+      > extends MiddlewareType<infer ResultTail, infer ResponseTail>
+      ? MiddlewareType<Result & ResultTail, Response | ResponseTail>
       : never
     : never
-  1: ParserType<RequestBase, never>
-}[Length<Parsers> extends 0 ? 1 : 0]
+  1: MiddlewareType<RequestBase, never>
+}[Length<Middleware> extends 0 ? 1 : 0]
 
 type Length<T extends any[]> = T['length']
 type Head<T extends any[]> = T extends [infer U, ...any[]] ? U : never

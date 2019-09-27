@@ -9,12 +9,20 @@ export interface ExpressContext {
   res: express.Response
 }
 
-export namespace Parser {
-  export type Parser<
-    Output extends {},
-    ErrorResponse extends common.Response.Generic
-  > = common.Parser.Parser<ExpressContext, Output, ErrorResponse>
+export namespace Middleware {
+  export type Middleware<
+    Result extends {},
+    Response extends common.Response.Generic
+  > = common.Middleware.Middleware<ExpressContext, Result, Response>
 
+  export type Generic = common.Middleware.Middleware<
+    ExpressContext,
+    {},
+    common.Response.Generic
+  >
+}
+
+export namespace Parser {
   export type ErrorHandler<
     ErrorResponse extends common.Response.Generic
   > = common.Parser.ErrorHandler<ErrorResponse>
@@ -48,12 +56,10 @@ export type RouteHandler<
   Response extends common.Response.Generic
 > = common.RouteHandler<ExpressContext, Response>
 
-export function routeHandler<
-  Parsers extends common.Parser.Parser<ExpressContext, any, any>[]
->(
-  ...parsers: Parsers
-): common.MakeRouteHandler<ExpressContext, ExpressContext, Parsers> {
-  return common.routeHandler(identity, parsers)
+export function routeHandler<Middleware extends Middleware.Generic[]>(
+  ...middleware: Middleware
+): common.MakeRouteHandler<ExpressContext, ExpressContext, Middleware> {
+  return common.routeHandler(identity, middleware)
 }
 
 export function run<Response extends common.Response.Generic>(
