@@ -14,6 +14,7 @@ TypeScript type inference magic. It works with both [Express] and [Koa].
 - [Tutorial](#tutorial)
 - [API Reference](#api-reference)
   - [Responses](#responses)
+  - [Middleware](#middleware)
   - [Request Parsers](#request-parsers)
   - [Route handlers](#route-handlers)
   - [Integration with the router](#integration-with-the-router)
@@ -342,37 +343,76 @@ Here's a list of most common responses:
 For the full list of supported responses, see
 [response.ts](packages/typera-common/src/response.ts).
 
+### Middleware
+
+Middleware are functions that take the [Koa] context (in `typera-koa`)
+or [Express] req/res (in `typera-express`) as a parameter, and return
+either a `Response` or an object). [fp-ts] `Either` is used to support
+multiple return types.
+
+If a middleware function returns a `Response`, then the request
+handling is stopped and that response if the final request that will
+be served. If it returns an object, that object is merged to the
+[typera] request object which is passed to the route handler.
+
+For example, here's a middleware that authenticates a user and adds
+user info to the [typera] request object:
+
+```typescript
+import * as Either from 'fp-ts/lib/Either'
+
+import { Middleware } from 'typera-koa'
+// or
+// import { Middleware } from 'typera-express'
+
+const authenticateUser: Middleware<{ user: User }, Response.Unauthorized<string>> = (ctx: koa.Context) => {
+  //                               ^               ^                                ^
+  //                               |               |                                |
+  // This is the object that's merged to request   |                                |
+  //                                               |                                |
+  //                   This is the response that may be returned by the middleware  |
+  //                                                                                |
+  //      This would be (req: express.Request, res: express.Response) for typera-express
+
+  const user = authenticateUser(ctx)  // Gets a user somehowy and returns null if unauthenticated
+  if (!user) {
+    return Either.left(Response.unauthorized('Login first'))
+  }
+  return Either.right({ user })
+}
+```
+
+Another example of a middleware that adds a database client to the
+[typera] request object. It never fails, so the response type is
+`never`.
+
+```typescript
+import * as pg from 'pg'
+
+const dbClient = connectToDatabase(...) // somehow connect to database
+
+const db: Middleware<{ db: pg.ClientBase }, never> = () => ({
+  db: dbClient
+})
+```
+
+If you write a middleware that adds nothing to the [typera] request
+object, its result type should be `{}`:
+
+```typescript
+const checkSomething: Middleware<{}, Response.BadRequest<string>> = ...
+```
+
 ### Request Parsers
 
-All request parser related types and functions live in the `Parser`
-namespace.
+Request parsers are built-in middleware that let you validate parts of
+the request. All request parser related types and functions live in
+the `Parser` namespace.
 
 ```typescript
 import { Parser } from 'typera-koa'
 // or
-import { Parser } from 'typera-express'
-```
-
-A request parser is a function that takes the [Koa] context (in
-`typera-koa`) or [Express] req/res (in `typera-express`) as a
-parameter, and returns either a `Response` on error, or an object when
-successful). [fp-ts] `Either` is used to support multiple return
-types.
-
-```typescript
-// typera-koa
-type Input = koa.Context
-
-// typera-express
-type Input = {
-  req: express.Request
-  res: express.Response
-}
-
-type Parser<
-  Output extends {},
-  ErrorResponse extends Response.Response<number, any, any>
-> = (input: Input) => Either<ErrorResponse, Output>
+//import { Parser } from 'typera-express'
 ```
 
 [typera] provides functions to build request parsers for captured
@@ -384,13 +424,13 @@ status code and error message in the body.
 
 ```typescript
 function routeParams<Codec extends t.Type<any>>(codec: Codec):
-  Parser<{ routeParams: t.TypeOf<Codec> }, Response.NotFound>
+  Middleware<{ routeParams: t.TypeOf<Codec> }, Response.NotFound>
 
 function query<Codec extends t.Type<any>>(codec: Codec):
-  Parser<{ query: t.TypeOf<Codec> }, Response.BadRequest<string>>
+  Middleware<{ query: t.TypeOf<Codec> }, Response.BadRequest<string>>
 
 function body<Codec extends t.Type<any>>(codec: Codec):
-  Parser<{ body: t.TypeOf<Codec> }, Response.BadRequest<string>>
+  Middleware<{ body: t.TypeOf<Codec> }, Response.BadRequest<string>>
 ```
 
 Note that when a validation error occurs, `routeParams` produces a 404
@@ -412,7 +452,7 @@ function routeParamsP<
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
-): Parser<{ routeParams: t.TypeOf<Codec> }, ErrorResponse>
+): Middleware<{ routeParams: t.TypeOf<Codec> }, ErrorResponse>
 
 function queryP<
   Codec extends t.Type<any>,
@@ -420,7 +460,7 @@ function queryP<
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
-): Parser<{ query: t.TypeOf<Codec> }, ErrorResponse>
+): Middleware<{ query: t.TypeOf<Codec> }, ErrorResponse>
 
 function bodyP<
   Codec extends t.Type<any>,
@@ -428,7 +468,7 @@ function bodyP<
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
-): Parser<{ body: t.TypeOf<Codec> }, ErrorResponse>
+): Middleware<{ body: t.TypeOf<Codec> }, ErrorResponse>
 ```
 
 ### Route handlers
@@ -441,32 +481,32 @@ import { RouteHandler, routeHandler } from 'typera-express'
 
 A route handler is a function that takes the [Koa] context (in
 `typera-koa`) or [Express] req/res (in `typera-express`) as a
-parameter. It returns a promise of a response.
+parameter, and a response wrapped in a promise.
 
 Route handlers can be created using the `routeHandler` function. It is used like this:
 
 ```typescript
 routeHandler(
-  parser1, parser2, ...
+  middleware1, middleware2, ...
 )(async req => {
   ...
   return Response.ok()
 })
 ```
 
-Formally, it takes zero or more [request parsers](#request-parsers)
-(`parser1, parser2, ...`) which are used to validate the incoming
-request and create the [typera] request object (`req`). It returns a
-function that takes a request handler. This latter function returns
-the final route handler.
+Formally, it takes zero or more [middleware functions](#middleware)
+(`middleware1, middleware2, ...`) which are used to process the
+incoming request and create the [typera] request object (`req`). It
+returns a function that takes a request handler. This latter function
+returns the final route handler.
 
 The request handler is a function that receives the [typera] request
 object (`req`) and returns a response (`req => { return Response.ok()
 }` in the above example).
 
 The [typera] request object is created by merging the output objects
-of [request parsers](#request-parsers) given to `routeHandler`. It
-also always extends the request base:
+of [middleware function](#middleware) given to `routeHandler`. It also
+always extends the request base:
 
 ```typescript
 // typera-koa
@@ -491,8 +531,8 @@ TypeScript compiler checks that the properties of `req` are used
 correctly in the request handler.
 
 `routeHandler` infers the response type by combining the error
-response types of all parsers, and the response types of the request
-handler. To get maximum type safety, the return type of of
+response types of all middleware functions, and the response types of
+the request handler. To get maximum type safety, the return type of of
 `routeHandler` should always be explicitly declared in user code. This
 makes sure that the possible responses of a route don't change
 unexpectedly because of changes in your code, and documents all the
@@ -507,7 +547,7 @@ const listHandler: RouteHandler<
 
 We avoid giving the accurate type of `routeHandler` here, because it's
 quite complex due to the type inference of `req` and response types.
-For interested users, refer to the code:
+Interested users can refer to the code:
 [common](packages/typera-common/src/index.ts),
 [koa](packages/typera-koa/index.ts),
 [express](packages/typera-express/index.ts).
@@ -527,7 +567,7 @@ that can be passed to [koa-router] (with `typera-koa`), or to
 In `typera-koa`, `run` has the following signature:
 
 ```typescript
-function run<Response extends Response.Response<number, any, any>>(
+function run<Response extends Response.Generic>(
   handler: RouteHandler<Response>
 ): (ctx: koa.Context) => Promise<void>
 ```
@@ -539,13 +579,15 @@ import * as Router from 'koa-router'
 import { run } from 'typera-koa'
 
 const router = new Router()
+
+// Assume that listHandler is a route handler created by routeHandler()
 router.get('/', run(listHandler))
 ```
 
 In `typera-express`, `run` has the following signature:
 
 ```typescript
-function run<Response extends Response.Response<number, any, any>>(
+function run<Response extends Response.Generic>(
   handler: RouteHandler<Response>
 ): (req: express.Request, res: express.Response) => Promise<void>
 ```
@@ -558,6 +600,7 @@ import { run } from 'typera-express'
 
 const app = express()
 
+// Assume that listHandler is a route handler created by routeHandler()
 app.get('/', run(listHandler))
 ```
 
