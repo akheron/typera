@@ -347,39 +347,38 @@ For the full list of supported responses, see
 
 Middleware are functions that take the [Koa] context (in `typera-koa`)
 or [Express] req/res (in `typera-express`) as a parameter, and return
-either a `Response` or an object). [fp-ts] `Either` is used to support
+either a `Response` or an object. [fp-ts] `Either` is used to support
 multiple return types.
 
 If a middleware function returns a `Response`, then the request
-handling is stopped and that response if the final request that will
-be served. If it returns an object, that object is merged to the
-[typera] request object which is passed to the route handler.
+handling is stopped and that response is sent to the client. If it
+returns an object, that object is merged to the [typera] request
+object which is passed to the route handler.
 
 For example, here's a middleware that authenticates a user and adds
 user info to the [typera] request object:
 
 ```typescript
 import * as Either from 'fp-ts/lib/Either'
-
 import { Middleware } from 'typera-koa'
 // or
 // import { Middleware } from 'typera-express'
 
-const authenticateUser: Middleware<{ user: User }, Response.Unauthorized<string>> = (ctx: koa.Context) => {
-  //                               ^               ^                                ^
-  //                               |               |                                |
-  // This is the object that's merged to request   |                                |
-  //                                               |                                |
-  //                   This is the response that may be returned by the middleware  |
-  //                                                                                |
-  //      This would be (req: express.Request, res: express.Response) for typera-express
-
-  const user = authenticateUser(ctx)  // Gets a user somehowy and returns null if unauthenticated
-  if (!user) {
-    return Either.left(Response.unauthorized('Login first'))
+const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthorized<string>> =
+  //                                          ^               ^
+  //                                          |               |
+  // This is the object that's merged to request              |
+  //                                                          |
+  //                   This is the response that may be returned by the middleware
+  //
+  //
+  (ctx: koa.Context) => {   // (req: express.Request, res: express.Response) for typera-express
+    const user = authenticateUser(ctx)  // Gets a user somehow and returns null if unauthenticated
+    if (!user) {
+      return Either.left(Response.unauthorized('Login first'))
+    }
+    return Either.right({ user })
   }
-  return Either.right({ user })
-}
 ```
 
 Another example of a middleware that adds a database client to the
@@ -391,7 +390,7 @@ import * as pg from 'pg'
 
 const dbClient = connectToDatabase(...) // somehow connect to database
 
-const db: Middleware<{ db: pg.ClientBase }, never> = () => ({
+const db: Middleware.Middleware<{ db: pg.ClientBase }, never> = () => ({
   db: dbClient
 })
 ```
@@ -400,7 +399,7 @@ If you write a middleware that adds nothing to the [typera] request
 object, its result type should be `{}`:
 
 ```typescript
-const checkSomething: Middleware<{}, Response.BadRequest<string>> = ...
+const checkSomething: Middleware.Middleware<{}, Response.BadRequest<string>> = ...
 ```
 
 ### Request Parsers
