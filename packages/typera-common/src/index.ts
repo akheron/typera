@@ -1,12 +1,15 @@
-import { foldM } from 'fp-ts/lib/Foldable'
-import { Either, either, right, getOrElse } from 'fp-ts/lib/Either'
-import { array } from 'fp-ts/lib/Array'
+import * as Foldable from 'fp-ts/lib/Foldable'
+import * as Either from 'fp-ts/lib/Either'
+import * as Array from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
+import { pipe } from 'fp-ts/lib/pipeable'
 
 import * as Parser from './parser'
 import * as Response from './response'
 
 export { Parser, Response }
+
+const foldM_E_A = Foldable.foldM(Either.either, Array.array)
 
 // A request handler takes a request and produces a response
 
@@ -30,16 +33,19 @@ export function routeHandler<
   parsers: Parsers
 ): MakeRouteHandler<Input, RequestBase, Parsers> {
   const parseRequest = (input: Input) =>
-    foldM(either, array)(
-      parsers,
-      right(makeRequestBase(input)),
-      (acc, parser) => either.map(parser(input), v => ({ ...acc, ...v }))
+    foldM_E_A(parsers, Either.right(makeRequestBase(input)), (acc, parser) =>
+      pipe(
+        parser(input),
+        v => ({ ...acc, ...v })
+      )
     )
 
-  return <any>(
-    ((handler: any) => (input: Input) =>
-      getOrElse(identity)(either.map(parseRequest(input), handler)))
-  )
+  return <any>((handler: any) => (input: Input) =>
+    pipe(
+      parseRequest(input),
+      Either.map(handler),
+      Either.getOrElse(identity)
+    ))
 }
 
 // Helpers
@@ -65,7 +71,7 @@ export type ParseRequest<
   infer Request,
   infer ParserResponses
 >
-  ? (input: Input) => Either<ParserResponses, Request>
+  ? (input: Input) => Either.Either<ParserResponses, Request>
   : never
 
 interface ParserType<
