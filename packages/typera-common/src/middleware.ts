@@ -5,6 +5,8 @@ export type Middleware<
   Input,
   Result extends {},
   Response extends Response.Generic
-> = (input: Input) => Either.Either<Response, Result>
+> = (
+  input: Input
+) => Either.Either<Response, Result> | Promise<Either.Either<Response, Result>>
 
 export type Generic<Input> = Middleware<Input, {}, Response.Generic>

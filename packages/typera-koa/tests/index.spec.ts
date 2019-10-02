@@ -16,7 +16,7 @@ const testContext = (
   }) as koa.Context
 
 describe('routeHandler', () => {
-  it('decodes request', () => {
+  it('decodes request', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.NotFound | Response.BadRequest<string>
     > = routeHandler(
@@ -29,24 +29,24 @@ describe('routeHandler', () => {
       expect(request.body).toEqual(42)
       return Response.noContent()
     })
-    handler(testContext({ params: true, query: 'foo', body: 42 }))
+    await handler(testContext({ params: true, query: 'foo', body: 42 }))
   })
 
-  it('passes response through', () => {
+  it('passes response through', async () => {
     const handler: RouteHandler<Response.Ok<string>> = routeHandler()(_ => {
       return Response.ok('foo')
     })
-    const response = handler(testContext())
+    const response = await handler(testContext())
     expect(response).toEqual({ status: 200, body: 'foo' })
   })
 
-  it('returns errors from parsers', () => {
+  it('returns errors from parsers', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.BadRequest<string>
     > = routeHandler(Parser.body(t.number))(_request => {
       return Response.noContent()
     })
-    const response = handler(testContext({ body: 'foo' }))
+    const response = await handler(testContext({ body: 'foo' }))
     expect(response).toEqual({
       status: 400,
       body: 'Invalid body: Invalid value "foo" supplied to : number',

@@ -345,10 +345,10 @@ For the full list of supported responses, see
 
 ### Middleware
 
-Middleware are functions that take the [Koa] context (in `typera-koa`)
-or [Express] req/res (in `typera-express`) as a parameter, and return
-either a `Response` or an object. [fp-ts] `Either` is used to support
-multiple return types.
+Middleware are asynchronous functions that take the [Koa] context (in
+`typera-koa`) or [Express] req/res (in `typera-express`) as a
+parameter, and return either a `Response` or an object. [fp-ts]
+`Either` is used to support multiple return types.
 
 If a middleware function returns a `Response`, then the request
 handling is stopped and that response is sent to the client. If it
@@ -372,8 +372,8 @@ const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthori
   //                   This is the response that may be returned by the middleware
   //
   //
-  (ctx: koa.Context) => {   // (req: express.Request, res: express.Response) for typera-express
-    const user = authenticateUser(ctx)  // Gets a user somehow and returns null if unauthenticated
+  async (ctx: koa.Context) => {   // (req: express.Request, res: express.Response) for typera-express
+    const user = await authenticateUser(ctx)  // Gets a user somehow and returns null if unauthenticated
     if (!user) {
       return Either.left(Response.unauthorized('Login first'))
     }
