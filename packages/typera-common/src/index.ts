@@ -1,6 +1,4 @@
-import * as Foldable from 'fp-ts/lib/Foldable'
 import * as Either from 'fp-ts/lib/Either'
-import * as Array from 'fp-ts/lib/Array'
 import { identity } from 'fp-ts/lib/function'
 import { pipe } from 'fp-ts/lib/pipeable'
 
@@ -9,8 +7,6 @@ import * as Parser from './parser'
 import * as Response from './response'
 
 export { Middleware, Parser, Response }
-
-const foldM_E_A = Foldable.foldM(Either.either, Array.array)
 
 // A request handler takes a request and produces a response
 
@@ -33,23 +29,25 @@ export function routeHandler<
   makeRequestBase: (input: Input) => RequestBase,
   middleware: Middleware
 ): MakeRouteHandler<Input, RequestBase, Middleware> {
-  function runMiddleware(input: Input): Either.Either<Response.Generic, any> {
-    return foldM_E_A(
-      middleware,
-      makeRequestBase(input),
-      (acc, middlewareItem) =>
-        pipe(
-          middlewareItem(input),
-          Either.map(v => ({ ...acc, ...v }))
-        )
-    )
+  async function runMiddleware(
+    input: Input
+  ): Promise<Either.Either<Response.Generic, any>> {
+    let request = makeRequestBase(input)
+    for (const middlewareFunc of middleware) {
+      const result = await middlewareFunc(input)
+      if (Either.isLeft(result)) {
+        return result
+      }
+      request = { ...request, ...result.right }
+    }
+    return Either.right(request)
   }
 
   return <any>(<Request extends any, Response extends Response.Generic>(
     handler: (req: Request) => Response
-  ) => (input: Input) =>
+  ) => async (input: Input) =>
     pipe(
-      runMiddleware(input),
+      await runMiddleware(input),
       Either.map(handler),
       Either.getOrElse(identity)
     ))
