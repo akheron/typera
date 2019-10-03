@@ -1,9 +1,17 @@
+import * as Either from 'fp-ts/lib/Either'
 import * as http from 'http'
 import * as Koa from 'koa'
 import * as koaBodyparser from 'koa-bodyparser'
 import * as koaRouter from 'koa-router'
 import * as t from 'io-ts'
-import { Parser, Response, RouteHandler, routeHandler, run } from '..'
+import {
+  Middleware,
+  Parser,
+  Response,
+  RouteHandler,
+  routeHandler,
+  run,
+} from '..'
 import * as request from 'supertest'
 
 function makeServer(router: koaRouter): http.Server {
@@ -74,5 +82,27 @@ describe('routeHandler', () => {
         400,
         'Invalid body: Invalid value "bar" supplied to : { foo: number }/foo: number'
       )
+  })
+
+  it('async middleware', async () => {
+    const mw: Middleware.Middleware<{ foo: number }, never> = (
+      _: Koa.Context
+    ) =>
+      new Promise((resolve, _reject) => {
+        setTimeout(() => resolve(Either.right({ foo: 42 })), 10)
+      })
+
+    const handler: RouteHandler<
+      Response.NoContent | Response.BadRequest<string>
+    > = routeHandler(mw)(request => {
+      expect(request.foo).toEqual(42)
+      return Response.noContent()
+    })
+    const router = new koaRouter().get('/asyncmw', run(handler))
+    server = makeServer(router)
+
+    await request(server)
+      .get('/asyncmw')
+      .expect(204)
   })
 })
