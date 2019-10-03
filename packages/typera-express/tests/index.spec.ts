@@ -1,84 +1,60 @@
 import * as express from 'express'
+import * as bodyParser from 'body-parser'
 import * as t from 'io-ts'
-import {
-  ExpressContext,
-  Parser,
-  Response,
-  RouteHandler,
-  routeHandler,
-  run,
-} from '..'
+import { Parser, Response, RouteHandler, routeHandler, run } from '..'
+import * as request from 'supertest'
 
-const testContext = (
-  opts: {
-    params?: any
-    query?: any
-    body?: any
-  } = {}
-): ExpressContext =>
-  (<unknown>{
-    req: {
-      params: opts.params,
-      query: opts.query,
-      body: opts.body,
-    },
-    res: null,
-  }) as ExpressContext
+function makeApp() {
+  return express().use(bodyParser.json())
+}
 
 describe('routeHandler', () => {
+  it('works', async () => {
+    const handler: RouteHandler<Response.Ok<string>> = routeHandler()(_ => {
+      return Response.ok('foo')
+    })
+    const app = makeApp().get('/simple', run(handler))
+
+    await request(app)
+      .get('/simple')
+      .expect(200, 'foo')
+  })
+
   it('decodes request', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.NotFound | Response.BadRequest<string>
     > = routeHandler(
-      Parser.routeParams(t.boolean),
-      Parser.query(t.string),
-      Parser.body(t.number)
+      Parser.routeParams(t.type({ foo: t.string })),
+      Parser.query(t.type({ bar: t.string })),
+      Parser.body(t.type({ baz: t.number }))
     )(request => {
-      expect(request.routeParams).toEqual(true)
-      expect(request.query).toEqual('foo')
-      expect(request.body).toEqual(42)
+      expect(request.routeParams).toEqual({ foo: 'FOO' })
+      expect(request.query).toEqual({ bar: 'BAR' })
+      expect(request.body).toEqual({ baz: 42 })
       return Response.noContent()
     })
-    await handler(testContext({ params: true, query: 'foo', body: 42 }))
+    const app = makeApp().post('/decode/:foo', run(handler))
+
+    await request(app)
+      .post('/decode/FOO?bar=BAR')
+      .send({ baz: 42 })
+      .expect(204)
   })
 
-  it('passes response through', async () => {
-    const handler: RouteHandler<Response.Ok<string>> = routeHandler()(_ => {
-      return Response.ok('foo')
-    })
-    const response = await handler(testContext())
-    expect(response).toEqual({ status: 200, body: 'foo' })
-  })
-
-  it('returns errors from parsers', async () => {
+  it('returns errors from middleware', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.BadRequest<string>
-    > = routeHandler(Parser.body(t.number))(_request => {
+    > = routeHandler(Parser.body(t.type({ foo: t.number })))(_request => {
       return Response.noContent()
     })
-    const response = await handler(testContext({ body: 'foo' }))
-    expect(response).toEqual({
-      status: 400,
-      body: 'Invalid body: Invalid value "foo" supplied to : number',
-    })
-  })
-})
+    const app = makeApp().post('/error', run(handler))
 
-describe('run', () => {
-  it('hands off the response to Koa', async () => {
-    const status = jest.fn()
-    const set = jest.fn()
-    const send = jest.fn()
-
-    const res = (<unknown>{ status, send, set }) as express.Response
-
-    const handler = (_ctx: ExpressContext) =>
-      Promise.resolve({ status: 200, body: 'foo', headers: { Bar: 'baz' } })
-
-    await run(handler)((<unknown>{}) as express.Request, res)
-
-    expect(status).toHaveBeenCalledWith(200)
-    expect(set).toHaveBeenCalledWith({ Bar: 'baz' })
-    expect(send).toHaveBeenCalledWith('foo')
+    await request(app)
+      .post('/error')
+      .send({ foo: 'bar' })
+      .expect(
+        400,
+        'Invalid body: Invalid value "bar" supplied to : { foo: number }/foo: number'
+      )
   })
 })
