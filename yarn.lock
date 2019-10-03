@@ -1971,6 +1971,11 @@ invariant@^2.2.4:
   dependencies:
     loose-envify "^1.0.0"
 
+io-ts-types@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/io-ts-types/-/io-ts-types-0.5.1.tgz#55bedec94e3cce1413d60c014918091d0dffbbce"
+  integrity sha512-wdlK7Gn9gBaI3BT44mpwU+Y54J3GTT5R3dkM7CYZoaPMKWDwp/jYZ1Bj8/RRfcwP2ElJjuGre06avjkHLvgl7w==
+
 io-ts@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.0.1.tgz#1261c12f915c2f48d16393a36966636b48a45aa1"
