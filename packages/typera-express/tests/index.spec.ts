@@ -1,7 +1,16 @@
+import * as Either from 'fp-ts/lib/Either'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import * as t from 'io-ts'
-import { Parser, Response, RouteHandler, routeHandler, run } from '..'
+import {
+  ExpressContext,
+  Middleware,
+  Parser,
+  Response,
+  RouteHandler,
+  routeHandler,
+  run,
+} from '..'
 import * as request from 'supertest'
 
 function makeApp() {
@@ -56,5 +65,26 @@ describe('routeHandler', () => {
         400,
         'Invalid body: Invalid value "bar" supplied to : { foo: number }/foo: number'
       )
+  })
+
+  it('async middleware', async () => {
+    const mw: Middleware.Middleware<{ foo: number }, never> = (
+      _: ExpressContext
+    ) =>
+      new Promise((resolve, _reject) => {
+        setTimeout(() => resolve(Either.right({ foo: 42 })), 10)
+      })
+
+    const handler: RouteHandler<
+      Response.NoContent | Response.BadRequest<string>
+    > = routeHandler(mw)(request => {
+      expect(request.foo).toEqual(42)
+      return Response.noContent()
+    })
+    const app = makeApp().get('/asyncmw', run(handler))
+
+    await request(app)
+      .get('/asyncmw')
+      .expect(204)
   })
 })
