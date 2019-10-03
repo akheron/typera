@@ -1,7 +1,5 @@
 import * as Either from 'fp-ts/lib/Either'
-import * as http from 'http'
 import * as Koa from 'koa'
-import * as koaBodyparser from 'koa-bodyparser'
 import * as koaRouter from 'koa-router'
 import * as t from 'io-ts'
 import {
@@ -13,16 +11,10 @@ import {
   run,
 } from '..'
 import * as request from 'supertest'
-
-function makeServer(router: koaRouter): http.Server {
-  const app = new Koa()
-  app.use(koaBodyparser())
-  app.use(router.routes())
-  return app.listen(53823)
-}
+import { makeServer } from './utils'
 
 describe('routeHandler', () => {
-  let server: http.Server | null
+  let server: ReturnType<typeof makeServer> | null = null
 
   afterEach(() => {
     if (server) {

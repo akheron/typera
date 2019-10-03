@@ -1,6 +1,4 @@
 import * as Either from 'fp-ts/lib/Either'
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
 import * as t from 'io-ts'
 import {
   ExpressContext,
@@ -12,10 +10,7 @@ import {
   run,
 } from '..'
 import * as request from 'supertest'
-
-function makeApp() {
-  return express().use(bodyParser.json())
-}
+import { makeApp } from './utils'
 
 describe('routeHandler', () => {
   it('works', async () => {
