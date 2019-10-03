@@ -1,71 +1,78 @@
-import * as koa from 'koa'
+import * as http from 'http'
+import * as Koa from 'koa'
+import * as koaBodyparser from 'koa-bodyparser'
+import * as koaRouter from 'koa-router'
 import * as t from 'io-ts'
 import { Parser, Response, RouteHandler, routeHandler, run } from '..'
+import * as request from 'supertest'
 
-const testContext = (
-  opts: {
-    params?: any
-    query?: any
-    body?: any
-  } = {}
-): koa.Context =>
-  (<unknown>{
-    params: opts.params,
-    request: { query: opts.query, body: opts.body },
-    response: {},
-  }) as koa.Context
+function makeServer(router: koaRouter): http.Server {
+  const app = new Koa()
+  app.use(koaBodyparser())
+  app.use(router.routes())
+  return app.listen(53823)
+}
 
 describe('routeHandler', () => {
+  let server: http.Server | null
+
+  afterEach(() => {
+    if (server) {
+      server.close()
+      server = null
+    }
+  })
+
+  it('works', async () => {
+    const handler: RouteHandler<Response.Ok<string>> = routeHandler()(_ => {
+      return Response.ok('foo')
+    })
+    const router = new koaRouter().get('/simple', run(handler))
+    server = makeServer(router)
+
+    await request(server)
+      .get('/simple')
+      .expect(200, 'foo')
+  })
+
   it('decodes request', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.NotFound | Response.BadRequest<string>
     > = routeHandler(
-      Parser.routeParams(t.boolean),
-      Parser.query(t.string),
-      Parser.body(t.number)
+      Parser.routeParams(t.type({ foo: t.string })),
+      Parser.query(t.type({ bar: t.string })),
+      Parser.body(t.type({ baz: t.number }))
     )(request => {
-      expect(request.routeParams).toEqual(true)
-      expect(request.query).toEqual('foo')
-      expect(request.body).toEqual(42)
+      expect(request.routeParams).toEqual({ foo: 'FOO' })
+      expect(request.query).toEqual({ bar: 'BAR' })
+      expect(request.body).toEqual({ baz: 42 })
       return Response.noContent()
     })
-    await handler(testContext({ params: true, query: 'foo', body: 42 }))
+
+    const router = new koaRouter().post('/decode/:foo', run(handler))
+    server = makeServer(router)
+
+    await request(server)
+      .post('/decode/FOO?bar=BAR')
+      .send({ baz: 42 })
+      .expect(204)
   })
 
-  it('passes response through', async () => {
-    const handler: RouteHandler<Response.Ok<string>> = routeHandler()(_ => {
-      return Response.ok('foo')
-    })
-    const response = await handler(testContext())
-    expect(response).toEqual({ status: 200, body: 'foo' })
-  })
-
-  it('returns errors from parsers', async () => {
+  it('returns errors from middleware', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.BadRequest<string>
-    > = routeHandler(Parser.body(t.number))(_request => {
+    > = routeHandler(Parser.body(t.type({ foo: t.number })))(_request => {
       return Response.noContent()
     })
-    const response = await handler(testContext({ body: 'foo' }))
-    expect(response).toEqual({
-      status: 400,
-      body: 'Invalid body: Invalid value "foo" supplied to : number',
-    })
-  })
-})
+    const router = new koaRouter().post('/error', run(handler))
+    server = makeServer(router)
 
-describe('run', () => {
-  it('hands off the response to Koa', async () => {
-    const ctx = testContext()
-    ctx.response.set = jest.fn()
-
-    const handler = (_ctx: koa.Context) =>
-      Promise.resolve({ status: 200, body: 'foo', headers: { Bar: 'baz' } })
-
-    await run(handler)(ctx)
-
-    expect(ctx.response.status).toEqual(200)
-    expect(ctx.response.set).toHaveBeenCalledWith({ Bar: 'baz' })
-    expect(ctx.response.body).toEqual('foo')
+    await request(server)
+      .post('/error')
+      .send({ foo: 'bar' })
+      .expect(
+        400,
+        'Invalid body: Invalid value "bar" supplied to : { foo: number }/foo: number'
+      )
   })
 })
