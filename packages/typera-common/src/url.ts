@@ -21,12 +21,14 @@ export type Method =
   | 'patch'
   | 'all'
 
-type PathCapture<K extends string = string, T = any> = {
+export type PathCapture<K extends string = string, T = any> = {
   (routeParams: {}): Option.Option<{ [KK in K]: T }>
   pattern: string
 }
 
-type PathSegmentsToCaptures<Segments extends Array<PathCapture | string>> = {
+export type PathSegmentsToCaptures<
+  Segments extends Array<PathCapture | string>
+> = {
   0: Head<Segments> extends PathCapture<infer K, infer T>
     ? { [KK in K]: T } & PathSegmentsToCaptures<Tail<Segments>>
     : PathSegmentsToCaptures<Tail<Segments>>

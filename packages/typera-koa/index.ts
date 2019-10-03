@@ -4,7 +4,6 @@ import 'koa-bodyparser' // Adds `body` to ctx.request
 
 import * as common from 'typera-common'
 export { Response, RequestHandler, URL } from 'typera-common'
-export const url = common.URL.url
 
 interface KoaRequestBase {
   ctx: koa.Context
@@ -65,11 +64,15 @@ export type Route<Response extends common.Response.Generic> = common.Route<
 
 type GenericRoute = Route<common.Response.Generic>
 
-export function route<URLCaptures, Middleware extends Middleware.Generic[]>(
-  urlParser: common.URL.URLParser<URLCaptures>,
-  ...middleware: Middleware
-): common.MakeRoute<koa.Context, KoaRequestBase, URLCaptures, Middleware> {
-  return common.route(makeRequestBase, getRouteParams, urlParser, middleware)
+export function route<
+  PathSegments extends Array<common.URL.PathCapture | string>
+>(
+  method: common.URL.Method,
+  ...segments: PathSegments
+): common.MakeRoute<koa.Context, KoaRequestBase, PathSegments> {
+  const urlParser = common.URL.url(method, ...segments)()
+  return ((...middleware: any[]) =>
+    common.route(makeRequestBase, getRouteParams, urlParser, middleware)) as any
 }
 
 class Router {
