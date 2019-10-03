@@ -1,8 +1,22 @@
 import * as koa from 'koa'
+import * as koaRouter from 'koa-router'
 import 'koa-bodyparser' // Adds `body` to ctx.request
 
 import * as common from 'typera-common'
-export { Response, RequestHandler } from 'typera-common'
+export { Response, RequestHandler, URL } from 'typera-common'
+export const url = common.URL.url
+
+interface KoaRequestBase {
+  ctx: koa.Context
+}
+
+function makeRequestBase(ctx: koa.Context): KoaRequestBase {
+  return { ctx }
+}
+
+function getRouteParams(ctx: koa.Context): any {
+  return ctx.params
+}
 
 export namespace Middleware {
   export type Middleware<
@@ -28,9 +42,6 @@ export namespace Parser {
   export const bodyP = common.Parser.bodyP(getBody)
   export const body = common.Parser.body(getBody)
 
-  function getRouteParams(ctx: koa.Context): any {
-    return ctx.params
-  }
   export const routeParamsP = common.Parser.routeParamsP(getRouteParams)
   export const routeParams = common.Parser.routeParams(getRouteParams)
 
@@ -47,17 +58,47 @@ export namespace Parser {
   export const headers = common.Parser.headers(getHeaders)
 }
 
+export type Route<Response extends common.Response.Generic> = common.Route<
+  koa.Context,
+  Response
+>
+
+type GenericRoute = Route<common.Response.Generic>
+
+export function route<URLCaptures, Middleware extends Middleware.Generic[]>(
+  urlParser: common.URL.URLParser<URLCaptures>,
+  ...middleware: Middleware
+): common.MakeRoute<koa.Context, KoaRequestBase, URLCaptures, Middleware> {
+  return common.route(makeRequestBase, getRouteParams, urlParser, middleware)
+}
+
+class Router {
+  private _routes: GenericRoute[]
+
+  constructor(...routes: GenericRoute[]) {
+    this._routes = routes
+  }
+
+  add(...routes: GenericRoute[]): Router {
+    return new Router(...this._routes.concat(routes))
+  }
+
+  handler(): koa.Middleware {
+    const router = new koaRouter()
+    this._routes.forEach(route => {
+      router[route.method](route.urlPattern, run(route.routeHandler))
+    })
+    return router.routes() as koa.Middleware<any, any>
+  }
+}
+
+export function router(...routes: Route<common.Response.Generic>[]): Router {
+  return new Router(...routes)
+}
+
 export type RouteHandler<
   Response extends common.Response.Generic
 > = common.RouteHandler<koa.Context, Response>
-
-interface KoaRequestBase {
-  ctx: koa.Context
-}
-
-function makeRequestBase(ctx: koa.Context): KoaRequestBase {
-  return { ctx }
-}
 
 export function routeHandler<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware

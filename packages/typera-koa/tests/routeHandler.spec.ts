@@ -28,14 +28,14 @@ describe('routeHandler', () => {
       return Response.ok('foo')
     })
     const router = new koaRouter().get('/simple', run(handler))
-    server = makeServer(router)
+    server = makeServer(router.routes())
 
     await request(server)
       .get('/simple')
       .expect(200, 'foo')
   })
 
-  it('decodes request', async () => {
+  it('decodes the request', async () => {
     const handler: RouteHandler<
       Response.NoContent | Response.NotFound | Response.BadRequest<string>
     > = routeHandler(
@@ -50,7 +50,7 @@ describe('routeHandler', () => {
     })
 
     const router = new koaRouter().post('/decode/:foo', run(handler))
-    server = makeServer(router)
+    server = makeServer(router.routes())
 
     await request(server)
       .post('/decode/FOO?bar=BAR')
@@ -65,7 +65,7 @@ describe('routeHandler', () => {
       return Response.noContent()
     })
     const router = new koaRouter().post('/error', run(handler))
-    server = makeServer(router)
+    server = makeServer(router.routes())
 
     await request(server)
       .post('/error')
@@ -91,7 +91,7 @@ describe('routeHandler', () => {
       return Response.noContent()
     })
     const router = new koaRouter().get('/asyncmw', run(handler))
-    server = makeServer(router)
+    server = makeServer(router.routes())
 
     await request(server)
       .get('/asyncmw')
