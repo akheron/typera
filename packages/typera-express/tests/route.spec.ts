@@ -1,12 +1,12 @@
 import * as t from 'io-ts'
-import { Parser, Response, URL, router, route, url } from '..'
+import { Parser, Response, URL, router, route } from '..'
 import * as request from 'supertest'
 import { makeApp } from './utils'
 
 describe('route', () => {
   it('works', async () => {
     const routes = router(
-      route(url('get', '/foo')())(_ => {
+      route('get', '/foo')()(_ => {
         return Response.ok('foo')
       })
     )
@@ -19,17 +19,17 @@ describe('route', () => {
 
   it('supports adding multiple routes', async () => {
     const routes = router(
-      route(url('get', '/foo')())(_ => {
+      route('get', '/foo')()(_ => {
         return Response.ok('foo')
       }),
-      route(url('get', '/bar')())(_ => {
+      route('get', '/bar')()(_ => {
         return Response.ok('bar')
       })
     ).add(
-      route(url('get', '/baz')())(_ => {
+      route('get', '/baz')()(_ => {
         return Response.ok('baz')
       }),
-      route(url('get', '/quux')())(_ => {
+      route('get', '/quux')()(_ => {
         return Response.ok('quux')
       })
     )
@@ -51,8 +51,7 @@ describe('route', () => {
 
   it('decodes the request', async () => {
     const routes = router(
-      route(
-        url('post', '/decode/', URL.str('foo'))(),
+      route('post', '/decode/', URL.str('foo'))(
         Parser.query(t.type({ bar: t.string })),
         Parser.body(t.type({ baz: t.number }))
       )(request => {
@@ -72,7 +71,7 @@ describe('route', () => {
 
   it('returns errors from middleware', async () => {
     const routes = router(
-      route(url('post', '/error')(), Parser.body(t.type({ foo: t.number })))(
+      route('post', '/error')(Parser.body(t.type({ foo: t.number })))(
         _request => {
           return Response.noContent()
         }

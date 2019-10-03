@@ -3,7 +3,6 @@ import express = require('express')
 
 import * as common from 'typera-common'
 export { Response, RequestHandler, URL } from 'typera-common'
-export const url = common.URL.url
 
 export interface ExpressContext {
   req: express.Request
@@ -61,11 +60,15 @@ export type Route<Response extends common.Response.Generic> = common.Route<
 
 type GenericRoute = Route<common.Response.Generic>
 
-export function route<URLCaptures, Middleware extends Middleware.Generic[]>(
-  urlParser: common.URL.URLParser<URLCaptures>,
-  ...middleware: Middleware
-): common.MakeRoute<ExpressContext, ExpressContext, URLCaptures, Middleware> {
-  return common.route(identity, getRouteParams, urlParser, middleware)
+export function route<
+  PathSegments extends Array<common.URL.PathCapture | string>
+>(
+  method: common.URL.Method,
+  ...segments: PathSegments
+): common.MakeRoute<ExpressContext, ExpressContext, PathSegments> {
+  const urlParser = common.URL.url(method, ...segments)()
+  return ((...middleware: any[]) =>
+    common.route(identity, getRouteParams, urlParser, middleware)) as any
 }
 
 class Router {

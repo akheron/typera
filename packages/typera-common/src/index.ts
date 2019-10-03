@@ -34,7 +34,7 @@ export function route<
   getRouteParams: (input: Input) => {},
   urlParser: URL.URLParser<URLCaptures>,
   middleware: Middleware
-): MakeRoute<Input, RequestBase, URLCaptures, Middleware> {
+): any {
   return ((handler: (req: any) => any) => ({
     method: urlParser.method,
     urlPattern: urlParser.urlPattern,
@@ -99,18 +99,22 @@ async function runMiddleware<
 export type MakeRoute<
   Input,
   RequestBase extends {},
-  URLCaptures extends {},
-  Middleware extends Middleware.Generic<Input>[]
-> = TypesFromMiddleware<Input, RequestBase, Middleware> extends MiddlewareType<
-  infer MiddlewareResult,
-  infer MiddlewareResponse
->
-  ? <Response extends Response.Generic>(
-      handler: RequestHandler<
-        MiddlewareResult & { routeParams: URLCaptures },
-        Response
-      >
-    ) => Route<Input, Response | MiddlewareResponse>
+  PathSegments extends Array<URL.PathCapture | string>
+> = URL.PathSegmentsToCaptures<PathSegments> extends infer URLCaptures
+  ? <Middleware extends Middleware.Generic<Input>[]>(
+      ...middleware: Middleware
+    ) => TypesFromMiddleware<
+      Input,
+      RequestBase,
+      Middleware
+    > extends MiddlewareType<infer MiddlewareResult, infer MiddlewareResponse>
+      ? <Response extends Response.Generic>(
+          handler: RequestHandler<
+            MiddlewareResult & { routeParams: URLCaptures },
+            Response
+          >
+        ) => Route<Input, Response | MiddlewareResponse>
+      : never
   : never
 
 export type MakeRouteHandler<
