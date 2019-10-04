@@ -2,9 +2,9 @@
 
 [![CircleCI](https://circleci.com/gh/akheron/typera.svg?style=shield)](https://circleci.com/gh/akheron/typera)
 
-Typera (**TYPE**d **R**outing **A**ssistant) helps you build route
-handlers in a type-safe manner by leveraging [io-ts] and some
-TypeScript type inference magic. It works with both [Express] and [Koa].
+Typera (**TYPE**d **R**outing **A**ssistant) helps you build backends
+in a type-safe manner by leveraging [io-ts] and some TypeScript type
+inference magic. It works with both [Express] and [Koa].
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -16,13 +16,18 @@ TypeScript type inference magic. It works with both [Express] and [Koa].
   - [Responses](#responses)
   - [Middleware](#middleware)
   - [Request Parsers](#request-parsers)
+    - [`Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`](#parserquerytcodec-ttypet-middleware-query-t--responsebadrequeststring)
+    - [`Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`](#parserbodytcodec-ttypet-middleware-body-t--responsebadrequeststring)
+    - [~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)](#parserrouteparamstcodec-ttypet-middleware-routeparams-t--responsenotfound-deprecated)
+    - [Customizing the error response](#customizing-the-error-response)
   - [Routes](#routes)
+    - [`route(...): Route<Response>`](#route-routeresponse)
   - [URL parameter capturing](#url-parameter-capturing)
     - [`URL.str(name: string)`](#urlstrname-string)
     - [`URL.int(name: string)`](#urlintname-string)
   - [Router](#router)
-    - [`router(...routes): Router`](#routerroutes-router)
-    - [`Router.add(...routes): Router`](#routeraddroutes-router)
+    - [`router(...routes: Route<any>[]): Router`](#routerroutes-routeany-router)
+    - [`Router.add(...routes: Route<any>[]): Router`](#routeraddroutes-routeany-router)
     - [`Router.handler()`](#routerhandler)
   - [~Route handlers~ (deprecated)](#route-handlers-deprecated)
   - [~Integration with the app~ (deprecated)](#integration-with-the-app-deprecated)
@@ -38,6 +43,10 @@ building web backends, there are quite a few `any`s involved:
   URL and request body are all `any`.
 
 - When generating a response, the response body's type is `any`.
+
+- Usually, when middleware is involved, there's no type-level
+  visibility to which transforms the middleware apply to the request,
+  or which responses it might return.
 
 - The response status is a `number`. It's not as bad as `any`, but
   your routes always return responses from a known set of possible
@@ -187,7 +196,7 @@ const updateUser: Route<
 )(async request => {
   // This imaginary function takes the user id and data, and updates the
   // user in the database. If the user does not exist, it returns null.
-  const user = updateUserInDatabase(request.routeParams.id, request.body)
+  const user = await updateUserInDatabase(request.routeParams.id, request.body)
 
   if (user != null) {
     return Response.ok({ id: user.id, name: user.name, age: user.age })
@@ -241,15 +250,17 @@ const updateUser: Route<
 ```
 
 This is because the validation of the request data can fail. The
-`Parser.body()` helper produces a `400 Bad Request` response with a
-`string` body if the request body doesn't pass validation. To
+`Parser.body()` middleware produces a `400 Bad Request` response with
+a `string` body if the request body doesn't pass validation. To
 customize the returned error responses, use the `P` suffixed versions
 of the parser functions (`Parser.bodyP()`, `Parser.routeParamsP()`,
 etc.). See [Request Parsers](#request-parsers) below for more
 information.
 
-There's one piece still missing: adding our route handlers to app! Use
-the `router` function to create a router from a bunch of routes.
+There's one piece still missing: adding our route handlers to the app.
+Use the `router()` function to create a router from a bunch of routes,
+and the `.handler()` method of the router to get a handler that can be
+added to the app.
 
 Here's an example for [Koa]:
 ```typescript
@@ -350,6 +361,13 @@ For the full list of supported responses, see
 
 ### Middleware
 
+```typescript
+import * as Either from 'fp-ts/lib/Either'
+import { Middleware } from 'typera-koa'
+// or
+import { Middleware } from 'typera-express'
+```
+
 Middleware are asynchronous functions that take the [Koa] context (in
 `typera-koa`) or [Express] req/res (in `typera-express`) as a
 parameter, and return either a `Response` or an object. [fp-ts]
@@ -364,11 +382,6 @@ For example, here's a middleware that authenticates a user and adds
 user info to the [typera] request object:
 
 ```typescript
-import * as Either from 'fp-ts/lib/Either'
-import { Middleware } from 'typera-koa'
-// or
-// import { Middleware } from 'typera-express'
-
 const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthorized<string>> =
   //                                          ^               ^
   //                                          |               |
@@ -414,34 +427,51 @@ the request. All request parser related types and functions live in
 the `Parser` namespace.
 
 ```typescript
+import * as t from 'io-ts'
 import { Parser } from 'typera-koa'
 // or
 //import { Parser } from 'typera-express'
 ```
 
-[typera] provides functions to build request parsers for captured
-route params, query string, and request body. These functions take an
-[io-ts] codec (`t.Type`) and return a request parser that validates
-the corresponding part of the request using the given codec. If the
-validation fails, they produce an error response with appropriate
-status code and error message in the body.
+[typera] provides functions to build request parser middleware for
+query string, and request body. These functions take an [io-ts] codec
+(`t.Type`) and return a middleware that validates the corresponding
+part of the request using the given codec. If the validation fails,
+they produce an error response with appropriate status code and error
+message in the body.
 
-#### `routeParams(codec: t.Type)
+#### `Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`
 
-```typescript
-function routeParams<Codec extends t.Type<any>>(codec: Codec):
-  Middleware<{ routeParams: t.TypeOf<Codec> }, Response.NotFound>
+Validate the query string according to the given [io-ts] codec.
+Respond with `400 Bad Request` if the validation fails.
 
-function query<Codec extends t.Type<any>>(codec: Codec):
-  Middleware<{ query: t.TypeOf<Codec> }, Response.BadRequest<string>>
+The input for this parser will be the query string parsed as `{ [K in
+string]: string }`, i.e. all parameter values will be strings. If you
+want to convert them to other types, you probably find the
+`XFromString` codecs from [io-ts-types] useful (e.g. `IntFromString`,
+`BooleanFromString`, etc.)
 
-function body<Codec extends t.Type<any>>(codec: Codec):
-  Middleware<{ body: t.TypeOf<Codec> }, Response.BadRequest<string>>
-```
+#### `Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`
 
-Note that when a validation error occurs, `routeParams` produces a 404
-Not Found response, while `query` and `body` produce a 400 Bad Request
-response.
+Validate the request body according to the given [io-ts] codec.
+Respond with `400 Bad Request` if the validation fails.
+
+The input for this parser will be the request body, parsed with the
+body parser of your choice. With [Express] you probably want to use
+[body-parser], and with [Koa] the most common choice is
+[koa-bodyparser]. Note that these are native [Express] or [Koa]
+middleware, so you must attach them directly to the [Express] or [Koa]
+app rather than use them as [typera] middleware.
+
+#### ~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)
+
+*Deprecated as of v0.4.0*: Only useful with the deprecated
+`routeHandler()` and `run()` functions.
+
+Validate the captured route params according to the given [io-ts]
+codec. Respond with `404 Not Found` if the validation fails.
+
+#### Customizing the error response
 
 Each of the above functions also have a `P` flavor that allows the
 user to override error handling. In addition to an [io-ts] codec,
@@ -451,14 +481,6 @@ these functions take an error handler function that receives an
 ```typescript
 type ErrorHandler<ErrorResponse extends Response.Response<number, any, any>> =
   (errors: t.Errors) => ErrorResponse
-
-function routeParamsP<
-  Codec extends t.Type<any>,
-  ErrorResponse extends Response.Response<number, any, any>
->(
-  codec: Codec,
-  errorHandler: ErrorHandler<ErrorResponse>
-): Middleware<{ routeParams: t.TypeOf<Codec> }, ErrorResponse>
 
 function queryP<
   Codec extends t.Type<any>,
@@ -475,6 +497,15 @@ function bodyP<
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
 ): Middleware<{ body: t.TypeOf<Codec> }, ErrorResponse>
+
+// Deprecated
+function routeParamsP<
+  Codec extends t.Type<any>,
+  ErrorResponse extends Response.Response<number, any, any>
+>(
+  codec: Codec,
+  errorHandler: ErrorHandler<ErrorResponse>
+): Middleware<{ routeParams: t.TypeOf<Codec> }, ErrorResponse>
 ```
 
 ### Routes
@@ -738,7 +769,7 @@ Interested users can refer to the code:
 
 ### ~Integration with the app~ (deprecated)
 
-**Deprecated** as of v0.4.0: Use `route()` and `router()` instead.
+*Deprecated as of v0.4.0*: Use `route()` and `router()` instead.
 
 ```typescript
 import { run } from 'typera-koa'
@@ -794,5 +825,7 @@ app.get('/', run(listHandler))
 [fp-ts]: https://github.com/gcanti/fp-ts
 [io-ts]: https://github.com/gcanti/io-ts
 [Express]: https://expressjs.com/
+[body-parser]: https://github.com/expressjs/body-parser
 [Koa]: https://koajs.com/
+[koa-bodyparser]: https://github.com/koajs/bodyparser
 [koa-mount]: https://github.com/koajs/mount
