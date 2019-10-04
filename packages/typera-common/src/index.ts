@@ -1,6 +1,4 @@
 import * as Either from 'fp-ts/lib/Either'
-import { identity } from 'fp-ts/lib/function'
-import { pipe } from 'fp-ts/lib/pipeable'
 
 import * as Middleware from './middleware'
 import * as Parser from './parser'
