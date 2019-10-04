@@ -46,14 +46,18 @@ export function url<PathSegments extends Array<PathCapture | string>>(
   ...segments: PathSegments
 ): () => URLParser<PathSegmentsToCaptures<PathSegments>> {
   return () => {
+    const urlPattern =
+      segments.length > 0
+        ? segments
+            .map(segment =>
+              isPathCapture(segment) ? segment.pattern : segment
+            )
+            .join('')
+        : '/'
     const capturers: PathCapture[] = segments.filter(isPathCapture)
     return {
       method,
-      urlPattern: segments
-        .map(segment =>
-          typeof segment === 'string' ? segment : segment.pattern
-        )
-        .join(''),
+      urlPattern,
       parse: (routeParams: {}) => {
         const captures = capturers.map(capturer => capturer(routeParams))
         return pipe(
