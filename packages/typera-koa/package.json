@@ -1,6 +1,6 @@
 {
   "name": "typera-koa",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "TYPEd Route Assistant - for Koa",
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
@@ -20,6 +20,6 @@
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
-    "typera-common": "0.3.0"
+    "typera-common": "0.4.0"
   }
 }
