@@ -5,6 +5,15 @@
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
+  "keywords": [
+    "api",
+    "app",
+    "express",
+    "restful",
+    "router",
+    "typescript",
+    "web"
+  ],
   "files": [
     "lib"
   ],
