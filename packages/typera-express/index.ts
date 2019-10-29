@@ -58,18 +58,22 @@ export type Route<Response extends common.Response.Generic> = common.Route<
   Response
 >
 
-type GenericRoute = Route<common.Response.Generic>
-
-export function route<
-  PathSegments extends Array<common.URL.PathCapture | string>
->(
-  method: common.URL.Method,
-  ...segments: PathSegments
-): common.MakeRoute<ExpressContext, ExpressContext, PathSegments> {
-  const urlParser = common.URL.url(method, ...segments)()
-  return ((...middleware: any[]) =>
-    common.route(identity, getRouteParams, urlParser, middleware)) as any
+export function applyMiddleware<Middleware extends Middleware.Generic[]>(
+  ...outsideMiddleware: Middleware
+): common.RouteFn<ExpressContext, ExpressContext, Middleware> {
+  return ((method: common.URL.Method, ...segments: any[]) => {
+    const urlParser = common.URL.url(method, ...segments)()
+    return ((...middleware: any[]) =>
+      common.route(identity, getRouteParams, urlParser, [
+        ...outsideMiddleware,
+        ...middleware,
+      ])) as any
+  }) as any
 }
+
+export const route = applyMiddleware()
+
+type GenericRoute = Route<common.Response.Generic>
 
 class Router {
   private _routes: GenericRoute[]

@@ -3,7 +3,7 @@ import { Parser, Response, Route, URL, router, route } from '..'
 import * as request from 'supertest'
 import { makeServer } from './utils'
 
-describe('route', () => {
+describe('route & router', () => {
   let server: ReturnType<typeof makeServer> | null = null
 
   afterEach(() => {

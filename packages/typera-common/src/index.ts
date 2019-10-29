@@ -15,6 +15,32 @@ export type RequestHandler<Request, Response> = (
 ) => Response | Promise<Response>
 
 // Create a route from url parser, middleware and a request handler
+export type RouteFn<
+  Input,
+  RequestBase extends {},
+  Middleware extends Array<Middleware.Generic<Input>>
+> = TypesFromMiddleware<Input, RequestBase, Middleware> extends MiddlewareType<
+  infer MiddlewareResult,
+  infer MiddlewareResponse
+>
+  ? RouteFnImpl<Input, RequestBase, MiddlewareResult, MiddlewareResponse>
+  : never
+
+type RouteFnImpl<
+  Input,
+  RequestBase extends {},
+  OutsideMiddlewareResult extends {},
+  OutsideMiddlewareResponse extends Response.Generic
+> = <PathSegments extends Array<URL.PathCapture | string>>(
+  method: URL.Method,
+  ...segments: PathSegments
+) => MakeRoute<
+  Input,
+  RequestBase,
+  PathSegments,
+  OutsideMiddlewareResult,
+  OutsideMiddlewareResponse
+>
 
 export type Route<Input, Response extends Response.Generic> = {
   method: URL.Method
@@ -97,9 +123,11 @@ async function runMiddleware<
 export type MakeRoute<
   Input,
   RequestBase extends {},
-  PathSegments extends Array<URL.PathCapture | string>
+  PathSegments extends Array<URL.PathCapture | string>,
+  OutsideMiddlewareResult extends {} = {},
+  OutsideMiddlewareResponse extends Response.Generic = never
 > = URL.PathSegmentsToCaptures<PathSegments> extends infer URLCaptures
-  ? <Middleware extends Middleware.Generic<Input>[]>(
+  ? <Middleware extends Array<Middleware.Generic<Input>>>(
       ...middleware: Middleware
     ) => TypesFromMiddleware<
       Input,
@@ -108,10 +136,14 @@ export type MakeRoute<
     > extends MiddlewareType<infer MiddlewareResult, infer MiddlewareResponse>
       ? <Response extends Response.Generic>(
           handler: RequestHandler<
-            MiddlewareResult & { routeParams: URLCaptures },
+            MiddlewareResult &
+              OutsideMiddlewareResult & { routeParams: URLCaptures },
             Response
           >
-        ) => Route<Input, Response | MiddlewareResponse>
+        ) => Route<
+          Input,
+          Response | MiddlewareResponse | OutsideMiddlewareResponse
+        >
       : never
   : never
 
@@ -128,7 +160,10 @@ export type MakeRouteHandler<
     ) => RouteHandler<Input, Response | MiddlewareResponse>
   : never
 
-interface MiddlewareType<Result extends {}, Response extends Response.Generic> {
+export interface MiddlewareType<
+  Result extends {},
+  Response extends Response.Generic
+> {
   _result: Result
   _response: Response
 }
