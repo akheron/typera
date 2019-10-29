@@ -94,6 +94,13 @@ const responses: ResponseDef[] = [
   r(429, 'TooManyRequests'),
   r(431, 'RequestHeaderFieldsTooLarge'),
   r(451, 'UnavailableForLegalReasons'),
+
+  r(500, 'InternalServerError'),
+  r(501, 'NotImplemented'),
+  r(502, 'BadGateway'),
+  r(503, 'ServiceUnavailable'),
+  r(504, 'GatewayTimeout'),
+  r(505, 'HTTPVersionNotSupported'),
 ]
 
 process.stdout.write(header)

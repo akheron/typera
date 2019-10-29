@@ -761,3 +761,89 @@ export function unavailableForLegalReasons(
 ) {
   return { status: 451, body, headers }
 }
+
+export type InternalServerError<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<500, Body, Headers>
+export function internalServerError<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): InternalServerError<Body, Headers>
+export function internalServerError<Body>(body: Body): InternalServerError<Body>
+export function internalServerError(): InternalServerError
+export function internalServerError(body = undefined, headers = undefined) {
+  return { status: 500, body, headers }
+}
+
+export type NotImplemented<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<501, Body, Headers>
+export function notImplemented<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): NotImplemented<Body, Headers>
+export function notImplemented<Body>(body: Body): NotImplemented<Body>
+export function notImplemented(): NotImplemented
+export function notImplemented(body = undefined, headers = undefined) {
+  return { status: 501, body, headers }
+}
+
+export type BadGateway<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<502, Body, Headers>
+export function badGateway<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): BadGateway<Body, Headers>
+export function badGateway<Body>(body: Body): BadGateway<Body>
+export function badGateway(): BadGateway
+export function badGateway(body = undefined, headers = undefined) {
+  return { status: 502, body, headers }
+}
+
+export type ServiceUnavailable<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<503, Body, Headers>
+export function serviceUnavailable<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): ServiceUnavailable<Body, Headers>
+export function serviceUnavailable<Body>(body: Body): ServiceUnavailable<Body>
+export function serviceUnavailable(): ServiceUnavailable
+export function serviceUnavailable(body = undefined, headers = undefined) {
+  return { status: 503, body, headers }
+}
+
+export type GatewayTimeout<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<504, Body, Headers>
+export function gatewayTimeout<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): GatewayTimeout<Body, Headers>
+export function gatewayTimeout<Body>(body: Body): GatewayTimeout<Body>
+export function gatewayTimeout(): GatewayTimeout
+export function gatewayTimeout(body = undefined, headers = undefined) {
+  return { status: 504, body, headers }
+}
+
+export type HTTPVersionNotSupported<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<505, Body, Headers>
+export function hTTPVersionNotSupported<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): HTTPVersionNotSupported<Body, Headers>
+export function hTTPVersionNotSupported<Body>(
+  body: Body
+): HTTPVersionNotSupported<Body>
+export function hTTPVersionNotSupported(): HTTPVersionNotSupported
+export function hTTPVersionNotSupported(body = undefined, headers = undefined) {
+  return { status: 505, body, headers }
+}
