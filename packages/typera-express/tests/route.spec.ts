@@ -3,7 +3,7 @@ import { Parser, Response, Route, URL, router, route } from '..'
 import * as request from 'supertest'
 import { makeApp } from './utils'
 
-describe('route', () => {
+describe('route & router', () => {
   it('works', async () => {
     const foo: Route<Response.Ok<string>> = route('get', '/foo')()(_ => {
       return Response.ok('foo')

@@ -600,6 +600,23 @@ Interested users can refer to the code:
 [koa](packages/typera-koa/index.ts),
 [express](packages/typera-express/index.ts).
 
+#### `applyMiddleware(...middleware): (...) => Route<Response>`
+
+If you need to apply the same middleware to many routes, you can
+create your own version of the `route()` function by calling
+`applyMiddleware` with the middleware that are common to all of the
+routes:
+
+```typescript
+// db and auth are middleware functions
+const route = applyMiddleware(db, auth)
+
+const listHandler: Route<...> = route(...)
+const updateHandler: Route<...> = route(...)
+```
+
+The function returned by `applyMiddleware()` works exactly the same as
+`route()`, i.e. you can still pass route-specific middleware to it.
 
 ### URL parameter capturing
 
