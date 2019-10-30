@@ -66,12 +66,27 @@ export function route<
       const requestBase = makeRequestBase(input)
       const routeParams = urlParser.parse(getRouteParams(input))
       if (Either.isLeft(routeParams)) return routeParams.left
-      const middlewareReq = await runMiddleware(requestBase, middleware, input)
-      if (Either.isLeft(middlewareReq)) return middlewareReq.left
-      return await handler({
-        ...middlewareReq.right,
-        routeParams: routeParams.right,
-      })
+
+      const middlewareOutput = await runMiddleware(
+        requestBase,
+        middleware,
+        input
+      )
+      if (Either.isLeft(middlewareOutput)) {
+        // Finalizers have already run in this case
+        return middlewareOutput.left
+      }
+
+      let response
+      try {
+        response = await handler({
+          ...middlewareOutput.right.request,
+          routeParams: routeParams.right,
+        })
+      } finally {
+        await middlewareOutput.right.runFinalizers(input)
+      }
+      return response
     },
   })) as any
 }
@@ -92,13 +107,29 @@ export function routeHandler<
 ): MakeRouteHandler<Input, RequestBase, Middleware> {
   return ((handler: (req: any) => Promise<any>) => async (input: Input) => {
     const requestBase = makeRequestBase(input)
-    const req = await runMiddleware(requestBase, middleware, input)
-    if (Either.isLeft(req)) return req.left
-    return await handler(req.right as Request)
+    const middlewareOutput = await runMiddleware(requestBase, middleware, input)
+    if (Either.isLeft(middlewareOutput)) {
+      // Finalizers have already run in this case
+      return middlewareOutput.left
+    }
+
+    let response
+    try {
+      response = await handler(middlewareOutput.right.request as Request)
+    } finally {
+      await middlewareOutput.right.runFinalizers(input)
+    }
+    return response
   }) as any
 }
 
 // Helpers
+
+function isMiddlewareResponse<Result, Response>(
+  v: Middleware.MiddlewareOutput<Result, Response>
+): v is Middleware.MiddlewareResponse<Response> {
+  return v.hasOwnProperty('response') && !v.hasOwnProperty('value')
+}
 
 async function runMiddleware<
   Input,
@@ -108,16 +139,46 @@ async function runMiddleware<
   requestBase: RequestBase,
   middleware: Middleware,
   input: Input
-): Promise<Either.Either<Response.Generic, {}>> {
+): Promise<
+  Either.Either<
+    Response.Generic,
+    { request: {}; runFinalizers: (input: Input) => Promise<void> }
+  >
+> {
   let request = requestBase
-  for (const middlewareFunc of middleware) {
-    const result = await middlewareFunc(input)
-    if (Either.isLeft(result)) {
-      return result
+
+  const finalizers: Array<Middleware.MiddlewareFinalizer> = []
+
+  async function runFinalizers() {
+    // Run finalizers in the reverse order
+    for (const finalizer of [...finalizers].reverse()) {
+      try {
+        await finalizer()
+      } catch (err) {
+        // Log and ignore finalizer errors
+        console.error('Ignoring an exception from middleware finalizer', err)
+      }
     }
-    request = { ...request, ...result.right }
   }
-  return Either.right(request)
+
+  for (const middlewareFunc of middleware) {
+    let output
+    try {
+      output = await middlewareFunc(input)
+    } catch (err) {
+      await runFinalizers()
+      throw err
+    }
+
+    if (isMiddlewareResponse(output)) {
+      await runFinalizers()
+      return Either.left(output.response)
+    } else {
+      if (output.finalizer != null) finalizers.push(output.finalizer)
+      request = { ...request, ...output.value }
+    }
+  }
+  return Either.right({ request, runFinalizers })
 }
 
 export type MakeRoute<

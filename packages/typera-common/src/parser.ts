@@ -25,10 +25,10 @@ export function bodyP<Input>(getBody: (input: Input) => any) {
     return (input: Input) =>
       pipe(
         codec.decode(getBody(input)),
-        Either.bimap(
-          errorHandler,
-          body => ({ body } as ParserOutput<'body', Codec>)
-        )
+        Either.map<any, any>(body => ({ value: { body } })),
+        Either.getOrElse((errors: t.Errors) => ({
+          response: errorHandler(errors),
+        }))
       )
   }
 }
@@ -62,10 +62,10 @@ export function routeParamsP<Input>(getRouteParams: (input: Input) => any) {
     return function(input: Input) {
       return pipe(
         codec.decode(getRouteParams(input)),
-        Either.bimap(
-          errorHandler,
-          routeParams => ({ routeParams } as ParserOutput<'routeParams', Codec>)
-        )
+        Either.map<any, any>(routeParams => ({ value: { routeParams } })),
+        Either.getOrElse((errors: t.Errors) => ({
+          response: errorHandler(errors),
+        }))
       )
     }
   }
@@ -92,10 +92,10 @@ export function queryP<Input>(getQuery: (input: Input) => any) {
     return function(input: Input) {
       return pipe(
         codec.decode(getQuery(input)),
-        Either.bimap(
-          errorHandler,
-          query => ({ query } as ParserOutput<'query', Codec>)
-        )
+        Either.map<any, any>(query => ({ value: { query } })),
+        Either.getOrElse((errors: t.Errors) => ({
+          response: errorHandler(errors),
+        }))
       )
     }
   }
@@ -129,10 +129,10 @@ export function headersP<Input>(getHeaders: (input: Input) => any) {
     return function(input: Input) {
       return pipe(
         codec.decode(getHeaders(input)),
-        Either.bimap(
-          errorHandler,
-          headers => ({ headers } as ParserOutput<'headers', Codec>)
-        )
+        Either.map<any, any>(headers => ({ value: { headers } })),
+        Either.getOrElse((errors: t.Errors) => ({
+          response: errorHandler(errors),
+        }))
       )
     }
   }
