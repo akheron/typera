@@ -12,6 +12,11 @@
   - Add `applyMiddleware(...middleware)`
   - Add 5xx responses to the `Response` namespace
 
+- **Other**
+  - `typera-express`: Change express dependecy to a peerDependency
+  - `typera-koa`: Change koa and koa-boadyparser dependecies to peerDependencies
+  - `typera-koa`: Don't depend on koa-router anymore
+
 ## 0.4.0
 
 - **New features**
