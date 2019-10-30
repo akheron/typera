@@ -15,6 +15,8 @@ inference magic. It works with both [Express] and [Koa].
 - [API Reference](#api-reference)
   - [Responses](#responses)
   - [Middleware](#middleware)
+    - [`Middleware.next([value[, finalizer]])`](#middlewarenextvalue-finalizer)
+    - [`Middleware.stop(response)`](#middlewarestopresponse)
   - [Request Parsers](#request-parsers)
     - [`Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`](#parserquerytcodec-ttypet-middleware-query-t--responsebadrequeststring)
     - [`Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`](#parserbodytcodec-ttypet-middleware-body-t--responsebadrequeststring)
@@ -22,6 +24,7 @@ inference magic. It works with both [Express] and [Koa].
     - [Customizing the error response](#customizing-the-error-response)
   - [Routes](#routes)
     - [`route(...): Route<Response>`](#route-routeresponse)
+    - [`applyMiddleware(...middleware): (...) => Route<Response>`](#applymiddlewaremiddleware---routeresponse)
   - [URL parameter capturing](#url-parameter-capturing)
     - [`URL.str(name: string)`](#urlstrname-string)
     - [`URL.int(name: string)`](#urlintname-string)
@@ -370,13 +373,18 @@ import { Middleware } from 'typera-express'
 
 Middleware are asynchronous functions that take the [Koa] context (in
 `typera-koa`) or [Express] req/res (in `typera-express`) as a
-parameter, and return either a `Response` or an object. [fp-ts]
-`Either` is used to support multiple return types.
+parameter, and return either a `Response` or an object.
 
 If a middleware function returns a `Response`, then the request
 handling is stopped and that response is sent to the client. If it
 returns an object, that object is merged to the [typera] request
 object which is passed to the route handler.
+
+When the middleware function returns an object, it can also add a
+finalizer function to be called after the request handler has
+finished. This is useful if the middleware allocates some resources
+that need to be released afterwards (e.g. release a database
+connection, delete a temporary file, etc.)
 
 For example, here's a middleware that authenticates a user and adds
 user info to the [typera] request object:
@@ -393,9 +401,9 @@ const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthori
   async (ctx: koa.Context) => {   // (req: express.Request, res: express.Response) for typera-express
     const user = await authenticateUser(ctx)  // Gets a user somehow and returns null if unauthenticated
     if (!user) {
-      return Either.left(Response.unauthorized('Login first'))
+      return Middleware.stop(Response.unauthorized('Login first'))
     }
-    return Either.right({ user })
+    return Middleware.next({ user })
   }
 ```
 
@@ -406,11 +414,12 @@ Another example of a middleware that adds a database client to the
 ```typescript
 import * as pg from 'pg'
 
-const dbClient = connectToDatabase(...) // somehow connect to database
+const pool = new pg.Pool()
 
-const db: Middleware.Middleware<{ db: pg.ClientBase }, never> = () => ({
-  db: dbClient
-})
+const db: Middleware.Middleware<{ connection: pg.ClientBase }, never> = async () => {
+  const connection = await pool.connect()
+  return Middleware.next({ connection }, () => connection.release())
+}
 ```
 
 If you write a middleware that adds nothing to the [typera] request
@@ -419,6 +428,25 @@ object, its result type should be `{}`:
 ```typescript
 const checkSomething: Middleware.Middleware<{}, Response.BadRequest<string>> = ...
 ```
+
+#### `Middleware.next([value[, finalizer]])`
+
+Construct a value to be merged with the [typera] request object, and
+optionally add a finalizer to be run when the request processing has
+finished.
+
+If `Middleware.next()` is called with no arguments, nothing is added
+to the [typera] request object (the middleware result type will be an
+empty object `{}`).
+
+The finalizer, if given, is called with no arguments. It can be an
+async function (can return a `Promise`).
+
+#### `Middleware.stop(response)`
+
+Stop processing the request and return `response` to the client. Other
+middleware or the route handler will not be run. If other middleware
+has already run before this one, their finalizers are run.
 
 ### Request Parsers
 

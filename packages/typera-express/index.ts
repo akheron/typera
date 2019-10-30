@@ -24,6 +24,9 @@ export namespace Middleware {
     {},
     common.Response.Generic
   >
+
+  export const next = common.Middleware.next
+  export const stop = common.Middleware.stop
 }
 
 export namespace Parser {

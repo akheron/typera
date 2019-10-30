@@ -8,9 +8,9 @@ const myMiddleware: Middleware.Middleware<
   Response.BadRequest<string>
 > = ({ req }) => {
   if (req.query.err != null) {
-    return Either.left(Response.badRequest('quux'))
+    return Middleware.stop(Response.badRequest('quux'))
   } else {
-    return Either.right({ foo: 'bar' })
+    return Middleware.next({ foo: 'bar' })
   }
 }
 

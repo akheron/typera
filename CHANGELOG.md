@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0
+
+- **Breaking change**
+  - Middleware return type changed from `Either` to another type. Use
+    `Middleware.next()` to return a result and `Middleware.stop()` to
+    return a response from a middleware function.
+
+- **New features**
+  - Add `Middleware.next(value[, finalizer])` and `Middleware.stop(response)`
+  - Add `applyMiddleware(...middleware)`
+  - Add 5xx responses to the `Response` namespace
+
 ## 0.4.0
 
 - **New features**

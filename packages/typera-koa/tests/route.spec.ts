@@ -1,5 +1,5 @@
 import * as t from 'io-ts'
-import { Parser, Response, Route, URL, router, route } from '..'
+import { Middleware, Parser, Response, Route, URL, router, route } from '..'
 import * as request from 'supertest'
 import { makeServer } from './utils'
 
@@ -103,5 +103,74 @@ describe('route & router', () => {
         400,
         'Invalid body: Invalid value "bar" supplied to : { foo: number }/foo: number'
       )
+  })
+
+  it('runs middleware finalizers', async () => {
+    let middleware1 = 0
+    let finalizer1 = 0
+    const mw1: Middleware.Middleware<{}, never> = () => {
+      middleware1++
+      return Middleware.next({}, () => {
+        finalizer1++
+      })
+    }
+
+    let middleware2 = 0
+    let finalizer2 = 0
+    const mw2: Middleware.Middleware<{}, never> = () => {
+      middleware2++
+      return Middleware.next({}, () => {
+        finalizer2++
+      })
+    }
+
+    const root: Route<Response.Ok> = route('get', '/')(mw1, mw2)(_request => {
+      return Response.ok()
+    })
+    const handler = router(root).handler()
+    server = makeServer(handler)
+
+    await request(server)
+      .get('/')
+      .expect(200)
+
+    expect(middleware1).toEqual(1)
+    expect(finalizer1).toEqual(1)
+    expect(middleware2).toEqual(1)
+    expect(finalizer2).toEqual(1)
+  })
+
+  it('runs previous middleware finalizers when a middleware returns a response', async () => {
+    let middleware1 = 0
+    let finalizer1 = 0
+    const mw1: Middleware.Middleware<{}, never> = () => {
+      middleware1++
+      return Middleware.next({}, () => {
+        finalizer1++
+      })
+    }
+
+    let middleware2 = 0
+    const mw2: Middleware.Middleware<{}, Response.Unauthorized> = () => {
+      middleware2++
+      return Middleware.stop(Response.unauthorized())
+    }
+
+    const root: Route<Response.Ok | Response.Unauthorized> = route('get', '/')(
+      mw1,
+      mw2
+    )(_request => {
+      return Response.ok()
+    })
+    const handler = router(root).handler()
+    server = makeServer(handler)
+
+    await request(server)
+      .get('/')
+      .expect(401)
+
+    expect(middleware1).toEqual(1)
+    expect(finalizer1).toEqual(1)
+    expect(middleware2).toEqual(1)
   })
 })

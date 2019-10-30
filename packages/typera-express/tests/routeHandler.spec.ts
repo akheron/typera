@@ -67,7 +67,7 @@ describe('routeHandler', () => {
       _: ExpressContext
     ) =>
       new Promise((resolve, _reject) => {
-        setTimeout(() => resolve(Either.right({ foo: 42 })), 10)
+        setTimeout(() => resolve(Middleware.next({ foo: 42 })), 10)
       })
 
     const handler: RouteHandler<
