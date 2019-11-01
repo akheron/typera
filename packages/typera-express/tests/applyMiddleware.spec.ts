@@ -26,11 +26,11 @@ describe('applyMiddleware', () => {
     })
     const app = makeApp().use(router(foo).handler())
 
-    request(app)
+    await request(app)
       .get('/foo')
       .expect(200, 'foo')
 
-    request(app)
+    await request(app)
       .get('/foo?err=true')
       .expect(400, 'quux')
   })

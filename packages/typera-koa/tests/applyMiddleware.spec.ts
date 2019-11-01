@@ -35,11 +35,11 @@ describe('applyMiddleware', () => {
     })
     server = makeServer(router(foo).handler())
 
-    request(server)
+    await request(server)
       .get('/foo')
       .expect(200, 'foo')
 
-    request(server)
+    await request(server)
       .get('/foo?err=true')
       .expect(400, 'quux')
   })
