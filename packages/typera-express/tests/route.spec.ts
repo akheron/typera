@@ -164,4 +164,40 @@ describe('route & router', () => {
     expect(finalizer1).toEqual(1)
     expect(middleware2).toEqual(1)
   })
+
+  it('ignores exceptions from middleware finalizers', async () => {
+    let middleware1 = 0
+    let finalizer1 = 0
+    const mw1: Middleware.Middleware<{}, never> = () => {
+      middleware1++
+      return Middleware.next({}, () => {
+        finalizer1++
+        throw new Error('This exception should be ignored')
+      })
+    }
+
+    let middleware2 = 0
+    let finalizer2 = 0
+    const mw2: Middleware.Middleware<{}, never> = () => {
+      middleware2++
+      return Middleware.next({}, () => {
+        finalizer2++
+      })
+    }
+
+    const root: Route<Response.Ok> = route.get('/')(mw1, mw2)(_request => {
+      return Response.ok()
+    })
+    const handler = router(root).handler()
+    const app = makeApp().use(handler)
+
+    await request(app)
+      .get('/')
+      .expect(200)
+
+    expect(middleware1).toEqual(1)
+    expect(finalizer1).toEqual(1)
+    expect(middleware2).toEqual(1)
+    expect(finalizer2).toEqual(1)
+  })
 })
