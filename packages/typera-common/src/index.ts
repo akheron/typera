@@ -18,12 +18,19 @@ export type RequestHandler<Request, Response> = (
 export type RouteFn<
   Input,
   RequestBase extends {},
-  Middleware extends Array<Middleware.Generic<Input>>
+  Middleware extends Array<Middleware.Generic<Input>>,
+  OutsideMiddlewareResult extends {} = {},
+  OutsideMiddlewareResponse extends Response.Generic = never
 > = TypesFromMiddleware<Input, RequestBase, Middleware> extends MiddlewareType<
   infer MiddlewareResult,
   infer MiddlewareResponse
 >
-  ? RouteFnImpl<Input, RequestBase, MiddlewareResult, MiddlewareResponse>
+  ? RouteFnImpl<
+      Input,
+      RequestBase,
+      MiddlewareResult & OutsideMiddlewareResult,
+      MiddlewareResponse | OutsideMiddlewareResponse
+    >
   : never
 
 type RouteFnImpl<
@@ -31,16 +38,72 @@ type RouteFnImpl<
   RequestBase extends {},
   OutsideMiddlewareResult extends {},
   OutsideMiddlewareResponse extends Response.Generic
-> = <PathSegments extends Array<URL.PathCapture | string>>(
-  method: URL.Method,
-  ...segments: PathSegments
-) => MakeRoute<
+> = {
+  <PathSegments extends Array<URL.PathCapture | string>>(
+    method: URL.Method,
+    ...segments: PathSegments
+  ): MakeRoute<
+    Input,
+    RequestBase,
+    PathSegments,
+    OutsideMiddlewareResult,
+    OutsideMiddlewareResponse
+  >
+  use<Middleware extends Array<Middleware.Generic<Input>>>(
+    ...middleware: Middleware
+  ): RouteFn<
+    Input,
+    RequestBase,
+    Middleware,
+    OutsideMiddlewareResult,
+    OutsideMiddlewareResponse
+  >
+} & {
+  [M in URL.Method]: <PathSegments extends Array<URL.PathCapture | string>>(
+    ...segments: PathSegments
+  ) => MakeRoute<
+    Input,
+    RequestBase,
+    PathSegments,
+    OutsideMiddlewareResult,
+    OutsideMiddlewareResponse
+  >
+}
+
+export function applyMiddleware<
   Input,
-  RequestBase,
-  PathSegments,
-  OutsideMiddlewareResult,
-  OutsideMiddlewareResponse
->
+  RequestBase extends {},
+  Middleware extends Middleware.Generic<Input>[]
+>(
+  makeRequestBase: (input: Input) => RequestBase,
+  getRouteParams: (input: Input) => {},
+  outsideMiddleware: Middleware
+): any {
+  const routeFn = (method: URL.Method, ...segments: any[]) => {
+    const urlParser = URL.url(method, ...segments)()
+    return (...middleware: any[]) =>
+      route(makeRequestBase, getRouteParams, urlParser, [
+        ...outsideMiddleware,
+        ...middleware,
+      ])
+  }
+  routeFn.use = (...middleware: any[]) =>
+    applyMiddleware(makeRequestBase, getRouteParams, [
+      ...outsideMiddleware,
+      ...middleware,
+    ])
+
+  routeFn.get = (...segments: any[]) => routeFn('get', ...segments)
+  routeFn.post = (...segments: any[]) => routeFn('post', ...segments)
+  routeFn.put = (...segments: any[]) => routeFn('put', ...segments)
+  routeFn.delete = (...segments: any[]) => routeFn('delete', ...segments)
+  routeFn.head = (...segments: any[]) => routeFn('head', ...segments)
+  routeFn.options = (...segments: any[]) => routeFn('options', ...segments)
+  routeFn.patch = (...segments: any[]) => routeFn('patch', ...segments)
+  routeFn.all = (...segments: any[]) => routeFn('all', ...segments)
+
+  return routeFn as any
+}
 
 export type Route<Input, Response extends Response.Generic> = {
   method: URL.Method
