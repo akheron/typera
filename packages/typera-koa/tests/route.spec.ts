@@ -14,31 +14,31 @@ describe('route & router', () => {
   })
 
   it('works', async () => {
-    const foo: Route<Response.Ok<string>> = route('get', '/foo')()(_ => {
+    const foo: Route<Response.Ok<string>> = route.get('/foo')()(_ => {
       return Response.ok('foo')
     })
     server = makeServer(router(foo).handler())
 
-    request(server)
+    await request(server)
       .get('/foo')
       .expect(200)
   })
 
   it('supports adding multiple routes', async () => {
-    const foo: Route<Response.Ok<string>> = route('get', '/foo')()(_ => {
+    const foo: Route<Response.Ok<string>> = route.get('/foo')()(_ => {
       return Response.ok('foo')
     })
-    const bar: Route<Response.Ok<string>> = route('get', '/bar')()<
+    const bar: Route<Response.Ok<string>> = route.get('/bar')()<
       Response.Ok<string>
     >(_ => {
       return Response.ok('bar')
     })
-    const baz: Route<Response.Ok<string>> = route('get', '/baz')()<
+    const baz: Route<Response.Ok<string>> = route.get('/baz')()<
       Response.Ok<string>
     >(_ => {
       return Response.ok('baz')
     })
-    const quux: Route<Response.Ok<string>> = route('get', '/quux')()<
+    const quux: Route<Response.Ok<string>> = route.get('/quux')()<
       Response.Ok<string>
     >(_ => {
       return Response.ok('quux')
@@ -66,7 +66,7 @@ describe('route & router', () => {
   it('decodes the request', async () => {
     const decode: Route<
       Response.NoContent | Response.BadRequest<string>
-    > = route('post', '/decode/', URL.str('foo'))(
+    > = route.post('/decode/', URL.str('foo'))(
       Parser.query(t.type({ bar: t.string })),
       Parser.body(t.type({ baz: t.number }))
     )(request => {
@@ -88,7 +88,7 @@ describe('route & router', () => {
   it('returns errors from middleware', async () => {
     const error: Route<
       Response.NoContent | Response.BadRequest<string>
-    > = route('post', '/error')(Parser.body(t.type({ foo: t.number })))(
+    > = route.post('/error')(Parser.body(t.type({ foo: t.number })))(
       _request => {
         return Response.noContent()
       }
@@ -124,7 +124,7 @@ describe('route & router', () => {
       })
     }
 
-    const root: Route<Response.Ok> = route('get', '/')(mw1, mw2)(_request => {
+    const root: Route<Response.Ok> = route.get('/')(mw1, mw2)(_request => {
       return Response.ok()
     })
     const handler = router(root).handler()
@@ -156,7 +156,7 @@ describe('route & router', () => {
       return Middleware.stop(Response.unauthorized())
     }
 
-    const root: Route<Response.Ok | Response.Unauthorized> = route('get', '/')(
+    const root: Route<Response.Ok | Response.Unauthorized> = route.get('/')(
       mw1,
       mw2
     )(_request => {

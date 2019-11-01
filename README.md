@@ -23,8 +23,18 @@ inference magic. It works with both [Express] and [Koa].
     - [~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)](#parserrouteparamstcodec-ttypet-middleware-routeparams-t--responsenotfound-deprecated)
     - [Customizing the error response](#customizing-the-error-response)
   - [Routes](#routes)
-    - [`route(...): Route<Response>`](#route-routeresponse)
-    - [`applyMiddleware(...middleware): (...) => Route<Response>`](#applymiddlewaremiddleware---routeresponse)
+    - [`route`](#route)
+      - [`route.get(...): Route<Response>`](#routeget-routeresponse)
+      - [`route.post(...): Route<Response>`](#routepost-routeresponse)
+      - [`route.put(...): Route<Response>`](#routeput-routeresponse)
+      - [`route.delete(...): Route<Response>`](#routedelete-routeresponse)
+      - [`route.head(...): Route<Response>`](#routehead-routeresponse)
+      - [`route.options(...): Route<Response>`](#routeoptions-routeresponse)
+      - [`route.patch(...): Route<Response>`](#routepatch-routeresponse)
+      - [`route.all(...): Route<Response>`](#routeall-routeresponse)
+      - [`route(method, ...): Route<Response>`](#routemethod--routeresponse)
+    - [`route.use(...middleware)`](#routeusemiddleware)
+    - [`applyMiddleware(...middleware)`](#applymiddlewaremiddleware)
   - [URL parameter capturing](#url-parameter-capturing)
     - [`URL.str(name: string)`](#urlstrname-string)
     - [`URL.int(name: string)`](#urlintname-string)
@@ -539,20 +549,31 @@ function routeParamsP<
 ### Routes
 
 ```typescript
-import { Route, URL, route } from 'typera-koa'
+import { Route, URL, applyMiddleware, route } from 'typera-koa'
 // or
-import { Route, URL, route } from 'typera-express'
+import { Route, URL, applyMiddleware, route } from 'typera-express'
 ```
 
-A route is a path combined with a function that serves a response for
-that path.
+#### `route`
 
-#### `route(...): Route<Response>`
+A route is matches a request method and path, and defines a function
+that serves a response for that path.
 
-Routes are created using the `route` function. It is used like this:
+##### `route.get(...): Route<Response>`
+##### `route.post(...): Route<Response>`
+##### `route.put(...): Route<Response>`
+##### `route.delete(...): Route<Response>`
+##### `route.head(...): Route<Response>`
+##### `route.options(...): Route<Response>`
+##### `route.patch(...): Route<Response>`
+##### `route.all(...): Route<Response>`
+##### `route(method, ...): Route<Response>`
+
+Routes are created using the `route.[method]` or `route(method, ...)`
+functions. It is used like this:
 
 ```typescript
-route(method, pathSegment1, pathSegment2, ...)(
+route.get(pathSegment1, pathSegment2, ...)(
   middleware1, middleware2, ...
 )(async req => {
   ...
@@ -560,13 +581,16 @@ route(method, pathSegment1, pathSegment2, ...)(
 })
 ```
 
-Formally, it takes a HTTP method (`get`, `post`, etc.), and zero or
-more path segments (`pathSegment1, pathSegment2, ...`). Each path
-segment can be either a `string` or an [URL
-capture](#url-parameter-capturing). They are concatenated together to
-form the final URL pattern. The path if the incoming HTTP request is
-matched against the URL pattern to see whether this route is
-responsible for serving the response for the HTTP request.
+(The special method `all` matches no matter what the actual request
+method is.)
+
+The `route.[method]` functions take zero or more path segments as
+arguments (`pathSegment1, pathSegment2, ...`). Each path segment can
+be either a `string` or an [URL capture](#url-parameter-capturing).
+They are concatenated together to form the final URL pattern. The path
+if the incoming HTTP request is matched against the URL pattern to see
+whether this route is responsible for serving the response for the
+HTTP request.
 
 It returns a function that takes zero or more [middleware
 functions](#middleware) (`middleware1, middleware2, ...`) which are
@@ -628,23 +652,29 @@ Interested users can refer to the code:
 [koa](packages/typera-koa/index.ts),
 [express](packages/typera-express/index.ts).
 
-#### `applyMiddleware(...middleware): (...) => Route<Response>`
+#### `route.use(...middleware)`
+#### `applyMiddleware(...middleware)`
 
 If you need to apply the same middleware to many routes, you can
-create your own version of the `route()` function by calling
-`applyMiddleware` with the middleware that are common to all of the
+create your own version of `route` by calling either `route.use()` or
+`applyMiddleware()` with the middleware that are common to all of the
 routes:
 
 ```typescript
 // db and auth are middleware functions
-const route = applyMiddleware(db, auth)
+const myRoute = route.use(db, auth)
+// or
+const myRoute = route.use(db).use(auth)
+// or
+const myRoute = applyMiddleware(db, auth)
 
-const listHandler: Route<...> = route(...)
-const updateHandler: Route<...> = route(...)
+const listHandler: Route<...> = myRoute.get(...)
+const updateHandler: Route<...> = myRoute.put(...)
 ```
 
-The function returned by `applyMiddleware()` works exactly the same as
-`route()`, i.e. you can still pass route-specific middleware to it.
+The value returned by `route.use()` and `applyMiddleware()` works
+exactly the same as `route` i.e. it has the `.get()`, `.post()` etc.
+methods and can be called directly.
 
 ### URL parameter capturing
 

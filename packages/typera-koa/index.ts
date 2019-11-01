@@ -65,22 +65,15 @@ export type Route<Response extends common.Response.Generic> = common.Route<
   Response
 >
 
-type GenericRoute = Route<common.Response.Generic>
-
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
-  ...outsideMiddleware: Middleware
+  ...middleware: Middleware
 ): common.RouteFn<koa.Context, KoaRequestBase, Middleware> {
-  return ((method: common.URL.Method, ...segments: any[]) => {
-    const urlParser = common.URL.url(method, ...segments)()
-    return ((...middleware: any[]) =>
-      common.route(makeRequestBase, getRouteParams, urlParser, [
-        ...outsideMiddleware,
-        ...middleware,
-      ])) as any
-  }) as any
+  return common.applyMiddleware(makeRequestBase, getRouteParams, middleware)
 }
 
 export const route = applyMiddleware()
+
+type GenericRoute = Route<common.Response.Generic>
 
 class Router {
   private _routes: GenericRoute[]

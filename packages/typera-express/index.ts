@@ -62,16 +62,9 @@ export type Route<Response extends common.Response.Generic> = common.Route<
 >
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
-  ...outsideMiddleware: Middleware
+  ...middleware: Middleware
 ): common.RouteFn<ExpressContext, ExpressContext, Middleware> {
-  return ((method: common.URL.Method, ...segments: any[]) => {
-    const urlParser = common.URL.url(method, ...segments)()
-    return ((...middleware: any[]) =>
-      common.route(identity, getRouteParams, urlParser, [
-        ...outsideMiddleware,
-        ...middleware,
-      ])) as any
-  }) as any
+  return common.applyMiddleware(identity, getRouteParams, middleware)
 }
 
 export const route = applyMiddleware()

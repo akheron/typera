@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- **New features**
+  - Add `route.get()`, `.post()`, `.put()`, `.delete()`, `.head()`,
+    `.options()`, `.patch()`, `.all()`.
+  - Add `route.use()`
+
 ## 0.5.0
 
 - **Breaking change**
