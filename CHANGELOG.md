@@ -6,6 +6,8 @@
   - Add `route.get()`, `.post()`, `.put()`, `.delete()`, `.head()`,
     `.options()`, `.patch()`, `.all()`.
   - Add `route.use()`
+  - Make modules importable from `typera-*/name`, e.g.
+    `typera-koa/response`.
 
 ## 0.5.0
 
