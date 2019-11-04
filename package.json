@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "yarn workspace typera-common build && yarn workspace typera-express build && yarn workspace typera-koa build",
-    "test": "jest && yarn workspace typing-tests test",
+    "test": "yarn build && jest && yarn workspace typing-tests test",
     "doctoc": "doctoc README.md --title '## Table of Contents'"
   },
   "devDependencies": {
