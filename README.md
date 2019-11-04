@@ -556,8 +556,8 @@ import { Route, URL, applyMiddleware, route } from 'typera-express'
 
 #### `route`
 
-A route is matches a request method and path, and defines a function
-that serves a response for that path.
+A route matches a request based on HTTP method and path, and defines a
+function that serves a response for the matched request.
 
 ##### `route.get(...): Route<Response>`
 ##### `route.post(...): Route<Response>`
@@ -569,8 +569,9 @@ that serves a response for that path.
 ##### `route.all(...): Route<Response>`
 ##### `route(method, ...): Route<Response>`
 
-Routes are created using the `route.[method]` or `route(method, ...)`
-functions. It is used like this:
+Routes are created using the `route.[method](...)` or `route(method,
+...)`, where method is one of `get`, `post`, `put`, `delete`, `head`,
+`options`, `patch` or `all`:
 
 ```typescript
 route.get(pathSegment1, pathSegment2, ...)(
@@ -581,14 +582,13 @@ route.get(pathSegment1, pathSegment2, ...)(
 })
 ```
 
-(The special method `all` matches no matter what the actual request
-method is.)
+The special method `all` matches every HTTP method.
 
-The `route.[method]` functions take zero or more path segments as
-arguments (`pathSegment1, pathSegment2, ...`). Each path segment can
-be either a `string` or an [URL capture](#url-parameter-capturing).
-They are concatenated together to form the final URL pattern. The path
-if the incoming HTTP request is matched against the URL pattern to see
+The `route` functions take zero or more path segments as arguments
+(`pathSegment1, pathSegment2, ...`). Each path segment can be either a
+`string` or an [URL capture](#url-parameter-capturing). They are
+concatenated together to form the final URL pattern. The path if the
+incoming HTTP request is matched against the URL pattern to see
 whether this route is responsible for serving the response for the
 HTTP request.
 
@@ -605,8 +605,8 @@ object (`req`) and returns a response (`req => { return Response.ok()
 
 The [typera] request object is created by merging the [URL
 captures](#url-parameter-capturing) and the output objects of
-[middleware functions](#middleware) given to `route`. It also
-always extends the request base:
+[middleware functions](#middleware) given to `route` or applied
+before. It also always extends the request base:
 
 ```typescript
 // typera-koa
@@ -642,12 +642,12 @@ route:
 const listHandler: Route<
   | Response.Ok<User>
   | Response.BadRequest<string>
-> = route(...)(...)(async req => { ... })
+> = route.get(...)(...)(async req => { ... })
 ```
 
-We avoid giving the accurate type of `route` here, because it's quite
-complex due to the type inference of `req` and response types.
-Interested users can refer to the code:
+We avoid giving the accurate type of the various `route` functions
+here, because they're quite complex due to the type inference of `req`
+and response types. Interested users can refer to the code:
 [common](packages/typera-common/src/index.ts),
 [koa](packages/typera-koa/index.ts),
 [express](packages/typera-express/index.ts).
