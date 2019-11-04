@@ -1,6 +1,6 @@
 {
   "name": "typera-koa",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "TYPEd Route Assistant - for Koa",
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
@@ -24,7 +24,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "typera-common": "0.5.0"
+    "typera-common": "0.6.0"
   },
   "peerDependencies": {
     "@types/koa": ">=2.0.0",
