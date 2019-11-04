@@ -3,7 +3,6 @@
   "name": "typing-tests",
   "version": "0.0.1",
   "scripts": {
-    "build": "true",
     "test": "ts-node run-typing-tests.ts"
   },
   "dependencies": {

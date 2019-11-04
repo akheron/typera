@@ -1,3 +1,5 @@
 node_modules
-lib
 yarn-error.log
+*.js
+*.d.ts
+!jest.config.js

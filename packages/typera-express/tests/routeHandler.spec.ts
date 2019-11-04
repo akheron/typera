@@ -1,4 +1,3 @@
-import * as Either from 'fp-ts/lib/Either'
 import * as t from 'io-ts'
 import {
   ExpressContext,

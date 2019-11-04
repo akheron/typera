@@ -1,4 +1,3 @@
-import * as Apply from 'fp-ts/lib/Apply'
 import * as Array from 'fp-ts/lib/Array'
 import * as Either from 'fp-ts/lib/Either'
 import * as Foldable from 'fp-ts/lib/Foldable'

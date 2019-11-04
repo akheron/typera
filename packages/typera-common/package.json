@@ -6,10 +6,11 @@
   "author": "Petri Lehtinen <petri@digip.org>",
   "license": "MIT",
   "files": [
-    "lib"
+    "*.js",
+    "*.d.ts"
   ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "build": "tsc",
     "generate-responses": "ts-node tools/generate-responses.ts > src/response.ts && prettier --write src/response.ts"

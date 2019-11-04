@@ -15,10 +15,11 @@
     "web"
   ],
   "files": [
-    "lib"
+    "*.js",
+    "*.d.ts"
   ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "build": "tsc"
   },

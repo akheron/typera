@@ -306,6 +306,39 @@ app.use(router(listUsers, createUser, updateUser).handler())
 
 ## API Reference
 
+### Imports
+
+[typera] exposes its contents in various modules, e.g. `Response`,
+`Middleware`, `Parser`, etc. In the examples below, they are imported
+from the top-level module like this:
+
+```typescript
+import { Response, Middleware, Parser } from 'typera-koa'
+// or
+import { Response, Middleware, Parser } from 'typera-express'
+```
+
+You can also import from the individual modules:
+
+```typescript
+import * as Response from 'typera-koa/response'
+import * as Middleware from 'typera-koa/middleware'
+import * as Parser from 'typera-koa/parser'
+// or
+import * as Response from 'typera-express/response'
+import * as Middleware from 'typera-express/middleware'
+import * as Parser from 'typera-express/parser'
+```
+
+And of course, you can also import individual items when importing
+directly from the modules:
+
+```typescript
+import { BadRequest } from 'typera-koa/response'
+// or
+import { BadRequest } from 'typera-koa/express'
+```
+
 ### Responses
 
 All response related types and functions live in the `Response`
