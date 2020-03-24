@@ -441,7 +441,7 @@ const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthori
   //                   This is the response that may be returned by the middleware
   //
   //
-  async (ctx: koa.Context) => {   // (req: express.Request, res: express.Response) for typera-express
+  async (ctx: koa.Context) => {   // ({ req, res }) for typera-express
     const user = await authenticateUser(ctx)  // Gets a user somehow and returns null if unauthenticated
     if (!user) {
       return Middleware.stop(Response.unauthorized('Login first'))
