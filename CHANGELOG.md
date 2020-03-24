@@ -2,6 +2,9 @@
 
 ## 0.7.0
 
+- **New features**
+  - Add `Response.redirect()`
+
 - **Fixes**
   - `typera-express`: Catch promise rejections and forward the errors
     down the middleware chain
