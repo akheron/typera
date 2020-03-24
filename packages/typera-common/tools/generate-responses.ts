@@ -19,27 +19,72 @@ type ResponseDef = {
   status: number
   name: string
   fnName: string
+  defaultBodyType: string
+  defaultHeadersType: string
 }
 
-const generateCode = ({ status, name, fnName }: ResponseDef): string => `\
-export type ${name}<Body = undefined, Headers extends OptionalHeaders = undefined> = Response<${status}, Body, Headers>
-export function ${fnName}<Body, Headers extends OptionalHeaders>(body: Body, headers: Headers): ${name}<Body, Headers>
-export function ${fnName}<Body>(body: Body): ${name}<Body>
-export function ${fnName}(): ${name}
-export function ${fnName}(body = undefined, headers = undefined) {
-  return { status: ${status}, body, headers }
+const generateCode = (d: ResponseDef): string => `\
+export type ${d.name}<Body = ${d.defaultBodyType}, Headers extends OptionalHeaders = ${d.defaultHeadersType}> = Response<${d.status}, Body, Headers>
+export function ${d.fnName}<Body, Headers extends OptionalHeaders>(body: Body, headers: Headers): ${d.name}<Body, Headers>
+export function ${d.fnName}<Body>(body: Body): ${d.name}<Body, undefined>
+export function ${d.fnName}(): ${d.name}<undefined, undefined>
+export function ${d.fnName}(body = undefined, headers = undefined) {
+  return { status: ${d.status}, body, headers }
 }
 
 `
 
-const r = (status: number, name: string, fnName?: string): ResponseDef => ({
+const footer = `\
+
+type RedirectStatus = 301 | 302 | 303 | 307 | 308
+
+function redirectName(status: RedirectStatus): string {
+  switch (status) {
+    case 301: return 'Moved permanently'
+    case 302: return 'Found'
+    case 303: return 'See other'
+    case 307: return 'Temporary redirect'
+    case 308: return 'Permanent redirect'
+  }
+}
+
+export function redirect<Status extends RedirectStatus>(
+  status: Status,
+  location: string
+): Response<Status, string, { location: string }> {
+  return {
+    status,
+    body: \`\${redirectName(status)}. Redirecting to \${location}\`,
+    headers: { location },
+  }
+}
+`
+
+interface ResponseOptions {
+  fn?: string
+  body?: string
+  headers?: string
+}
+
+const r = (
+  status: number,
+  name: string,
+  options: ResponseOptions = {}
+): ResponseDef => ({
   status,
   name,
-  fnName: fnName || name[0].toLowerCase() + name.slice(1),
+  fnName: options.fn ?? name[0].toLowerCase() + name.slice(1),
+  defaultBodyType: options.body ?? 'undefined',
+  defaultHeadersType: options.headers ?? 'undefined',
 })
 
+const redirectOpts = {
+  body: 'string',
+  headers: '{ location: string }',
+}
+
 const responses: ResponseDef[] = [
-  r(100, 'Continue', 'continue_'),
+  r(100, 'Continue', { fn: 'continue_' }),
   r(101, 'SwitchingProtocols'),
   r(102, 'Processing'),
   r(103, 'EarlyHints'),
@@ -56,14 +101,14 @@ const responses: ResponseDef[] = [
   r(226, 'IMUsed'),
 
   r(300, 'MultipleChoices'),
-  r(301, 'MovedPermanently'),
-  r(302, 'Found'),
-  r(303, 'SeeOther'),
+  r(301, 'MovedPermanently', redirectOpts),
+  r(302, 'Found', redirectOpts),
+  r(303, 'SeeOther', redirectOpts),
   r(304, 'NotModified'),
   r(305, 'UseProxy'),
   r(306, 'SwitchProxy'),
-  r(307, 'TemporaryRedirect'),
-  r(308, 'PermanentRedirect'),
+  r(307, 'TemporaryRedirect', redirectOpts),
+  r(308, 'PermanentRedirect', redirectOpts),
 
   r(400, 'BadRequest'),
   r(401, 'Unauthorized'),
@@ -104,6 +149,7 @@ const responses: ResponseDef[] = [
 ]
 
 process.stdout.write(header)
-responses.forEach(r => {
+responses.forEach((r) => {
   process.stdout.write(generateCode(r))
 })
+process.stdout.write(footer)

@@ -13,7 +13,10 @@ inference magic. It works with both [Express] and [Koa].
 - [The Problem](#the-problem)
 - [Tutorial](#tutorial)
 - [API Reference](#api-reference)
+  - [Imports](#imports)
   - [Responses](#responses)
+  - [Redirects](#redirects)
+    - [`Response.redirect<Status>(status: Status, location: string): Response.Response<Status, string, { location: string }>`](#responseredirectstatusstatus-status-location-string-responseresponsestatus-string--location-string-)
   - [Middleware](#middleware)
     - [`Middleware.next([value[, finalizer]])`](#middlewarenextvalue-finalizer)
     - [`Middleware.stop(response)`](#middlewarestopresponse)
@@ -382,9 +385,10 @@ function ok<Body>(body: Body): Ok<Body>
 function ok<Body, Headers extends OptionalHeaders>(body: Body, headers: Headers): Ok<Body, Headers>
 ```
 
-All response types have the `Body` and `Headers` type parameters, both
-defaulting to `undefined`. All response constructor functions have the
-same 3 signatures.
+All response types have the `Body` and `Headers` type parameters. With
+other than [redirect responses](#redirects), both default to
+`undefined`. All response constructor functions have the same 3
+signatures.
 
 Here's a list of most common responses:
 
@@ -404,6 +408,49 @@ Here's a list of most common responses:
 
 For the full list of supported responses, see
 [response.ts](packages/typera-common/src/response.ts).
+
+### Redirects
+
+Redirecting the client to another URL is a common thing to and requires
+setting a header. To create a redirect response, use the
+`redirect(status, location)` helper:
+
+```
+const myHandler: Route<Response.MovedPermanently> =
+  route.get('/foo')()(async req => {
+    return Response.redirect(301, '/bar')
+  })
+```
+
+This generates a response with a string body and the `Location` header
+set:
+
+```
+HTTP/1.1 301 Moved Permanently
+Location: /bar
+
+Moved premanently. Redirecting to /bar
+```
+
+For simplicity, the redirecting responses listed below have the default
+body type of `string` and the default headers type of `{ location:
+string }`:
+
+| HTTP | Type | Constructor function |
+| -----| ---- | -------------------- |
+| 301 Moved Permanently | `MovedPermanently` | `redirect(301, location)` |
+| 302 Found | `Found` | `redirect(302, location)` |
+| 303 See Other | `SeeOther` | `redirect(303, location)` |
+| 307 Temporary Redirect | `TemporaryRedirect` | `redirect(307, location)` |
+| 308 Permanent Redirect | `PermanentRedirect` | `redirect(308, location)` |
+
+Use the "normal" constructor functions (`movedPermanently()`, `found()`,
+...) if you want full control over the body and headers.
+
+#### `Response.redirect<Status>(status: Status, location: string): Response.Response<Status, string, { location: string }>`
+
+Create a response that redirects to the given location. The response
+body will be a textual explanation of the redirect.
 
 ### Middleware
 
