@@ -1,4 +1,5 @@
 import * as t from 'io-ts'
+import { ErrorRequestHandler } from 'express'
 import {
   ExpressContext,
   Middleware,
@@ -42,6 +43,27 @@ describe('routeHandler', () => {
       .post('/decode/FOO?bar=BAR')
       .send({ baz: 42 })
       .expect(204)
+  })
+
+  it('forwards thrown errors to express error handling middleware', async () => {
+    const handler: RouteHandler<Response.Ok> = routeHandler()(
+      async _request => {
+        throw new Error('Unexpected error')
+        return Response.ok()
+      }
+    )
+
+    const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+      res.status(500).send(err.message)
+    }
+
+    const app = makeApp()
+    app.get('/test', run(handler))
+    app.use(errorHandler)
+
+    await request(app)
+      .get('/test')
+      .expect(500, 'Unexpected error')
   })
 
   it('returns errors from middleware', async () => {

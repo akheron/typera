@@ -62,9 +62,19 @@ export function routeHandler<Middleware extends Middleware.Generic[]>(
 
 export function run<Response extends common.Response.Generic>(
   handler: RouteHandler<Response>
-): (req: express.Request, res: express.Response) => Promise<void> {
-  return async (req, res) => {
-    const response = await handler({ req, res })
+): (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => Promise<void> {
+  return async (req, res, next) => {
+    let response: Response
+    try {
+      response = await handler({ req, res })
+    } catch (err) {
+      next(err)
+      return
+    }
     res.status(response.status)
     if (response.headers != null) {
       res.set(response.headers)
