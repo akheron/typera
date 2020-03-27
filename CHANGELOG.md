@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+- **Fixes**
+  - `typera-express`: Catch promise rejections and forward the errors
+    down the middleware chain
+
 ## 0.6.0
 
 - **New features**
