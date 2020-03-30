@@ -294,7 +294,7 @@ And for [Express]:
 ```typescript
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
-import { router } from 'typera-koa'
+import { router } from 'typera-express'
 
 const app = express()
 
