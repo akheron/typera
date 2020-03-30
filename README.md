@@ -17,6 +17,7 @@ inference magic. It works with both [Express] and [Koa].
   - [Responses](#responses)
   - [Redirects](#redirects)
     - [`Response.redirect<Status>(status: Status, location: string): Response.Response<Status, string, { location: string }>`](#responseredirectstatusstatus-status-location-string-responseresponsestatus-string--location-string-)
+  - [Streaming responses](#streaming-responses)
   - [Middleware](#middleware)
     - [`Middleware.next([value[, finalizer]])`](#middlewarenextvalue-finalizer)
     - [`Middleware.stop(response)`](#middlewarestopresponse)
@@ -415,7 +416,7 @@ Redirecting the client to another URL is a common thing to and requires
 setting a header. To create a redirect response, use the
 `redirect(status, location)` helper:
 
-```
+```typescript
 const myHandler: Route<Response.MovedPermanently> =
   route.get('/foo')()(async req => {
     return Response.redirect(301, '/bar')
@@ -451,6 +452,25 @@ Use the "normal" constructor functions (`movedPermanently()`, `found()`,
 
 Create a response that redirects to the given location. The response
 body will be a textual explanation of the redirect.
+
+### Streaming responses
+
+Use the `Response.StreamingBody` body type and the
+`Response.streamingBody()` function to create streaming responses. The
+function takes a callback that receives a writable stream as a
+parameter:
+
+```typescript
+const streamingHandler: Route<Response.Ok<Response.StreamingBody>> =
+  route.get('/document.pdf')()(async req => {
+    return Response.ok(Response.streamingBody(outputStream => {
+      // Assuming that the generatePDF function generates a
+      // PDF document to the given writable stream
+      generatePDF({ /* some data */ }, outputStream)
+    }))
+  })
+```
+
 
 ### Middleware
 

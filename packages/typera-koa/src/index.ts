@@ -1,6 +1,7 @@
 import * as koa from 'koa'
 import * as koaRouter from 'koa-router'
 import 'koa-bodyparser' // Adds `body` to ctx.request
+import * as stream from 'stream'
 
 import * as common from 'typera-common'
 export { RequestHandler } from 'typera-common'
@@ -78,6 +79,11 @@ export function run<Response extends common.Response.Generic>(
     if (response.headers != null) {
       ctx.response.set(response.headers)
     }
-    ctx.response.body = response.body || ''
+    if (Response.isStreamingBody(response.body)) {
+      ctx.body = new stream.PassThrough()
+      response.body.callback(ctx.body)
+    } else {
+      ctx.response.body = response.body || ''
+    }
   }
 }
