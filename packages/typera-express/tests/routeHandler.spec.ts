@@ -1,3 +1,4 @@
+import * as stream from 'stream'
 import * as t from 'io-ts'
 import { ErrorRequestHandler } from 'express'
 import {
@@ -102,5 +103,26 @@ describe('routeHandler', () => {
     await request(app)
       .get('/asyncmw')
       .expect(204)
+  })
+
+  it('streaming body', async () => {
+    const handler: RouteHandler<Response.Ok<
+      Response.StreamingBody
+    >> = routeHandler()(async () => {
+      const body = Response.streamingBody(outStream => {
+        const s = new stream.Readable()
+        s.pipe(outStream)
+        s.push('foo')
+        s.push('bar')
+        s.push(null)
+      })
+      return Response.ok(body)
+    })
+
+    const app = makeApp().get('/streaming', run(handler))
+
+    await request(app)
+      .get('/streaming')
+      .expect(200, 'foobar')
   })
 })
