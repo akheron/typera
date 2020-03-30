@@ -3,6 +3,8 @@
 const header = `\
 // This file is generated, do not edit! See ../tools/generate-responses.ts
 
+import { Writable } from 'stream'
+
 type OptionalHeaders = { [key: string]: string } | undefined
 
 export type Response<Status, Body, Headers extends OptionalHeaders> = {
@@ -57,6 +59,18 @@ export function redirect<Status extends RedirectStatus>(
     body: \`\${redirectName(status)}. Redirecting to \${location}\`,
     headers: { location },
   }
+}
+
+export type StreamingBodyCallback = (stream: Writable) => void
+
+export type StreamingBody = { _kind: 'StreamingBody', callback: StreamingBodyCallback }
+
+export function streamingBody(callback: StreamingBodyCallback): StreamingBody {
+  return { _kind: 'StreamingBody', callback }
+}
+
+export function isStreamingBody(body: any): body is StreamingBody {
+  return body && body._kind === 'StreamingBody' && body.callback
 }
 `
 

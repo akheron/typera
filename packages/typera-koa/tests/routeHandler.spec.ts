@@ -1,4 +1,4 @@
-import * as Either from 'fp-ts/lib/Either'
+import * as stream from 'stream'
 import * as Koa from 'koa'
 import * as koaRouter from 'koa-router'
 import * as t from 'io-ts'
@@ -96,5 +96,30 @@ describe('routeHandler', () => {
     await request(server)
       .get('/asyncmw')
       .expect(204)
+  })
+
+  it('streaming body', async () => {
+    const handler: RouteHandler<Response.Ok<
+      Response.StreamingBody,
+      { 'content-type': 'text/plain' }
+    >> = routeHandler()(async () => {
+      const body = Response.streamingBody(outStream => {
+        const s = new stream.Readable()
+        s.pipe(outStream)
+        s.push('foo')
+        s.push('bar')
+        s.push(null)
+      })
+
+      // text/plain is required for supertest to capture the body as string
+      return Response.ok(body, { 'content-type': 'text/plain' as const })
+    })
+
+    const router = new koaRouter().get('/streaming', run(handler))
+    server = makeServer(router.routes())
+
+    await request(server)
+      .get('/streaming')
+      .expect(200, 'foobar')
   })
 })

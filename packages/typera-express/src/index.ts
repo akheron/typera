@@ -39,7 +39,7 @@ class Router {
 
   handler(): express.Router {
     const router = express.Router()
-    this._routes.forEach(route => {
+    this._routes.forEach((route) => {
       router[route.method](route.urlPattern, run(route.routeHandler))
     })
     return router
@@ -80,7 +80,11 @@ export function run<Response extends common.Response.Generic>(
       res.set(response.headers)
     }
     if (response.body) {
-      res.send(response.body)
+      if (Response.isStreamingBody(response.body)) {
+        response.body.callback(res)
+      } else {
+        res.send(response.body)
+      }
     } else {
       res.end()
     }

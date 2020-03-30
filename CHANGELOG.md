@@ -4,6 +4,7 @@
 
 - **New features**
   - Add `Response.redirect()`
+  - Add support for streaming responses
 
 - **Fixes**
   - `typera-express`: Catch promise rejections and forward the errors
