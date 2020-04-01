@@ -66,13 +66,18 @@ describe('route & router', () => {
   it('decodes the request', async () => {
     const decode: Route<
       Response.NoContent | Response.BadRequest<string>
-    > = route.post('/decode/', URL.str('foo'))(
-      Parser.query(t.type({ bar: t.string })),
-      Parser.body(t.type({ baz: t.number }))
+    > = route.post(
+      '/decode/',
+      URL.str('foo'),
+      '/',
+      URL.int('bar')
+    )(
+      Parser.query(t.type({ baz: t.string })),
+      Parser.body(t.type({ quux: t.boolean }))
     )(request => {
-      expect(request.routeParams).toEqual({ foo: 'FOO' })
-      expect(request.query).toEqual({ bar: 'BAR' })
-      expect(request.body).toEqual({ baz: 42 })
+      expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
+      expect(request.query).toEqual({ baz: 'hello' })
+      expect(request.body).toEqual({ quux: true })
       return Response.noContent()
     })
 
@@ -80,8 +85,8 @@ describe('route & router', () => {
     server = makeServer(handler)
 
     await request(server)
-      .post('/decode/FOO?bar=BAR')
-      .send({ baz: 42 })
+      .post('/decode/FOO/42?baz=hello')
+      .send({ quux: true })
       .expect(204)
   })
 
