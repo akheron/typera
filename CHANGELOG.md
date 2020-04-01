@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.1
+
+- **Fixes**
+  - Fix URL parsing when there are multiple captures
+
 ## 0.7.0
 
 - **New features**
