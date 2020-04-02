@@ -163,7 +163,7 @@ const responses: ResponseDef[] = [
 ]
 
 process.stdout.write(header)
-responses.forEach((r) => {
+responses.forEach(r => {
   process.stdout.write(generateCode(r))
 })
 process.stdout.write(footer)

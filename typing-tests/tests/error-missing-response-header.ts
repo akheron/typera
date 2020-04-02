@@ -1,8 +1,9 @@
 import { Response, RouteHandler, routeHandler } from 'typera-koa'
 
-export const handler: RouteHandler<
-  Response.Ok<string, { 'Content-Type': 'application/json' }>
-> = routeHandler()(_req => {
+export const handler: RouteHandler<Response.Ok<
+  string,
+  { 'Content-Type': 'application/json' }
+>> = routeHandler()(_req => {
   return Response.ok('foo')
 })
 

@@ -15,7 +15,7 @@ export type ErrorHandler<ErrorResponse extends Response.Generic> = (
 ) => ErrorResponse
 
 export function bodyP<Input>(getBody: (input: Input) => any) {
-  return function<
+  return function <
     Codec extends t.Type<any>,
     ErrorResponse extends Response.Generic
   >(
@@ -48,7 +48,7 @@ export function body<Input>(getBody: (input: Input) => any) {
 }
 
 export function routeParamsP<Input>(getRouteParams: (input: Input) => any) {
-  return function<
+  return function <
     Codec extends t.Type<any>,
     ErrorResponse extends Response.Generic
   >(
@@ -59,7 +59,7 @@ export function routeParamsP<Input>(getRouteParams: (input: Input) => any) {
     ParserOutput<'routeParams', Codec>,
     ErrorResponse
   > {
-    return function(input: Input) {
+    return function (input: Input) {
       return pipe(
         codec.decode(getRouteParams(input)),
         Either.map<any, any>(routeParams => ({ value: { routeParams } })),
@@ -82,14 +82,14 @@ export function routeParams<Input>(getRouteParams: (input: Input) => any) {
 }
 
 export function queryP<Input>(getQuery: (input: Input) => any) {
-  return function<
+  return function <
     Codec extends t.Type<any>,
     ErrorResponse extends Response.Generic
   >(
     codec: Codec,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<Input, ParserOutput<'query', Codec>, ErrorResponse> {
-    return function(input: Input) {
+    return function (input: Input) {
       return pipe(
         codec.decode(getQuery(input)),
         Either.map<any, any>(query => ({ value: { query } })),
@@ -115,7 +115,7 @@ export function query<Input>(getQuery: (input: Input) => any) {
 }
 
 export function headersP<Input>(getHeaders: (input: Input) => any) {
-  return function<
+  return function <
     Codec extends t.Type<any>,
     ErrorResponse extends Response.Generic
   >(
@@ -126,7 +126,7 @@ export function headersP<Input>(getHeaders: (input: Input) => any) {
     ParserOutput<'headers', Codec>,
     ErrorResponse
   > {
-    return function(input: Input) {
+    return function (input: Input) {
       return pipe(
         codec.decode(getHeaders(input)),
         Either.map<any, any>(headers => ({ value: { headers } })),

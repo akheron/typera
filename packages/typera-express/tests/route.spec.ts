@@ -10,9 +10,7 @@ describe('route & router', () => {
     })
     const app = makeApp().use(router(foo).handler())
 
-    await request(app)
-      .get('/foo')
-      .expect(200)
+    await request(app).get('/foo').expect(200)
   })
 
   it('supports adding multiple routes', async () => {
@@ -35,23 +33,13 @@ describe('route & router', () => {
       return Response.ok('quux')
     })
 
-    const handler = router(foo, bar)
-      .add(baz, quux)
-      .handler()
+    const handler = router(foo, bar).add(baz, quux).handler()
     const app = makeApp().use(handler)
 
-    await request(app)
-      .get('/foo')
-      .expect(200, 'foo')
-    await request(app)
-      .get('/bar')
-      .expect(200, 'bar')
-    await request(app)
-      .get('/baz')
-      .expect(200, 'baz')
-    await request(app)
-      .get('/quux')
-      .expect(200, 'quux')
+    await request(app).get('/foo').expect(200, 'foo')
+    await request(app).get('/bar').expect(200, 'bar')
+    await request(app).get('/baz').expect(200, 'baz')
+    await request(app).get('/quux').expect(200, 'quux')
   })
 
   it('decodes the request', async () => {
@@ -126,9 +114,7 @@ describe('route & router', () => {
     const handler = router(root).handler()
     const app = makeApp().use(handler)
 
-    await request(app)
-      .get('/')
-      .expect(200)
+    await request(app).get('/').expect(200)
 
     expect(middleware1).toEqual(1)
     expect(finalizer1).toEqual(1)
@@ -161,9 +147,7 @@ describe('route & router', () => {
     const handler = router(root).handler()
     const app = makeApp().use(handler)
 
-    await request(app)
-      .get('/')
-      .expect(401)
+    await request(app).get('/').expect(401)
 
     expect(middleware1).toEqual(1)
     expect(finalizer1).toEqual(1)
@@ -196,9 +180,7 @@ describe('route & router', () => {
     const handler = router(root).handler()
     const app = makeApp().use(handler)
 
-    await request(app)
-      .get('/')
-      .expect(200)
+    await request(app).get('/').expect(200)
 
     expect(middleware1).toEqual(1)
     expect(finalizer1).toEqual(1)

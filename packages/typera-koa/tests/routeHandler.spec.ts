@@ -30,9 +30,7 @@ describe('routeHandler', () => {
     const router = new koaRouter().get('/simple', run(handler))
     server = makeServer(router.routes())
 
-    await request(server)
-      .get('/simple')
-      .expect(200, 'foo')
+    await request(server).get('/simple').expect(200, 'foo')
   })
 
   it('decodes the request', async () => {
@@ -93,9 +91,7 @@ describe('routeHandler', () => {
     const router = new koaRouter().get('/asyncmw', run(handler))
     server = makeServer(router.routes())
 
-    await request(server)
-      .get('/asyncmw')
-      .expect(204)
+    await request(server).get('/asyncmw').expect(204)
   })
 
   it('streaming body', async () => {
@@ -118,8 +114,6 @@ describe('routeHandler', () => {
     const router = new koaRouter().get('/streaming', run(handler))
     server = makeServer(router.routes())
 
-    await request(server)
-      .get('/streaming')
-      .expect(200, 'foobar')
+    await request(server).get('/streaming').expect(200, 'foobar')
   })
 })

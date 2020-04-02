@@ -24,13 +24,9 @@ describe('applyMiddleware', () => {
     })
     const app = makeApp().use(router(foo).handler())
 
-    await request(app)
-      .get('/foo')
-      .expect(200, 'bar')
+    await request(app).get('/foo').expect(200, 'bar')
 
-    await request(app)
-      .get('/foo?err=true')
-      .expect(400, 'quux')
+    await request(app).get('/foo?err=true').expect(400, 'quux')
   })
 
   it('chaining', async () => {
@@ -52,9 +48,7 @@ describe('applyMiddleware', () => {
     })
     const app = makeApp().use(router(foo).handler())
 
-    await request(app)
-      .get('/foo')
-      .expect(200)
+    await request(app).get('/foo').expect(200)
 
     expect(middleware1).toEqual(1)
     expect(middleware2).toEqual(1)

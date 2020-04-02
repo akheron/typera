@@ -20,9 +20,7 @@ describe('routeHandler', () => {
     })
     const app = makeApp().get('/simple', run(handler))
 
-    await request(app)
-      .get('/simple')
-      .expect(200, 'foo')
+    await request(app).get('/simple').expect(200, 'foo')
   })
 
   it('decodes request', async () => {
@@ -40,10 +38,7 @@ describe('routeHandler', () => {
     })
     const app = makeApp().post('/decode/:foo', run(handler))
 
-    await request(app)
-      .post('/decode/FOO?bar=BAR')
-      .send({ baz: 42 })
-      .expect(204)
+    await request(app).post('/decode/FOO?bar=BAR').send({ baz: 42 }).expect(204)
   })
 
   it('forwards thrown errors to express error handling middleware', async () => {
@@ -62,9 +57,7 @@ describe('routeHandler', () => {
     app.get('/test', run(handler))
     app.use(errorHandler)
 
-    await request(app)
-      .get('/test')
-      .expect(500, 'Unexpected error')
+    await request(app).get('/test').expect(500, 'Unexpected error')
   })
 
   it('returns errors from middleware', async () => {
@@ -100,9 +93,7 @@ describe('routeHandler', () => {
     })
     const app = makeApp().get('/asyncmw', run(handler))
 
-    await request(app)
-      .get('/asyncmw')
-      .expect(204)
+    await request(app).get('/asyncmw').expect(204)
   })
 
   it('streaming body', async () => {
@@ -121,8 +112,6 @@ describe('routeHandler', () => {
 
     const app = makeApp().get('/streaming', run(handler))
 
-    await request(app)
-      .get('/streaming')
-      .expect(200, 'foobar')
+    await request(app).get('/streaming').expect(200, 'foobar')
   })
 })

@@ -33,13 +33,9 @@ describe('applyMiddleware', () => {
     })
     server = makeServer(router(foo).handler())
 
-    await request(server)
-      .get('/foo')
-      .expect(200, 'bar')
+    await request(server).get('/foo').expect(200, 'bar')
 
-    await request(server)
-      .get('/foo?err=true')
-      .expect(400, 'quux')
+    await request(server).get('/foo?err=true').expect(400, 'quux')
   })
 
   it('chaining', async () => {
@@ -61,9 +57,7 @@ describe('applyMiddleware', () => {
     })
     server = makeServer(router(foo).handler())
 
-    await request(server)
-      .get('/foo')
-      .expect(200)
+    await request(server).get('/foo').expect(200)
 
     expect(middleware1).toEqual(1)
     expect(middleware2).toEqual(1)
