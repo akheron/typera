@@ -16,7 +16,7 @@
     "@types/supertest": "^2.0.8",
     "doctoc": "^1.4.0",
     "lerna": "^3.20.2",
-    "prettier": "^1.17.1",
+    "prettier": "^2.0.2",
     "supertest": "^4.0.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.8.3"
