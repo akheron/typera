@@ -3,13 +3,13 @@ import * as commonMiddleware from 'typera-common/middleware'
 import * as commonResponse from 'typera-common/response'
 
 export type Middleware<
-  Result extends {},
+  Result,
   Response extends commonResponse.Generic
 > = commonMiddleware.Middleware<koa.Context, Result, Response>
 
 export type Generic = commonMiddleware.Middleware<
   koa.Context,
-  {},
+  any,
   commonResponse.Generic
 >
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.2
+
+- **Fixes**
+  - Make the `Middleware` type more lenient about the result type. Using
+    `unknown` is preferred if the middleware doesn't add anything to the
+    request.
+
 ## 0.7.1
 
 - **Fixes**

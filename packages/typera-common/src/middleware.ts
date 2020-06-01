@@ -1,16 +1,12 @@
 import * as Response from './response'
 
-export type Middleware<
-  Input,
-  Result extends {},
-  Response extends Response.Generic
-> = (
+export type Middleware<Input, Result, Response extends Response.Generic> = (
   input: Input
 ) =>
   | MiddlewareOutput<Result, Response>
   | Promise<MiddlewareOutput<Result, Response>>
 
-export type Generic<Input> = Middleware<Input, {}, Response.Generic>
+export type Generic<Input> = Middleware<Input, any, Response.Generic>
 
 export type MiddlewareOutput<Result, Response> =
   | MiddlewareResult<Result>
@@ -25,8 +21,8 @@ export type MiddlewareFinalizer = () => void | Promise<void>
 
 export type MiddlewareResponse<Response> = { response: Response }
 
-export function next(): MiddlewareResult<{}>
-export function next<Result extends {}>(
+export function next(): MiddlewareResult<unknown>
+export function next<Result>(
   value: Result,
   finalizer?: () => void | Promise<void>
 ): MiddlewareResult<Result>

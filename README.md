@@ -533,10 +533,10 @@ const db: Middleware.Middleware<{ connection: pg.ClientBase }, never> = async ()
 ```
 
 If you write a middleware that adds nothing to the [typera] request
-object, its result type should be `{}`:
+object, its result type should be `unknown`:
 
 ```typescript
-const checkSomething: Middleware.Middleware<{}, Response.BadRequest<string>> = ...
+const checkSomething: Middleware.Middleware<unknown, Response.BadRequest<string>> = ...
 ```
 
 #### `Middleware.next([value[, finalizer]])`

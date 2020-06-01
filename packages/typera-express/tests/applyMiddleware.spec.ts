@@ -31,13 +31,13 @@ describe('applyMiddleware', () => {
 
   it('chaining', async () => {
     let middleware1 = 0
-    const mw1: Middleware.Middleware<{}, never> = () => {
+    const mw1: Middleware.Middleware<unknown, never> = () => {
       middleware1++
       return Middleware.next()
     }
 
     let middleware2 = 0
-    const mw2: Middleware.Middleware<{}, never> = () => {
+    const mw2: Middleware.Middleware<unknown, never> = () => {
       middleware2++
       return Middleware.next()
     }
