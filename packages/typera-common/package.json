@@ -13,7 +13,8 @@
   "types": "./index.d.ts",
   "scripts": {
     "build": "tsc",
-    "generate-responses": "ts-node tools/generate-responses.ts > src/response.ts && prettier --write src/response.ts"
+    "generate-responses": "ts-node tools/generate-responses.ts > src/response.ts && prettier --write src/response.ts",
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@types/jest": "^25.1.5",

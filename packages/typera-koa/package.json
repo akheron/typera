@@ -21,7 +21,8 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "typera-common": "^0.7.2"
