@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.3
+
+- **Dependencies**
+  - typera-express: Remove peerDependencies, depend directly on express
+  - typera-koa: Remove peerDependencies, depend directly on koa utility
+    libraries
+  - Use @koa/router instead of the unmaintained koa-router
+
 ## 0.7.2
 
 - **Fixes**
@@ -15,6 +23,7 @@
 ## 0.7.0
 
 - **New features**
+
   - Add `Response.redirect()`
   - Add support for streaming responses
 
@@ -34,11 +43,13 @@
 ## 0.5.0
 
 - **Breaking change**
+
   - Middleware return type changed from `Either` to another type. Use
     `Middleware.next()` to return a result and `Middleware.stop()` to
     return a response from a middleware function.
 
 - **New features**
+
   - Add `Middleware.next(value[, finalizer])` and `Middleware.stop(response)`
   - Add `applyMiddleware(...middleware)`
   - Add 5xx responses to the `Response` namespace
@@ -51,6 +62,7 @@
 ## 0.4.0
 
 - **New features**
+
   - Add support for middleware
   - Add `router()` and `route()`
 
