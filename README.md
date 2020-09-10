@@ -79,7 +79,7 @@ Install [typera] with yarn or npm.
 For [Koa]:
 
 ```shell
-yarn add koa typera-koa
+yarn add typera-koa
 # or
 npm install --save koa typera-koa
 ```
@@ -953,7 +953,7 @@ import { run } from 'typera-express'
 ```
 
 Use the `run` function to transform the route handler to a function
-that can be passed to [koa-router] (with `typera-koa`), or to
+that can be passed to [@koa/router] (with `typera-koa`), or to
 [Express] routing functions (with `typera-express`).
 
 In `typera-koa`, `run` has the following signature:
@@ -967,7 +967,7 @@ function run<Response extends Response.Generic>(
 Example of usage:
 
 ```typescript
-import * as Router from 'koa-router'
+import * as Router from '@koa/router'
 import { run } from 'typera-koa'
 
 const router = new Router()
@@ -1002,5 +1002,6 @@ app.get('/', run(listHandler))
 [Express]: https://expressjs.com/
 [body-parser]: https://github.com/expressjs/body-parser
 [Koa]: https://koajs.com/
+[@koa/router]: https://github.com/koajs/router
 [koa-bodyparser]: https://github.com/koajs/bodyparser
 [koa-mount]: https://github.com/koajs/mount

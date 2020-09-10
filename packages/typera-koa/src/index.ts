@@ -1,5 +1,5 @@
 import * as koa from 'koa'
-import * as koaRouter from 'koa-router'
+import * as koaRouter from '@koa/router'
 import 'koa-bodyparser' // Adds `body` to ctx.request
 import * as stream from 'stream'
 
