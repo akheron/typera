@@ -476,9 +476,9 @@ const streamingHandler: Route<Response.Ok<Response.StreamingBody>> =
 
 ```typescript
 import * as Either from 'fp-ts/lib/Either'
-import { RequestBase, Middleware } from 'typera-koa'
+import { RequestBase, Middleware, ChainedMiddleware } from 'typera-koa'
 // or
-import { RequestBase, Middleware } from 'typera-express'
+import { RequestBase, Middleware, ChainedMiddleware } from 'typera-express'
 ```
 
 Middleware are asynchronous functions that take a [typera] request
@@ -537,6 +537,23 @@ object, its result type should be `unknown`:
 ```typescript
 const checkSomething: Middleware.Middleware<unknown, Response.BadRequest<string>> = ...
 ```
+
+If you need to use the result of some previous middleware, use
+`ChainedMiddleware`. It's like `Middleware` but takes as first type parameter
+the type that previous middleware should produce.
+
+Let's write a middleware that writes audit entries to database, and so it
+requires a database connection from the `db` middleware above:
+
+``` typescript
+const audit: Middleware.ChainedMiddleware<{ connection: pg.ClientBase }, unknown, never> = async (req) => {
+  await writeAuditLog(req.connection)
+  return Middleware.next()
+}
+```
+
+Now, the `audit` middleware can only be used if the `db` middleware comes before
+it and adds `connection` to the request object.
 
 #### `Middleware.next([value[, finalizer]])`
 

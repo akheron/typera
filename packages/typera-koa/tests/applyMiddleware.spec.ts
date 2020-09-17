@@ -1,4 +1,11 @@
-import { Middleware, Response, Route, applyMiddleware, router } from '..'
+import {
+  Middleware,
+  Response,
+  Route,
+  RequestBase,
+  applyMiddleware,
+  router,
+} from '..'
 import * as request from 'supertest'
 import { makeServer } from './utils'
 
@@ -38,7 +45,7 @@ describe('applyMiddleware', () => {
     await request(server).get('/foo?err=true').expect(400, 'quux')
   })
 
-  it('chaining', async () => {
+  it('basic chaining', async () => {
     let middleware1 = 0
     const mw1: Middleware.Middleware<unknown, never> = () => {
       middleware1++
@@ -61,5 +68,39 @@ describe('applyMiddleware', () => {
 
     expect(middleware1).toEqual(1)
     expect(middleware2).toEqual(1)
+  })
+
+  describe('chaining allows using previous middleware result', () => {
+    const mw1: Middleware.Middleware<{ num: number }, never> = () =>
+      Middleware.next({ num: 42 })
+
+    const mw2: Middleware.ChainedMiddleware<
+      { num: number },
+      { str: string },
+      never
+    > = req => Middleware.next({ str: req.num.toString() })
+
+    const handler = async (req: RequestBase & { num: number; str: string }) => {
+      expect(req.num).toEqual(42)
+      expect(req.str).toEqual('42')
+      return Response.ok()
+    }
+
+    const run = async (fooRoute: Route<Response.Ok>) => {
+      server = makeServer(router(fooRoute).handler())
+      await request(server).get('/foo').expect(200)
+    }
+
+    it('both outside the route', async () => {
+      const routeFn = applyMiddleware(mw1).use(mw2)
+      const foo: Route<Response.Ok> = routeFn.get('/foo')()(handler)
+      await run(foo)
+    })
+
+    it('second inside the route', async () => {
+      const routeFn = applyMiddleware(mw1)
+      const foo: Route<Response.Ok> = routeFn.get('/foo')(mw2)(handler)
+      await run(foo)
+    })
   })
 })

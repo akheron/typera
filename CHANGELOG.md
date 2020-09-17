@@ -27,6 +27,7 @@
 **New features**
 
 - Export the `RequestBase` type from typera-express and typera-koa
+- Add `ChainedMiddleware` to use results from previous middleware
 
 **Fixes**
 
