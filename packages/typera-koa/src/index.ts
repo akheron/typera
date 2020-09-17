@@ -4,7 +4,8 @@ import 'koa-bodyparser' // Adds `body` to ctx.request
 import * as stream from 'stream'
 
 import * as common from 'typera-common'
-export { RequestHandler } from 'typera-common'
+import { Route } from 'typera-common'
+export { RequestHandler, Route } from 'typera-common'
 
 import { RequestBase, getRouteParams } from './context'
 import * as Middleware from './middleware'
@@ -12,11 +13,6 @@ import * as Parser from './parser'
 import * as Response from './response'
 import * as URL from './url'
 export { RequestBase, Middleware, Parser, Response, URL }
-
-export type Route<Response extends common.Response.Generic> = common.Route<
-  RequestBase,
-  Response
->
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware

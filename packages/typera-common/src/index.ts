@@ -70,10 +70,10 @@ export function applyMiddleware<
   return routeFn as any
 }
 
-export type Route<Request, Response extends Response.Generic> = {
+export type Route<Response extends Response.Generic> = {
   method: URL.Method
   urlPattern: string
-  routeHandler: (req: Request) => Promise<Response>
+  routeHandler: (req: unknown) => Promise<Response>
 }
 
 export function route<
@@ -216,7 +216,6 @@ export type MakeRoute<
             Response
           >
         ) => Route<
-          Request,
           Response | MiddlewareResponse | OutsideMiddlewareResponse
         >
       : never
