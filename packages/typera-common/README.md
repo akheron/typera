@@ -1,5 +1,4 @@
-typera-common - typera support lib
-==================================
+# typera-common - typera support lib
 
 You don't need to install this package directly. See [akheron/typera]
 for documentation.
