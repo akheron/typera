@@ -24,6 +24,10 @@
 
   typera-express middleware are not affected, as their argument already was a `{ req, res }` object.
 
+**New features**
+
+- Export the `RequestBase` type from typera-express and typera-koa
+
 ## 0.7.3
 
 - **Dependencies**

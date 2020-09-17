@@ -114,8 +114,8 @@ export function route<
 
 // Create a route handler from middleware and a request handler
 
-export type RouteHandler<Input, Response extends Response.Generic> = (
-  input: Input
+export type RouteHandler<Request, Response extends Response.Generic> = (
+  req: Request
 ) => Promise<Response>
 
 export function routeHandler<

@@ -7,4 +7,4 @@ export const handler: RouteHandler<Response.Ok<string>> = routeHandler()(
 )
 
 // Expected error:
-// Type 'RouteHandler<KoaRequestBase, Response<200, number, undefined>>' is not assignable to type 'RouteHandler<KoaRequestBase, Response<200, string, undefined>>'.
+// Type 'RouteHandler<RequestBase, Response<200, number, undefined>>' is not assignable to type 'RouteHandler<RequestBase, Response<200, string, undefined>>'.
