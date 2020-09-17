@@ -36,75 +36,83 @@
 
 ## 0.7.3
 
-- **Dependencies**
-  - typera-express: Remove peerDependencies, depend directly on express
-  - typera-koa: Remove peerDependencies, depend directly on koa utility
-    libraries
-  - Use @koa/router instead of the unmaintained koa-router
+**Dependencies**
+
+- typera-express: Remove peerDependencies, depend directly on express
+- typera-koa: Remove peerDependencies, depend directly on koa utility
+  libraries
+- Use @koa/router instead of the unmaintained koa-router
 
 ## 0.7.2
 
-- **Fixes**
-  - Make the `Middleware` type more lenient about the result type. Using
-    `unknown` is preferred if the middleware doesn't add anything to the
-    request.
+**Fixes**
+
+- Make the `Middleware` type more lenient about the result type. Using
+  `unknown` is preferred if the middleware doesn't add anything to the
+  request.
 
 ## 0.7.1
 
-- **Fixes**
-  - Fix URL parsing when there are multiple captures
+**Fixes**
+
+- Fix URL parsing when there are multiple captures
 
 ## 0.7.0
 
-- **New features**
+**New features**
 
-  - Add `Response.redirect()`
-  - Add support for streaming responses
+- Add `Response.redirect()`
+- Add support for streaming responses
 
-- **Fixes**
-  - `typera-express`: Catch promise rejections and forward the errors
-    down the middleware chain
+**Fixes**
+
+- `typera-express`: Catch promise rejections and forward the errors
+  down the middleware chain
 
 ## 0.6.0
 
-- **New features**
-  - Add `route.get()`, `.post()`, `.put()`, `.delete()`, `.head()`,
-    `.options()`, `.patch()`, `.all()`.
-  - Add `route.use()`
-  - Make modules importable from `typera-*/name`, e.g.
-    `typera-koa/response`.
+**New features**
+
+- Add `route.get()`, `.post()`, `.put()`, `.delete()`, `.head()`,
+  `.options()`, `.patch()`, `.all()`.
+- Add `route.use()`
+- Make modules importable from `typera-*/name`, e.g.
+  `typera-koa/response`.
 
 ## 0.5.0
 
-- **Breaking change**
+**Breaking change**
 
-  - Middleware return type changed from `Either` to another type. Use
-    `Middleware.next()` to return a result and `Middleware.stop()` to
-    return a response from a middleware function.
+- Middleware return type changed from `Either` to another type. Use
+  `Middleware.next()` to return a result and `Middleware.stop()` to
+  return a response from a middleware function.
 
-- **New features**
+**New features**
 
-  - Add `Middleware.next(value[, finalizer])` and `Middleware.stop(response)`
-  - Add `applyMiddleware(...middleware)`
-  - Add 5xx responses to the `Response` namespace
+- Add `Middleware.next(value[, finalizer])` and `Middleware.stop(response)`
+- Add `applyMiddleware(...middleware)`
+- Add 5xx responses to the `Response` namespace
 
-- **Other**
-  - `typera-express`: Change express dependecy to a peerDependency
-  - `typera-koa`: Change koa and koa-boadyparser dependecies to peerDependencies
-  - `typera-koa`: Don't depend on koa-router anymore
+**Other**
+
+- `typera-express`: Change express dependecy to a peerDependency
+- `typera-koa`: Change koa and koa-boadyparser dependecies to peerDependencies
+- `typera-koa`: Don't depend on koa-router anymore
 
 ## 0.4.0
 
-- **New features**
+**New features**
 
-  - Add support for middleware
-  - Add `router()` and `route()`
+- Add support for middleware
+- Add `router()` and `route()`
 
-- **Deprecations**
-  - Deprecate `routeHandler()` and `run()` in favor of `router()` and
-    `route()`.
+**Deprecations**
+
+- Deprecate `routeHandler()` and `run()` in favor of `router()` and
+  `route()`.
 
 ## 0.3.0
 
-- **Breaking Change**
-  - Upgrade `fp-ts` to `^2.0.0`
+**Breaking Change**
+
+- Upgrade `fp-ts` to `^2.0.0`
