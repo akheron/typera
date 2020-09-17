@@ -8,6 +8,7 @@ inference magic. It works with both [Express] and [Koa].
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 ## Table of Contents
 
 - [The Problem](#the-problem)
@@ -253,8 +254,7 @@ the second argument, the code won't compile before they also fix the
 `userBody` decoder to match the new type.
 
 It's not required to use the response helpers like `Response.ok()` or
-`Response.notFound()`. You can also return plain objects: `return {
-status: 200, body: { ... }, headers: { ... } }`
+`Response.notFound()`. You can also return plain objects: `return { status: 200, body: { ... }, headers: { ... } }`
 
 Did you notice that the `updateUser` route handler also had a
 `Response.BadRequest<string>` as a possible response?
@@ -280,6 +280,7 @@ and the `.handler()` method of the router to get a handler that can be
 added to the app.
 
 Here's an example for [Koa]:
+
 ```typescript
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-bodyparser'
@@ -393,19 +394,19 @@ signatures.
 
 Here's a list of most common responses:
 
-| HTTP | Type | Constructor function |
-| ---- | ---- | -------------------- |
-| 200 OK | `Ok` | `ok` |
-| 201 Created | `Created` | `created` |
-| 204 No Content | `NoContent` | `noContent` |
-| 301 Moved Permanently | `MovedPermanently` | `movedPermanently` |
-| 302 Found | `Found` | `found` |
-| 304 Not Modified | `NotModified` | `notModified` |
-| 400 Bad Request | `BadRequest` | `badRequest` |
-| 401 Unauthorized | `Unauthorized` | `unauthorized` |
-| 403 Forbidden | `Forbidden` | `forbidden` |
-| 404 Not Found | `NotFound` | `notFound` |
-| 405 Method Not Allowed | `MethodNotAllowed` | `methodNotAllowed` |
+| HTTP                   | Type               | Constructor function |
+| ---------------------- | ------------------ | -------------------- |
+| 200 OK                 | `Ok`               | `ok`                 |
+| 201 Created            | `Created`          | `created`            |
+| 204 No Content         | `NoContent`        | `noContent`          |
+| 301 Moved Permanently  | `MovedPermanently` | `movedPermanently`   |
+| 302 Found              | `Found`            | `found`              |
+| 304 Not Modified       | `NotModified`      | `notModified`        |
+| 400 Bad Request        | `BadRequest`       | `badRequest`         |
+| 401 Unauthorized       | `Unauthorized`     | `unauthorized`       |
+| 403 Forbidden          | `Forbidden`        | `forbidden`          |
+| 404 Not Found          | `NotFound`         | `notFound`           |
+| 405 Method Not Allowed | `MethodNotAllowed` | `methodNotAllowed`   |
 
 For the full list of supported responses, see
 [response.ts](packages/typera-common/src/response.ts).
@@ -434,14 +435,13 @@ Moved premanently. Redirecting to /bar
 ```
 
 For simplicity, the redirecting responses listed below have the default
-body type of `string` and the default headers type of `{ location:
-string }`:
+body type of `string` and the default headers type of `{ location: string }`:
 
-| HTTP | Type | Constructor function |
-| -----| ---- | -------------------- |
-| 301 Moved Permanently | `MovedPermanently` | `redirect(301, location)` |
-| 302 Found | `Found` | `redirect(302, location)` |
-| 303 See Other | `SeeOther` | `redirect(303, location)` |
+| HTTP                   | Type                | Constructor function      |
+| ---------------------- | ------------------- | ------------------------- |
+| 301 Moved Permanently  | `MovedPermanently`  | `redirect(301, location)` |
+| 302 Found              | `Found`             | `redirect(302, location)` |
+| 303 See Other          | `SeeOther`          | `redirect(303, location)` |
 | 307 Temporary Redirect | `TemporaryRedirect` | `redirect(307, location)` |
 | 308 Permanent Redirect | `PermanentRedirect` | `redirect(308, location)` |
 
@@ -470,7 +470,6 @@ const streamingHandler: Route<Response.Ok<Response.StreamingBody>> =
     }))
   })
 ```
-
 
 ### Middleware
 
@@ -545,7 +544,7 @@ the type that previous middleware should produce.
 Let's write a middleware that writes audit entries to database, and so it
 requires a database connection from the `db` middleware above:
 
-``` typescript
+```typescript
 const audit: Middleware.ChainedMiddleware<{ connection: pg.ClientBase }, unknown, never> = async (req) => {
   await writeAuditLog(req.connection)
   return Middleware.next()
@@ -602,8 +601,7 @@ message in the body.
 Validate the query string according to the given [io-ts] codec.
 Respond with `400 Bad Request` if the validation fails.
 
-The input for this parser will be the query string parsed as `{ [K in
-string]: string }`, i.e. all parameter values will be strings. If you
+The input for this parser will be the query string parsed as `{ [K in string]: string }`, i.e. all parameter values will be strings. If you
 want to convert them to other types, you probably find the
 `XFromString` codecs from [io-ts-types] useful (e.g. `IntFromString`,
 `BooleanFromString`, etc.)
@@ -622,7 +620,7 @@ app rather than use them as [typera] middleware.
 
 #### ~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)
 
-*Deprecated as of v0.4.0*: Only useful with the deprecated
+_Deprecated as of v0.4.0_: Only useful with the deprecated
 `routeHandler()` and `run()` functions.
 
 Validate the captured route params according to the given [io-ts]
@@ -679,17 +677,24 @@ A route matches a request based on HTTP method and path, and defines a
 function that serves a response for the matched request.
 
 ##### `route.get(...): Route<Response>`
+
 ##### `route.post(...): Route<Response>`
+
 ##### `route.put(...): Route<Response>`
+
 ##### `route.delete(...): Route<Response>`
+
 ##### `route.head(...): Route<Response>`
+
 ##### `route.options(...): Route<Response>`
+
 ##### `route.patch(...): Route<Response>`
+
 ##### `route.all(...): Route<Response>`
+
 ##### `route(method, ...): Route<Response>`
 
-Routes are created using the `route.[method](...)` or `route(method,
-...)`, where method is one of `get`, `post`, `put`, `delete`, `head`,
+Routes are created using the `route.[method](...)` or `route(method, ...)`, where method is one of `get`, `post`, `put`, `delete`, `head`,
 `options`, `patch` or `all`:
 
 ```typescript
@@ -719,8 +724,7 @@ a request handler. This last function returns the final `Route`
 object.
 
 The request handler is a function that receives the [typera] request
-object (`req`) and returns a response (`req => { return Response.ok()
-}` in the above example).
+object (`req`) and returns a response (`req => { return Response.ok() }` in the above example).
 
 The [typera] request object is created by merging the [URL
 captures](#url-parameter-capturing) and the output objects of
@@ -772,6 +776,7 @@ and response types. Interested users can refer to the code:
 [express](packages/typera-express/index.ts).
 
 #### `route.use(...middleware)`
+
 #### `applyMiddleware(...middleware)`
 
 If you need to apply the same middleware to many routes, you can
@@ -805,6 +810,7 @@ URL captures make it possible to extract some parts of the HTTP
 request path for use in the route handler.
 
 For example, with the following path segments:
+
 ```typescript
 route('get', '/user/', URL.int('id'))(...)(async req => { ... })
 ```
@@ -813,13 +819,13 @@ In the route handler function, `req.routeParams.id` will contain the
 integer that was given after `/user/` in the path (`id` is the name
 given to `URL.int()`), like this:
 
-| Path | `req` |
-| ---- | ----- |
-| `/user/5` | `{ routeParams: { id: 5 }}` |
+| Path           | `req`                            |
+| -------------- | -------------------------------- |
+| `/user/5`      | `{ routeParams: { id: 5 }}`      |
 | `/user/528472` | `{ routeParams: { id: 528472 }}` |
-| `/user/foo` | Route is not matched |
-| `/user/5/` | Route is not matched |
-| `/user/` | Route is not matched |
+| `/user/foo`    | Route is not matched             |
+| `/user/5/`     | Route is not matched             |
+| `/user/`       | Route is not matched             |
 
 The following capture functions are available:
 
@@ -833,7 +839,6 @@ starts with a `/`.
 
 Capture a non-negative integer, matching the regexp `\d+`. The
 captured value is converted to `number`.
-
 
 ### Router
 
@@ -864,6 +869,7 @@ The `.handler()` method returns a handler that can be passed to
 `typera-express` or `typera-koa` matching your framework choice).
 
 With [Express], you can mount the handler to a sub-path like this:
+
 ```typescript
 import * as express from 'express'
 
@@ -874,6 +880,7 @@ app.use('/subpath', router.handler())
 ```
 
 With [Koa], you need to use [koa-mount] to mount your routes to a sub-path:
+
 ```typescript
 import * as Koa from 'koa'
 import mount = require('koa-mount']
@@ -886,7 +893,7 @@ app.use(mount('/subpath', router.handler()))
 
 ### ~Route handlers~ (deprecated)
 
-*Deprecated as of v0.4.0*: Use `route()` and `router()` instead.
+_Deprecated as of v0.4.0_: Use `route()` and `router()` instead.
 
 A route handler is a function that takes the [Koa] context (in
 `typera-koa`) or [Express] req/res (in `typera-express`) as a
@@ -910,8 +917,7 @@ returns a function that takes a request handler. This latter function
 returns the final route handler.
 
 The request handler is a function that receives the [typera] request
-object (`req`) and returns a response (`req => { return Response.ok()
-}` in the above example).
+object (`req`) and returns a response (`req => { return Response.ok() }` in the above example).
 
 The [typera] request object is created by merging the output objects
 of [middleware function](#middleware) given to `routeHandler`. It also
@@ -963,7 +969,7 @@ Interested users can refer to the code:
 
 ### ~Integration with the app~ (deprecated)
 
-*Deprecated as of v0.4.0*: Use `route()` and `router()` instead.
+_Deprecated as of v0.4.0_: Use `route()` and `router()` instead.
 
 ```typescript
 import { run } from 'typera-koa'
@@ -1018,9 +1024,9 @@ app.get('/', run(listHandler))
 [typera]: https://github.com/akheron/typera
 [fp-ts]: https://github.com/gcanti/fp-ts
 [io-ts]: https://github.com/gcanti/io-ts
-[Express]: https://expressjs.com/
+[express]: https://expressjs.com/
 [body-parser]: https://github.com/expressjs/body-parser
-[Koa]: https://koajs.com/
+[koa]: https://koajs.com/
 [@koa/router]: https://github.com/koajs/router
 [koa-bodyparser]: https://github.com/koajs/bodyparser
 [koa-mount]: https://github.com/koajs/mount

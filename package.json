@@ -10,6 +10,8 @@
   "scripts": {
     "build": "yarn workspace typera-common build && yarn workspace typera-express build && yarn workspace typera-koa build",
     "test": "yarn build && jest && yarn workspace typing-tests test",
+    "lint": "prettier --check \"**/*.{json,md}\"",
+    "lint:fix": "prettier --write '**/*.{json,md}'",
     "doctoc": "doctoc README.md --title '## Table of Contents'"
   },
   "devDependencies": {
