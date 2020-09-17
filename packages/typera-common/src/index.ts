@@ -188,8 +188,12 @@ async function runMiddleware<
       await runFinalizers()
       return Either.left(output.response)
     } else {
-      if (output.finalizer != null) finalizers.push(output.finalizer)
-      request = { ...request, ...output.value }
+      if (output.finalizer !== undefined) {
+        finalizers.push(output.finalizer)
+      }
+      if (output.value !== undefined) {
+        request = { ...request, ...output.value }
+      }
     }
   }
   return Either.right({ request, runFinalizers })

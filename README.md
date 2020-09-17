@@ -551,6 +551,9 @@ empty object `{}`).
 The finalizer, if given, is called with no arguments. It can be an
 async function (can return a `Promise`).
 
+If you want to run a finalizer but not add anything to the request,
+you can return `{}` or `undefined` as the value.
+
 #### `Middleware.stop(response)`
 
 Stop processing the request and return `response` to the client. Other
