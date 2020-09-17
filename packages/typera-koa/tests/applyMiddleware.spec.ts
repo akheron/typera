@@ -16,8 +16,8 @@ describe('applyMiddleware', () => {
     const myMiddleware: Middleware.Middleware<
       { foo: string },
       Response.BadRequest<string>
-    > = ctx => {
-      if (ctx.query.err != null) {
+    > = req => {
+      if (req.ctx.query.err != null) {
         return Middleware.stop(Response.badRequest('quux'))
       } else {
         return Middleware.next({ foo: 'bar' })

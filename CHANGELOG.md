@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.0.0
+
+**BREAKING CHANGES**
+
+- Middleware functions now receive a typera request object as an argument.
+
+  Upgrade your typera-koa middleware like this:
+
+  ```typescript
+  // OLD
+  const myMiddleware: Middleware<...> = (ctx) => {
+    doSomething(ctx)
+    // ...
+  }
+
+  // NEW
+  const myMiddleware: Middleware<...> = (req) => {
+    doSomething(req.ctx)
+    // ...
+  }
+  ```
+
+  typera-express middleware are not affected, as their argument already was a `{ req, res }` object.
+
 ## 0.7.3
 
 - **Dependencies**

@@ -75,9 +75,7 @@ describe('routeHandler', () => {
   })
 
   it('async middleware', async () => {
-    const mw: Middleware.Middleware<{ foo: number }, never> = (
-      _: Koa.Context
-    ) =>
+    const mw: Middleware.Middleware<{ foo: number }, never> = () =>
       new Promise((resolve, _reject) => {
         setTimeout(() => resolve(Middleware.next({ foo: 42 })), 10)
       })

@@ -1,5 +1,9 @@
 import * as koa from 'koa'
 
-export function getRouteParams(ctx: koa.Context): any {
-  return ctx.params
+export interface KoaRequestBase {
+  ctx: koa.Context
+}
+
+export function getRouteParams(req: KoaRequestBase): any {
+  return req.ctx.params
 }

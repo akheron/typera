@@ -16,82 +16,47 @@ export type RequestHandler<Request, Response> = (
 
 // Create a route from url parser, middleware and a request handler
 export type RouteFn<
-  Input,
-  RequestBase extends {},
-  Middleware extends Array<Middleware.Generic<Input>>,
-  OutsideMiddlewareResult extends {} = {},
+  Request,
+  Middleware extends Array<Middleware.Generic<Request>>,
   OutsideMiddlewareResponse extends Response.Generic = never
-> = TypesFromMiddleware<Input, RequestBase, Middleware> extends MiddlewareType<
+> = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
   infer MiddlewareResult,
   infer MiddlewareResponse
 >
   ? RouteFnImpl<
-      Input,
-      RequestBase,
-      MiddlewareResult & OutsideMiddlewareResult,
+      MiddlewareResult,
       MiddlewareResponse | OutsideMiddlewareResponse
     >
   : never
 
 type RouteFnImpl<
-  Input,
-  RequestBase extends {},
-  OutsideMiddlewareResult extends {},
+  Request,
   OutsideMiddlewareResponse extends Response.Generic
 > = {
   <PathSegments extends Array<URL.PathCapture | string>>(
     method: URL.Method,
     ...segments: PathSegments
-  ): MakeRoute<
-    Input,
-    RequestBase,
-    PathSegments,
-    OutsideMiddlewareResult,
-    OutsideMiddlewareResponse
-  >
-  use<Middleware extends Array<Middleware.Generic<Input>>>(
+  ): MakeRoute<Request, PathSegments, OutsideMiddlewareResponse>
+  use<Middleware extends Array<Middleware.Generic<Request>>>(
     ...middleware: Middleware
-  ): RouteFn<
-    Input,
-    RequestBase,
-    Middleware,
-    OutsideMiddlewareResult,
-    OutsideMiddlewareResponse
-  >
+  ): RouteFn<Request, Middleware, OutsideMiddlewareResponse>
 } & {
   [M in URL.Method]: <PathSegments extends Array<URL.PathCapture | string>>(
     ...segments: PathSegments
-  ) => MakeRoute<
-    Input,
-    RequestBase,
-    PathSegments,
-    OutsideMiddlewareResult,
-    OutsideMiddlewareResponse
-  >
+  ) => MakeRoute<Request, PathSegments, OutsideMiddlewareResponse>
 }
 
 export function applyMiddleware<
-  Input,
-  RequestBase extends {},
-  Middleware extends Middleware.Generic<Input>[]
->(
-  makeRequestBase: (input: Input) => RequestBase,
-  getRouteParams: (input: Input) => {},
-  outsideMiddleware: Middleware
-): any {
+  Request,
+  Middleware extends Middleware.Generic<Request>[]
+>(getRouteParams: (req: Request) => {}, outsideMiddleware: Middleware): any {
   const routeFn = (method: URL.Method, ...segments: any[]) => {
     const urlParser = URL.url(method, ...segments)()
     return (...middleware: any[]) =>
-      route(makeRequestBase, getRouteParams, urlParser, [
-        ...outsideMiddleware,
-        ...middleware,
-      ])
+      route(getRouteParams, urlParser, [...outsideMiddleware, ...middleware])
   }
   routeFn.use = (...middleware: any[]) =>
-    applyMiddleware(makeRequestBase, getRouteParams, [
-      ...outsideMiddleware,
-      ...middleware,
-    ])
+    applyMiddleware(getRouteParams, [...outsideMiddleware, ...middleware])
 
   routeFn.get = (...segments: any[]) => routeFn('get', ...segments)
   routeFn.post = (...segments: any[]) => routeFn('post', ...segments)
@@ -105,36 +70,29 @@ export function applyMiddleware<
   return routeFn as any
 }
 
-export type Route<Input, Response extends Response.Generic> = {
+export type Route<Request, Response extends Response.Generic> = {
   method: URL.Method
   urlPattern: string
-  routeHandler: (input: Input) => Promise<Response>
+  routeHandler: (req: Request) => Promise<Response>
 }
 
 export function route<
-  Input,
-  RequestBase extends {},
+  RequestBase,
   URLCaptures,
-  Middleware extends Middleware.Generic<Input>[]
+  Middleware extends Middleware.Generic<RequestBase>[]
 >(
-  makeRequestBase: (input: Input) => RequestBase,
-  getRouteParams: (input: Input) => {},
+  getRouteParams: (req: RequestBase) => {},
   urlParser: URL.URLParser<URLCaptures>,
   middleware: Middleware
 ): any {
   return ((handler: (req: any) => any) => ({
     method: urlParser.method,
     urlPattern: urlParser.urlPattern,
-    routeHandler: async (input: Input) => {
-      const requestBase = makeRequestBase(input)
-      const routeParams = urlParser.parse(getRouteParams(input))
+    routeHandler: async (requestBase: RequestBase) => {
+      const routeParams = urlParser.parse(getRouteParams(requestBase))
       if (Either.isLeft(routeParams)) return routeParams.left
 
-      const middlewareOutput = await runMiddleware(
-        requestBase,
-        middleware,
-        input
-      )
+      const middlewareOutput = await runMiddleware(requestBase, middleware)
       if (Either.isLeft(middlewareOutput)) {
         // Finalizers have already run in this case
         return middlewareOutput.left
@@ -147,7 +105,7 @@ export function route<
           routeParams: routeParams.right,
         })
       } finally {
-        await middlewareOutput.right.runFinalizers(input)
+        await middlewareOutput.right.runFinalizers()
       }
       return response
     },
@@ -161,16 +119,11 @@ export type RouteHandler<Input, Response extends Response.Generic> = (
 ) => Promise<Response>
 
 export function routeHandler<
-  Input,
-  RequestBase extends {},
-  Middleware extends Middleware.Generic<Input>[]
->(
-  makeRequestBase: (input: Input) => RequestBase,
-  middleware: Middleware
-): MakeRouteHandler<Input, RequestBase, Middleware> {
-  return ((handler: (req: any) => Promise<any>) => async (input: Input) => {
-    const requestBase = makeRequestBase(input)
-    const middlewareOutput = await runMiddleware(requestBase, middleware, input)
+  RequestBase,
+  Middleware extends Middleware.Generic<RequestBase>[]
+>(middleware: Middleware): MakeRouteHandler<RequestBase, Middleware> {
+  return ((handler: (req: any) => Promise<any>) => async (req: RequestBase) => {
+    const middlewareOutput = await runMiddleware(req, middleware)
     if (Either.isLeft(middlewareOutput)) {
       // Finalizers have already run in this case
       return middlewareOutput.left
@@ -180,7 +133,7 @@ export function routeHandler<
     try {
       response = await handler(middlewareOutput.right.request as Request)
     } finally {
-      await middlewareOutput.right.runFinalizers(input)
+      await middlewareOutput.right.runFinalizers()
     }
     return response
   }) as any
@@ -195,17 +148,15 @@ function isMiddlewareResponse<Result, Response>(
 }
 
 async function runMiddleware<
-  Input,
-  RequestBase extends {},
-  Middleware extends Middleware.Generic<Input>[]
+  RequestBase,
+  Middleware extends Middleware.Generic<RequestBase>[]
 >(
   requestBase: RequestBase,
-  middleware: Middleware,
-  input: Input
+  middleware: Middleware
 ): Promise<
   Either.Either<
     Response.Generic,
-    { request: {}; runFinalizers: (input: Input) => Promise<void> }
+    { request: {}; runFinalizers: () => Promise<void> }
   >
 > {
   let request = requestBase
@@ -227,7 +178,7 @@ async function runMiddleware<
   for (const middlewareFunc of middleware) {
     let output
     try {
-      output = await middlewareFunc(input)
+      output = await middlewareFunc(request)
     } catch (err) {
       await runFinalizers()
       throw err
@@ -245,70 +196,60 @@ async function runMiddleware<
 }
 
 export type MakeRoute<
-  Input,
-  RequestBase extends {},
+  Request,
   PathSegments extends Array<URL.PathCapture | string>,
-  OutsideMiddlewareResult extends {} = {},
   OutsideMiddlewareResponse extends Response.Generic = never
 > = URL.PathSegmentsToCaptures<PathSegments> extends infer URLCaptures
-  ? <Middleware extends Array<Middleware.Generic<Input>>>(
+  ? <Middleware extends Array<Middleware.Generic<Request>>>(
       ...middleware: Middleware
-    ) => TypesFromMiddleware<
-      Input,
-      RequestBase,
-      Middleware
-    > extends MiddlewareType<infer MiddlewareResult, infer MiddlewareResponse>
+    ) => TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
+      infer MiddlewareResult,
+      infer MiddlewareResponse
+    >
       ? <Response extends Response.Generic>(
           handler: RequestHandler<
-            MiddlewareResult &
-              OutsideMiddlewareResult & { routeParams: URLCaptures },
+            MiddlewareResult & { routeParams: URLCaptures },
             Response
           >
         ) => Route<
-          Input,
+          Request,
           Response | MiddlewareResponse | OutsideMiddlewareResponse
         >
       : never
   : never
 
 export type MakeRouteHandler<
-  Input,
-  RequestBase extends {},
-  Middleware extends Middleware.Generic<Input>[]
-> = TypesFromMiddleware<Input, RequestBase, Middleware> extends MiddlewareType<
+  Request,
+  Middleware extends Middleware.Generic<Request>[]
+> = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
   infer MiddlewareResult,
   infer MiddlewareResponse
 >
   ? <Response extends Response.Generic>(
       handler: RequestHandler<MiddlewareResult, Response>
-    ) => RouteHandler<Input, Response | MiddlewareResponse>
+    ) => RouteHandler<Request, Response | MiddlewareResponse>
   : never
 
-export interface MiddlewareType<
-  Result extends {},
-  Response extends Response.Generic
-> {
+export interface MiddlewareType<Result, Response extends Response.Generic> {
   _result: Result
   _response: Response
 }
 
 type TypesFromMiddleware<
-  Input,
-  RequestBase extends {},
-  Middleware extends Middleware.Generic<Input>[]
+  Request,
+  Middleware extends Middleware.Generic<Request>[]
 > = {
   0: Head<Middleware> extends Middleware.Middleware<
-    Input,
+    Request,
     infer Result,
     infer Response
   >
-    ? TypesFromMiddleware<
-        Input,
-        RequestBase,
-        Tail<Middleware>
-      > extends MiddlewareType<infer ResultTail, infer ResponseTail>
+    ? TypesFromMiddleware<Request, Tail<Middleware>> extends MiddlewareType<
+        infer ResultTail,
+        infer ResponseTail
+      >
       ? MiddlewareType<Result & ResultTail, Response | ResponseTail>
       : never
     : never
-  1: MiddlewareType<RequestBase, never>
+  1: MiddlewareType<Request, never>
 }[Length<Middleware> extends 0 ? 1 : 0]

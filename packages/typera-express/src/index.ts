@@ -1,4 +1,3 @@
-import { identity } from 'fp-ts/lib/function'
 import express = require('express')
 
 import * as common from 'typera-common'
@@ -18,8 +17,8 @@ export type Route<Response extends common.Response.Generic> = common.Route<
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.RouteFn<ExpressContext, ExpressContext, Middleware> {
-  return common.applyMiddleware(identity, getRouteParams, middleware)
+): common.RouteFn<ExpressContext, Middleware> {
+  return common.applyMiddleware(getRouteParams, middleware)
 }
 
 export const route = applyMiddleware()
@@ -56,8 +55,8 @@ export type RouteHandler<
 
 export function routeHandler<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.MakeRouteHandler<ExpressContext, ExpressContext, Middleware> {
-  return common.routeHandler(identity, middleware)
+): common.MakeRouteHandler<ExpressContext, Middleware> {
+  return common.routeHandler(middleware)
 }
 
 export function run<Response extends common.Response.Generic>(
