@@ -6,21 +6,21 @@ import * as stream from 'stream'
 import * as common from 'typera-common'
 export { RequestHandler } from 'typera-common'
 
-import { KoaRequestBase, getRouteParams } from './context'
+import { RequestBase, getRouteParams } from './context'
 import * as Middleware from './middleware'
 import * as Parser from './parser'
 import * as Response from './response'
 import * as URL from './url'
-export { Middleware, Parser, Response, URL }
+export { RequestBase, Middleware, Parser, Response, URL }
 
 export type Route<Response extends common.Response.Generic> = common.Route<
-  KoaRequestBase,
+  RequestBase,
   Response
 >
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.RouteFn<KoaRequestBase, Middleware> {
+): common.RouteFn<RequestBase, Middleware> {
   return common.applyMiddleware(getRouteParams, middleware)
 }
 
@@ -54,11 +54,11 @@ export function router(...routes: Route<common.Response.Generic>[]): Router {
 
 export type RouteHandler<
   Response extends common.Response.Generic
-> = common.RouteHandler<KoaRequestBase, Response>
+> = common.RouteHandler<RequestBase, Response>
 
 export function routeHandler<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.MakeRouteHandler<KoaRequestBase, Middleware> {
+): common.MakeRouteHandler<RequestBase, Middleware> {
   return common.routeHandler(middleware)
 }
 

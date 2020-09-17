@@ -1,14 +1,14 @@
-import { ExpressContext } from './context'
+import { RequestBase } from './context'
 import * as commonMiddleware from 'typera-common/middleware'
 import * as commonResponse from 'typera-common/response'
 
 export type Middleware<
   Result,
   Response extends commonResponse.Generic
-> = commonMiddleware.Middleware<ExpressContext, Result, Response>
+> = commonMiddleware.Middleware<RequestBase, Result, Response>
 
 export type Generic = commonMiddleware.Middleware<
-  ExpressContext,
+  RequestBase,
   any,
   commonResponse.Generic
 >
