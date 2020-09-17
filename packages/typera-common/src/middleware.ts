@@ -27,7 +27,6 @@ export function next<Result>(
   finalizer?: () => void | Promise<void>
 ): MiddlewareResult<Result>
 export function next(value?: any, finalizer?: any): any {
-  if (value == null) return {}
   return { value, finalizer }
 }
 

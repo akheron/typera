@@ -101,9 +101,9 @@ describe('route & router', () => {
 
     let middleware2 = 0
     let finalizer2 = 0
-    const mw2: Middleware.Middleware<{}, never> = () => {
+    const mw2: Middleware.Middleware<unknown, never> = () => {
       middleware2++
-      return Middleware.next({}, () => {
+      return Middleware.next(undefined, () => {
         finalizer2++
       })
     }

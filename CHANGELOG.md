@@ -28,6 +28,11 @@
 
 - Export the `RequestBase` type from typera-express and typera-koa
 
+**Fixes**
+
+- Middleware: Allow running a finalizer without adding anything to the request
+  object by returning `Middleware.next(undefined, f)` (#25)
+
 ## 0.7.3
 
 - **Dependencies**
