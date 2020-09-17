@@ -1,12 +1,12 @@
 import * as Response from './response'
 
-export type Middleware<Input, Result, Response extends Response.Generic> = (
-  input: Input
+export type Middleware<Request, Result, Response extends Response.Generic> = (
+  req: Request
 ) =>
   | MiddlewareOutput<Result, Response>
   | Promise<MiddlewareOutput<Result, Response>>
 
-export type Generic<Input> = Middleware<Input, any, Response.Generic>
+export type Generic<Request> = Middleware<Request, any, Response.Generic>
 
 export type MiddlewareOutput<Result, Response> =
   | MiddlewareResult<Result>

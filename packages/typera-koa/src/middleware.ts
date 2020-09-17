@@ -1,14 +1,14 @@
-import * as koa from 'koa'
 import * as commonMiddleware from 'typera-common/middleware'
 import * as commonResponse from 'typera-common/response'
+import { KoaRequestBase } from './context'
 
 export type Middleware<
   Result,
   Response extends commonResponse.Generic
-> = commonMiddleware.Middleware<koa.Context, Result, Response>
+> = commonMiddleware.Middleware<KoaRequestBase, Result, Response>
 
 export type Generic = commonMiddleware.Middleware<
-  koa.Context,
+  KoaRequestBase,
   any,
   commonResponse.Generic
 >

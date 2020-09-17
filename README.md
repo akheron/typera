@@ -476,14 +476,13 @@ const streamingHandler: Route<Response.Ok<Response.StreamingBody>> =
 
 ```typescript
 import * as Either from 'fp-ts/lib/Either'
-import { Middleware } from 'typera-koa'
+import { RequestBase, Middleware } from 'typera-koa'
 // or
-import { Middleware } from 'typera-express'
+import { RequestBase, Middleware } from 'typera-express'
 ```
 
-Middleware are asynchronous functions that take the [Koa] context (in
-`typera-koa`) or [Express] req/res (in `typera-express`) as a
-parameter, and return either a `Response` or an object.
+Middleware are asynchronous functions that take a [typera] request
+object as a parameter, and return either a `Response` or an object.
 
 If a middleware function returns a `Response`, then the request
 handling is stopped and that response is sent to the client. If it
@@ -508,8 +507,8 @@ const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthori
   //                   This is the response that may be returned by the middleware
   //
   //
-  async (ctx: koa.Context) => {   // ({ req, res }) for typera-express
-    const user = await authenticateUser(ctx)  // Gets a user somehow and returns null if unauthenticated
+  async (req: RequestBase) => {
+    const user = await authenticateUser(req)  // Gets a user somehow and returns null if unauthenticated
     if (!user) {
       return Middleware.stop(Response.unauthorized('Login first'))
     }

@@ -2,7 +2,6 @@ import * as stream from 'stream'
 import * as t from 'io-ts'
 import { ErrorRequestHandler } from 'express'
 import {
-  ExpressContext,
   Middleware,
   Parser,
   Response,
@@ -78,9 +77,7 @@ describe('routeHandler', () => {
   })
 
   it('async middleware', async () => {
-    const mw: Middleware.Middleware<{ foo: number }, never> = (
-      _: ExpressContext
-    ) =>
+    const mw: Middleware.Middleware<{ foo: number }, never> = () =>
       new Promise((resolve, _reject) => {
         setTimeout(() => resolve(Middleware.next({ foo: 42 })), 10)
       })

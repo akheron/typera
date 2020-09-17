@@ -6,30 +6,22 @@ import * as stream from 'stream'
 import * as common from 'typera-common'
 export { RequestHandler } from 'typera-common'
 
-import { getRouteParams } from './context'
+import { KoaRequestBase, getRouteParams } from './context'
 import * as Middleware from './middleware'
 import * as Parser from './parser'
 import * as Response from './response'
 import * as URL from './url'
 export { Middleware, Parser, Response, URL }
 
-interface KoaRequestBase {
-  ctx: koa.Context
-}
-
-function makeRequestBase(ctx: koa.Context): KoaRequestBase {
-  return { ctx }
-}
-
 export type Route<Response extends common.Response.Generic> = common.Route<
-  koa.Context,
+  KoaRequestBase,
   Response
 >
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.RouteFn<koa.Context, KoaRequestBase, Middleware> {
-  return common.applyMiddleware(makeRequestBase, getRouteParams, middleware)
+): common.RouteFn<KoaRequestBase, Middleware> {
+  return common.applyMiddleware(getRouteParams, middleware)
 }
 
 export const route = applyMiddleware()
@@ -62,19 +54,19 @@ export function router(...routes: Route<common.Response.Generic>[]): Router {
 
 export type RouteHandler<
   Response extends common.Response.Generic
-> = common.RouteHandler<koa.Context, Response>
+> = common.RouteHandler<KoaRequestBase, Response>
 
 export function routeHandler<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.MakeRouteHandler<koa.Context, KoaRequestBase, Middleware> {
-  return common.routeHandler(makeRequestBase, middleware)
+): common.MakeRouteHandler<KoaRequestBase, Middleware> {
+  return common.routeHandler(middleware)
 }
 
 export function run<Response extends common.Response.Generic>(
   handler: RouteHandler<Response>
 ): (ctx: koa.Context) => Promise<void> {
   return async ctx => {
-    const response = await handler(ctx)
+    const response = await handler({ ctx })
     ctx.response.status = response.status
     if (response.headers != null) {
       ctx.response.set(response.headers)
