@@ -4,6 +4,7 @@ import {
   Route,
   RequestBase,
   applyMiddleware,
+  route,
   router,
 } from '..'
 import * as request from 'supertest'
@@ -26,7 +27,7 @@ describe('applyMiddleware', () => {
     const foo: Route<Response.Ok<string> | Response.BadRequest<string>> = route(
       'get',
       '/foo'
-    )()(req => {
+    ).handler(req => {
       return Response.ok(req.foo)
     })
     const app = makeApp().use(router(foo).handler())
@@ -50,7 +51,7 @@ describe('applyMiddleware', () => {
     }
     const route = applyMiddleware(mw1).use(mw2)
 
-    const foo: Route<Response.Ok> = route.get('/foo')()(_ => {
+    const foo: Route<Response.Ok> = route.get('/foo').handler(_ => {
       return Response.ok()
     })
     const app = makeApp().use(router(foo).handler())
@@ -84,13 +85,25 @@ describe('applyMiddleware', () => {
 
     it('both outside the route', async () => {
       const routeFn = applyMiddleware(mw1).use(mw2)
-      const foo: Route<Response.Ok> = routeFn.get('/foo')()(handler)
+      const foo: Route<Response.Ok> = routeFn.get('/foo').handler(handler)
       await run(foo)
     })
 
     it('second inside the route', async () => {
       const routeFn = applyMiddleware(mw1)
-      const foo: Route<Response.Ok> = routeFn.get('/foo')(mw2)(handler)
+      const foo: Route<Response.Ok> = routeFn
+        .get('/foo')
+        .use(mw2)
+        .handler(handler)
+      await run(foo)
+    })
+
+    it('both inside the route', async () => {
+      const foo: Route<Response.Ok> = route
+        .get('/foo')
+        .use(mw1)
+        .use(mw2)
+        .handler(handler)
       await run(foo)
     })
   })

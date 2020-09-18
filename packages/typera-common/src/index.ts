@@ -50,11 +50,9 @@ export function applyMiddleware<
   Request,
   Middleware extends Middleware.Generic<Request>[]
 >(getRouteParams: (req: Request) => {}, outsideMiddleware: Middleware): any {
-  const routeFn = (method: URL.Method, ...segments: any[]) => {
-    const urlParser = URL.url(method, ...segments)()
-    return (...middleware: any[]) =>
-      route(getRouteParams, urlParser, [...outsideMiddleware, ...middleware])
-  }
+  const routeFn = (method: URL.Method, ...segments: any[]) =>
+    makeRouteConstructor(getRouteParams, method, segments, outsideMiddleware)
+
   routeFn.use = (...middleware: any[]) =>
     applyMiddleware(getRouteParams, [...outsideMiddleware, ...middleware])
 
@@ -68,6 +66,28 @@ export function applyMiddleware<
   routeFn.all = (...segments: any[]) => routeFn('all', ...segments)
 
   return routeFn as any
+}
+
+function makeRouteConstructor<Request>(
+  getRouteParams: (req: Request) => {},
+  method: URL.Method,
+  segments: any[],
+  middleware: any[]
+) {
+  const urlParser = URL.url(method, ...segments)()
+
+  const routeConstructor = (...nextMiddleware: any[]) =>
+    route(getRouteParams, urlParser, [...middleware, ...nextMiddleware])
+
+  routeConstructor.use = (...nextMiddleware: any[]) =>
+    makeRouteConstructor(getRouteParams, method, segments, [
+      ...middleware,
+      ...nextMiddleware,
+    ])
+
+  routeConstructor.handler = route(getRouteParams, urlParser, middleware)
+
+  return routeConstructor
 }
 
 export type Route<Response extends Response.Generic> = {
@@ -204,22 +224,43 @@ export type MakeRoute<
   PathSegments extends Array<URL.PathCapture | string>,
   OutsideMiddlewareResponse extends Response.Generic = never
 > = URL.PathSegmentsToCaptures<PathSegments> extends infer URLCaptures
-  ? <Middleware extends Array<Middleware.Generic<Request>>>(
-      ...middleware: Middleware
-    ) => TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
-      infer MiddlewareResult,
-      infer MiddlewareResponse
-    >
-      ? <Response extends Response.Generic>(
-          handler: RequestHandler<
-            MiddlewareResult & { routeParams: URLCaptures },
-            Response
-          >
-        ) => Route<
-          Response | MiddlewareResponse | OutsideMiddlewareResponse
-        >
-      : never
+  ? RouteConstructor<URLCaptures, Request, OutsideMiddlewareResponse>
   : never
+
+interface RouteConstructor<
+  URLCaptures,
+  Request,
+  OutsideMiddlewareResponse extends Response.Generic = never
+> {
+  <Middleware extends Middleware.Generic<Request>[]>(
+    ...middleware: Middleware
+  ): TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
+    infer MiddlewareResult,
+    infer MiddlewareResponse
+  >
+    ? <Response extends Response.Generic>(
+        handler: RequestHandler<
+          MiddlewareResult & { routeParams: URLCaptures },
+          Response
+        >
+      ) => Route<Response | MiddlewareResponse | OutsideMiddlewareResponse>
+    : never
+  use<Middleware extends Middleware.Generic<Request>[]>(
+    ...middleware: Middleware
+  ): TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
+    infer MiddlewareResult,
+    infer MiddlewareResponse
+  >
+    ? RouteConstructor<
+        URLCaptures,
+        Request & MiddlewareResult,
+        MiddlewareResponse | OutsideMiddlewareResponse
+      >
+    : never
+  handler<Response extends Response.Generic>(
+    fn: RequestHandler<Request & { routeParams: URLCaptures }, Response>
+  ): Route<Response | OutsideMiddlewareResponse>
+}
 
 export type MakeRouteHandler<
   Request,

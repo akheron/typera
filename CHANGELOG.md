@@ -28,6 +28,7 @@
 
 - Export the `RequestBase` type from typera-express and typera-koa
 - Add `ChainedMiddleware` to use results from previous middleware
+- Add a new syntax for defining routes: `route(method, path).use(middleware).handler(async req => { ... })`
 
 **Fixes**
 

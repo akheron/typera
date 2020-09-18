@@ -14,7 +14,7 @@ describe('route & router', () => {
   })
 
   it('works', async () => {
-    const foo: Route<Response.Ok<string>> = route.get('/foo')()(_ => {
+    const foo: Route<Response.Ok<string>> = route.get('/foo').handler(_ => {
       return Response.ok('foo')
     })
     server = makeServer(router(foo).handler())
@@ -23,22 +23,16 @@ describe('route & router', () => {
   })
 
   it('supports adding multiple routes', async () => {
-    const foo: Route<Response.Ok<string>> = route.get('/foo')()(_ => {
+    const foo: Route<Response.Ok<string>> = route.get('/foo').handler(_ => {
       return Response.ok('foo')
     })
-    const bar: Route<Response.Ok<string>> = route.get('/bar')()<
-      Response.Ok<string>
-    >(_ => {
+    const bar: Route<Response.Ok<string>> = route.get('/bar').handler(_ => {
       return Response.ok('bar')
     })
-    const baz: Route<Response.Ok<string>> = route.get('/baz')()<
-      Response.Ok<string>
-    >(_ => {
+    const baz: Route<Response.Ok<string>> = route.get('/baz').handler(_ => {
       return Response.ok('baz')
     })
-    const quux: Route<Response.Ok<string>> = route.get('/quux')()<
-      Response.Ok<string>
-    >(_ => {
+    const quux: Route<Response.Ok<string>> = route.get('/quux').handler(_ => {
       return Response.ok('quux')
     })
 
@@ -54,20 +48,18 @@ describe('route & router', () => {
   it('decodes the request', async () => {
     const decode: Route<
       Response.NoContent | Response.BadRequest<string>
-    > = route.post(
-      '/decode/',
-      URL.str('foo'),
-      '/',
-      URL.int('bar')
-    )(
-      Parser.query(t.type({ baz: t.string })),
-      Parser.body(t.type({ quux: t.boolean }))
-    )(request => {
-      expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
-      expect(request.query).toEqual({ baz: 'hello' })
-      expect(request.body).toEqual({ quux: true })
-      return Response.noContent()
-    })
+    > = route
+      .post('/decode/', URL.str('foo'), '/', URL.int('bar'))
+      .use(
+        Parser.query(t.type({ baz: t.string })),
+        Parser.body(t.type({ quux: t.boolean }))
+      )
+      .handler(request => {
+        expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
+        expect(request.query).toEqual({ baz: 'hello' })
+        expect(request.body).toEqual({ quux: true })
+        return Response.noContent()
+      })
 
     const handler = router(decode).handler()
     server = makeServer(handler)
@@ -79,13 +71,12 @@ describe('route & router', () => {
   })
 
   it('returns errors from middleware', async () => {
-    const error: Route<
-      Response.NoContent | Response.BadRequest<string>
-    > = route.post('/error')(Parser.body(t.type({ foo: t.number })))(
-      _request => {
+    const error: Route<Response.NoContent | Response.BadRequest<string>> = route
+      .post('/error')
+      .use(Parser.body(t.type({ foo: t.number })))
+      .handler(_request => {
         return Response.noContent()
-      }
-    )
+      })
     const handler = router(error).handler()
     server = makeServer(handler)
 
@@ -117,9 +108,12 @@ describe('route & router', () => {
       })
     }
 
-    const root: Route<Response.Ok> = route.get('/')(mw1, mw2)(_request => {
-      return Response.ok()
-    })
+    const root: Route<Response.Ok> = route
+      .get('/')
+      .use(mw1, mw2)
+      .handler(_request => {
+        return Response.ok()
+      })
     const handler = router(root).handler()
     server = makeServer(handler)
 
@@ -147,12 +141,12 @@ describe('route & router', () => {
       return Middleware.stop(Response.unauthorized())
     }
 
-    const root: Route<Response.Ok | Response.Unauthorized> = route.get('/')(
-      mw1,
-      mw2
-    )(_request => {
-      return Response.ok()
-    })
+    const root: Route<Response.Ok | Response.Unauthorized> = route
+      .get('/')
+      .use(mw1, mw2)
+      .handler(_request => {
+        return Response.ok()
+      })
     const handler = router(root).handler()
     server = makeServer(handler)
 
@@ -183,9 +177,12 @@ describe('route & router', () => {
       })
     }
 
-    const root: Route<Response.Ok> = route.get('/')(mw1, mw2)(_request => {
-      return Response.ok()
-    })
+    const root: Route<Response.Ok> = route
+      .get('/')
+      .use(mw1, mw2)
+      .handler(_request => {
+        return Response.ok()
+      })
     const handler = router(root).handler()
     server = makeServer(handler)
 
