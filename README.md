@@ -94,78 +94,112 @@ yarn add typera-koa
 npm install --save koa typera-koa
 ```
 
-Import the things we need:
+Here's an example of a typed route handler that updates a user's profile in the
+database:
 
 ```typescript
 // Change 'typera-express' to 'typera-koa' if you're using Koa
-import { Parser, Response, Route, URL, route } from 'typera-express
-```
+import { Parser, Response, Route, URL, route } from 'typera-express'
+import * as t from 'io-ts'
 
-Define your routes with their response types:
-
-```typescript
 interface User {
   id: number
   name: string
   age: number
 }
 
-const listUsers: Route<Response.Ok<User[]>> = route.get('/user') //...
-
-const createUser: Route<
-  Response.Ok<User> | Response.BadRequest<string>
-> = route.post('/user') //...
+// Decodes an object { name: string, age: number }
+const userBody = t.type({ name: t.string, age: t.number })
 
 const updateUser: Route<
   Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
-> = route.put('/user/', URL.int('id')) //...
+> = route
+  .put('/user/', URL.int('id')) // Capture id from the path
+  .use(Parser.body(userBody)) // Use the userBody decoder for the request body
+  .handler(async request => {
+    // This imaginary function takes the user id and data, and updates the
+    // user in the database. If the user does not exist, it returns null.
+    const user = await updateUserInDatabase(
+      request.routeParams.id,
+      request.body
+    )
+
+    if (user === null) {
+      return Response.notFound()
+    }
+
+    return Response.ok({
+      id: user.id,
+      name: user.name,
+      age: user.age,
+    })
+  })
 ```
 
-The first argument of `route()` is a HTTP method, and rest are path segments.
-Any of the segments can capture a part of the path, like `URL.int('id')` above.
-The `'id'` argument is the name of the parameter, more on that later.
+Let's go through it in detail.
+
+```typescript
+// Change 'typera-express' to 'typera-koa' if you're using Koa
+import { Parser, Response, Route, URL, route } from 'typera-express'
+
+interface User {
+  id: number
+  name: string
+  age: number
+}
+
+// Decodes an object { name: string, age: number }
+const userBody = t.type({ name: t.string, age: t.number })
+```
+
+We fist import the stuff that is needed, and define an object type that is
+returned from the route handler. We also define an [io-ts] codec for decoding
+incoming user data.
+
+```typescript
+const updateUser: Route<
+  Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
+> = route /* ... */
+```
+
+Then we declare our route's possible responses: `200 OK` with `User` as a body,
+`404 Not Found`, or `400 Bad Request` with a `string` body.
 
 The types in the `Response` namespace correspond to HTTP status codes, and their
 type parameter denotes the type of the response body. All the standard statuses
 are covered, and you can also have custom ones like this:
 `Response.Response<418, string>`
 
-You should annotate the route handler response types like above. While it's not
-required, it helps you catch bugs if you accidentally change the result data of
-a route. By annotating what you actually wanted to return, you let the compiler
-notice if reality doesn't match the expectations.
-
-Next, use [io-ts] to create validators for the incoming request data.
+You don't need to provide the response types because typera will infer them for
+you. But annotating helps you catch bugs if you accidentally change the result
+data of a route. By annotating your route with what you actually wanted to
+return, you let the compiler notice if reality doesn't match the expectations.
 
 ```typescript
-import * as t from 'io-ts'
-
-// Decodes an object { name: string, age: number }
-const userBody = t.type({ name: t.string, age: t.number })
-```
-
-Pass the validators to `route`, using the helpers from `typera.Parser` to
-specify which part of the request you're decoding. Continuing with the
-`updateUser` route handler above:
-
-```typescript
-const updateUser: Route<
-  Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
-> = route
-  .put('/user/', URL.int('id'))
+route
+  .put('/user/', URL.int('id')) // Capture id from the path
   .use(Parser.body(userBody)) // Use the userBody decoder for the request body
   .handler(async request => {
-    // ...
+    /* ... */
   })
 ```
 
-The callback function passed last will contain the actual route logic you're
-going to write. The function gets as an argument the `request` that will contain
-all URL captures as well as all the results of the decoders you passed. And
-what's great is that the data is correctly typed!
+Here we tell that our route is going to be run for `PUT` requests. The arguments
+of `route.put()` are path segments. Any of the segments can capture a part of
+the path, like `URL.int('id')` above. The `'id'` argument is the name of the
+parameter (more on that later).
 
-In the example above, `request` will have the following inferred type, and
-changes to the validators will also update the type of `request`:
+The `.use()` method adds a middleware to the route. The `userBody` [io-ts] codec
+was defined above, and passing it to the `Parser.body()` middleware instructs
+typera to parse the incoming request body with that codec.
+
+The `.handler()` method adds the actual route logic, and here is where the magic
+happens. The function passed to `.handler()` gets as an argument the [typera]
+`request` object, that will contain all URL captures as well as all the results
+of the middleware you passed. And what's great is that the data is correctly
+typed!
+
+In our example, `request` will have the following inferred type:
 
 ```typescript
 interface MyRequest {
@@ -192,14 +226,12 @@ interface MyRequest {
 intersection type instead. In any case, it can be used as if it was like above,
 editor autocomplete will work correctly, etc.)
 
-Let's continue by writing the actual route logic:
+The last part is the actual route logic:
 
 ```typescript
-const updateUser: Route<
-  Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
-> = route
-  .put('/user/', URL.int('id'))
-  .use(Parser.body(userBody)) // Use the userBody decoder for the request body
+route
+  .put(/*...*/)
+  .use(/*...*/)
   .handler(async request => {
     // This imaginary function takes the user id and data, and updates the
     // user in the database. If the user does not exist, it returns null.
@@ -208,11 +240,15 @@ const updateUser: Route<
       request.body
     )
 
-    if (user != null) {
-      return Response.ok({ id: user.id, name: user.name, age: user.age })
+    if (user === null) {
+      return Response.notFound()
     }
 
-    return Response.notFound()
+    return Response.ok({
+      id: user.id,
+      name: user.name,
+      age: user.age,
+    })
   })
 ```
 
@@ -222,12 +258,7 @@ database or not.
 
 Note that the OK response body corresponds to the `User` type we defined
 earlier. We annotated the route handler to return a `User` body with the OK
-response:
-
-```typescript
-const updateUser: Route<Response.Ok<User>>
-// ...
-```
+response.
 
 Let's assume we made a typo in our code and wrote `ic` instead of `id`:
 
@@ -247,11 +278,6 @@ It's not required to use the response helpers like `Response.ok()` or
 
 Did you notice that the `updateUser` route handler also had a
 `Response.BadRequest<string>` as a possible response?
-
-```typescript
-const updateUser: Route<// ...
-Response.BadRequest<string>>
-```
 
 This is because the validation of the request data can fail. The `Parser.body()`
 middleware produces a `400 Bad Request` response with a `string` body if the
@@ -276,7 +302,7 @@ const app = express()
 // body-parser is needed if you use Parser.body()
 app.use(bodyParser.json())
 
-app.use(router(listUsers, createUser, updateUser).handler())
+app.use(router(updateUser /*, otherRoute, stillAnother */).handler())
 ```
 
 And for [Koa]:
@@ -291,7 +317,7 @@ const app = new Koa()
 // koa-bodyparser is needed if you use Parser.body()
 app.use(bodyParser())
 
-app.use(router(listUsers, createUser, updateUser).handler())
+app.use(router(updateUser /*, otherRoute, stillAnother */).handler())
 ```
 
 ## API Reference
@@ -884,7 +910,7 @@ With [Koa], you need to use [koa-mount] to mount your routes to a sub-path:
 
 ```typescript
 import * as Koa from 'koa'
-import mount = require('koa-mount']
+import mount = require('koa-mount')
 
 const app = new Koa()
 // ...
