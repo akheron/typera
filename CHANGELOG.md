@@ -24,11 +24,17 @@
 
   typera-express middleware are not affected, as their argument already was a `{ req, res }` object.
 
+- typera-express exported `ExpressContext` was renamed to `RequestBase`.
+
+**Deprecations**
+
+- The previous syntax for defining routes is now deprecated: `route(method, path)(middleware)(async request => { ... })`
+
 **New features**
 
 - Export the `RequestBase` type from typera-express and typera-koa
 - Add `ChainedMiddleware` to use results from previous middleware
-- Add a new syntax for defining routes: `route(method, path).use(middleware).handler(async req => { ... })`
+- Add a new syntax for defining routes: `route(method, path).use(middleware).handler(async request => { ... })`
 
 **Fixes**
 
