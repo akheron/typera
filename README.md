@@ -2,9 +2,9 @@
 
 [![CircleCI](https://circleci.com/gh/akheron/typera.svg?style=shield)](https://circleci.com/gh/akheron/typera)
 
-Typera (**TYPE**d **R**outing **A**ssistant) helps you build backends
-in a type-safe manner by leveraging [io-ts] and some TypeScript type
-inference magic. It works with both [Express] and [Koa].
+Typera (**TYPE**d **R**outing **A**ssistant) helps you build backends in a
+type-safe manner by leveraging [io-ts] and some TypeScript type inference magic.
+It works with both [Express] and [Koa].
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -55,11 +55,11 @@ inference magic. It works with both [Express] and [Koa].
 
 ## The Problem
 
-When you see an `any`, you cannot really be sure anymore. When
-building web backends, there are quite a few `any`s involved:
+When you see an `any`, you cannot really be sure anymore. When building web
+backends, there are quite a few `any`s involved:
 
-- You get a request in. Captured route params, query params from the
-  URL and request body are all `any`.
+- You get a request in. Captured route params, query params from the URL and
+  request body are all `any`.
 
 - When generating a response, the response body's type is `any`.
 
@@ -67,12 +67,12 @@ building web backends, there are quite a few `any`s involved:
   transforms the middleware apply to the request, or which responses it might
   return.
 
-- The response status is a `number`. It's not as bad as `any`, but
-  your routes always return responses from a known set of possible
-  status code / body combinations.
+- The response status is a `number`. It's not as bad as `any`, but your routes
+  always return responses from a known set of possible status code / body
+  combinations.
 
-By default, the compiler cannot help you with any (pun intended) of
-this. But with [typera], you're safe!
+By default, the compiler cannot help you with any (pun intended) of this. But
+with [typera], you're safe!
 
 ## Tutorial
 
@@ -110,37 +110,30 @@ interface User {
   age: number
 }
 
-const listUsers: Route<
-  | Response.Ok<User[]>
-> = route.get('/user')//...
+const listUsers: Route<Response.Ok<User[]>> = route.get('/user') //...
 
 const createUser: Route<
-  | Response.Ok<User>
-  | Response.BadRequest<string>
-> = route.post('/user')//...
+  Response.Ok<User> | Response.BadRequest<string>
+> = route.post('/user') //...
 
 const updateUser: Route<
-  | Response.Ok<User>
-  | Response.NotFound
-  | Response.BadRequest<string>
-> = route.put('/user/', URL.int('id'))//...
+  Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
+> = route.put('/user/', URL.int('id')) //...
 ```
 
-The first argument of `route()` is a HTTP method, and rest are path
-segments. Any of the segments can capture a part of the path, like
-`URL.int('id')` above. The `'id'` argument is the name of the
-parameter, more on that later.
+The first argument of `route()` is a HTTP method, and rest are path segments.
+Any of the segments can capture a part of the path, like `URL.int('id')` above.
+The `'id'` argument is the name of the parameter, more on that later.
 
-The types in the `Response` namespace correspond to HTTP status
-codes, and their type parameter denotes the type of the response body.
-All the standard statuses are covered, and you can also have custom
-ones like this: `Response.Response<418, string>`
+The types in the `Response` namespace correspond to HTTP status codes, and their
+type parameter denotes the type of the response body. All the standard statuses
+are covered, and you can also have custom ones like this:
+`Response.Response<418, string>`
 
-You should annotate the route handler response types like above. While
-it's not required, it helps you catch bugs if you accidentally change
-the result data of a route. By annotating what you actually wanted to
-return, you let the compiler notice if reality doesn't match the
-expectations.
+You should annotate the route handler response types like above. While it's not
+required, it helps you catch bugs if you accidentally change the result data of
+a route. By annotating what you actually wanted to return, you let the compiler
+notice if reality doesn't match the expectations.
 
 Next, use [io-ts] to create validators for the incoming request data.
 
@@ -151,31 +144,28 @@ import * as t from 'io-ts'
 const userBody = t.type({ name: t.string, age: t.number })
 ```
 
-Pass the validators to `route`, using the helpers from
-`typera.Parser` to specify which part of the request you're decoding.
-Continuing with the `updateUser` route handler above:
+Pass the validators to `route`, using the helpers from `typera.Parser` to
+specify which part of the request you're decoding. Continuing with the
+`updateUser` route handler above:
 
 ```typescript
 const updateUser: Route<
-  | Response.Ok<User>
-  | Response.NotFound
-  | Response.BadRequest<string>
+  Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
 > = route
   .put('/user/', URL.int('id'))
-  .use(Parser.body(userBody))  // Use the userBody decoder for the request body
-  .handler(async (request) => {
+  .use(Parser.body(userBody)) // Use the userBody decoder for the request body
+  .handler(async request => {
     // ...
   })
 ```
 
-The callback function passed last will contain the actual route logic
-you're going to write. The function gets as an argument the `request`
-that will contain all URL captures as well as all the results of the
-decoders you passed. And what's great is that the data is correctly
-typed!
+The callback function passed last will contain the actual route logic you're
+going to write. The function gets as an argument the `request` that will contain
+all URL captures as well as all the results of the decoders you passed. And
+what's great is that the data is correctly typed!
 
-In the example above, `request` will have the following inferred type,
-and changes to the validators will also update the type of `request`:
+In the example above, `request` will have the following inferred type, and
+changes to the validators will also update the type of `request`:
 
 ```typescript
 interface MyRequest {
@@ -199,23 +189,24 @@ interface MyRequest {
 ```
 
 (In reality the type won't be exatly as above, but a bit more complex
-intersection type instead. In any case, it can be used as if it was
-like above, editor autocomplete will work correctly, etc.)
+intersection type instead. In any case, it can be used as if it was like above,
+editor autocomplete will work correctly, etc.)
 
 Let's continue by writing the actual route logic:
 
 ```typescript
 const updateUser: Route<
-  | Response.Ok<User>
-  | Response.NotFound
-  | Response.BadRequest<string>
+  Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
 > = route
   .put('/user/', URL.int('id'))
   .use(Parser.body(userBody)) // Use the userBody decoder for the request body
-  .handler(async (request) => {
+  .handler(async request => {
     // This imaginary function takes the user id and data, and updates the
     // user in the database. If the user does not exist, it returns null.
-    const user = await updateUserInDatabase(request.routeParams.id, request.body)
+    const user = await updateUserInDatabase(
+      request.routeParams.id,
+      request.body
+    )
 
     if (user != null) {
       return Response.ok({ id: user.id, name: user.name, age: user.age })
@@ -225,60 +216,53 @@ const updateUser: Route<
   })
 ```
 
-The above code returns either `200 OK` with the user data in the body,
-or `404 Not Found` without any body, depending on whether the user was
-found in the database or not.
+The above code returns either `200 OK` with the user data in the body, or
+`404 Not Found` without any body, depending on whether the user was found in the
+database or not.
 
-Note that the OK response body corresponds to the `User` type we
-defined earlier. We annotated the route handler to return a `User`
-body with the OK response:
+Note that the OK response body corresponds to the `User` type we defined
+earlier. We annotated the route handler to return a `User` body with the OK
+response:
 
 ```typescript
-const updateUser: Route<
-  | Response.Ok<User>
-  // ...
->
+const updateUser: Route<Response.Ok<User>>
+// ...
 ```
 
-Let's assume we made a typo in our code and wrote `ic` instead of
-`id`:
+Let's assume we made a typo in our code and wrote `ic` instead of `id`:
 
 ```typescript
 return Response.ok({ ic: user.id, name: user.name, age: user.age })
 // OOPS! -------------^
 ```
 
-The TypeScript compiler catches this and gives you an error. Likewise,
-if in the future someone changes the `updateUserFromDatabase` function
-and e.g. adds a new field to the user data that the function takes as
-the second argument, the code won't compile before they also fix the
-`userBody` decoder to match the new type.
+The TypeScript compiler catches this and gives you an error. Likewise, if in the
+future someone changes the `updateUserFromDatabase` function and e.g. adds a new
+field to the user data that the function takes as the second argument, the code
+won't compile before they also fix the `userBody` decoder to match the new type.
 
 It's not required to use the response helpers like `Response.ok()` or
-`Response.notFound()`. You can also return plain objects: `return { status: 200, body: { ... }, headers: { ... } }`
+`Response.notFound()`. You can also return plain objects:
+`return { status: 200, body: { ... }, headers: { ... } }`
 
 Did you notice that the `updateUser` route handler also had a
 `Response.BadRequest<string>` as a possible response?
 
 ```typescript
-const updateUser: Route<
-  // ...
-  | Response.BadRequest<string>
->
+const updateUser: Route<// ...
+Response.BadRequest<string>>
 ```
 
-This is because the validation of the request data can fail. The
-`Parser.body()` middleware produces a `400 Bad Request` response with
-a `string` body if the request body doesn't pass validation. To
-customize the returned error responses, use the `P` suffixed versions
-of the parser functions (`Parser.bodyP()`, `Parser.routeParamsP()`,
-etc.). See [Request Parsers](#request-parsers) below for more
-information.
+This is because the validation of the request data can fail. The `Parser.body()`
+middleware produces a `400 Bad Request` response with a `string` body if the
+request body doesn't pass validation. To customize the returned error responses,
+use the `P` suffixed versions of the parser functions (`Parser.bodyP()`,
+`Parser.routeParamsP()`, etc.). See [Request Parsers](#request-parsers) below
+for more information.
 
-There's one piece still missing: adding our route handlers to the app.
-Use the `router()` function to create a router from a bunch of routes,
-and the `.handler()` method of the router to get a handler that can be
-added to the app.
+There's one piece still missing: adding our route handlers to the app. Use the
+`router()` function to create a router from a bunch of routes, and the
+`.handler()` method of the router to get a handler that can be added to the app.
 
 Here's an example for [Express]:
 
@@ -314,9 +298,9 @@ app.use(router(listUsers, createUser, updateUser).handler())
 
 ### Imports
 
-[typera] exposes its contents in various modules, e.g. `Response`,
-`Middleware`, `Parser`, etc. In the examples below, they are imported
-from the top-level module like this:
+[typera] exposes its contents in various modules, e.g. `Response`, `Middleware`,
+`Parser`, etc. In the examples below, they are imported from the top-level
+module like this:
 
 ```typescript
 import { Response, Middleware, Parser } from 'typera-express'
@@ -336,8 +320,8 @@ import * as Middleware from 'typera-koa/middleware'
 import * as Parser from 'typera-koa/parser'
 ```
 
-And of course, you can also import individual items when importing
-directly from the modules:
+And of course, you can also import individual items when importing directly from
+the modules:
 
 ```typescript
 import { BadRequest } from 'typera-koa/express'
@@ -347,8 +331,7 @@ import { BadRequest } from 'typera-koa/response'
 
 ### Responses
 
-All response related types and functions live in the `Response`
-namespace.
+All response related types and functions live in the `Response` namespace.
 
 ```typescript
 import { Response } from 'typera-express'
@@ -368,8 +351,8 @@ type Response<Status, Body, Headers extends OptionalHeaders> = {
 }
 ```
 
-There is a separate type and a function to construct a response of
-that type for each valid HTTP status code.
+There is a separate type and a function to construct a response of that type for
+each valid HTTP status code.
 
 For example, the response type for a 200 OK is:
 
@@ -380,18 +363,21 @@ type Ok<
 > = Response<200, Body, Headers>
 ```
 
-The function to construct a 200 OK response has the following overloaded signatures:
+The function to construct a 200 OK response has the following overloaded
+signatures:
 
 ```typescript
 function ok(): Ok
 function ok<Body>(body: Body): Ok<Body>
-function ok<Body, Headers extends OptionalHeaders>(body: Body, headers: Headers): Ok<Body, Headers>
+function ok<Body, Headers extends OptionalHeaders>(
+  body: Body,
+  headers: Headers
+): Ok<Body, Headers>
 ```
 
-All response types have the `Body` and `Headers` type parameters. With
-other than [redirect responses](#redirects), both default to
-`undefined`. All response constructor functions have the same 3
-signatures.
+All response types have the `Body` and `Headers` type parameters. With other
+than [redirect responses](#redirects), both default to `undefined`. All response
+constructor functions have the same 3 signatures.
 
 Here's a list of most common responses:
 
@@ -414,19 +400,19 @@ For the full list of supported responses, see
 
 ### Redirects
 
-Redirecting the client to another URL is a common thing to do and
-requires setting a header. To create a redirect response, use the
+Redirecting the client to another URL is a common thing to do and requires
+setting a header. To create a redirect response, use the
 `redirect(status, location)` helper:
 
 ```typescript
-const myHandler: Route<Response.MovedPermanently> =
-  route.get('/foo').handler(async (request) => {
+const myHandler: Route<Response.MovedPermanently> = route
+  .get('/foo')
+  .handler(async request => {
     return Response.redirect(301, '/bar')
   })
 ```
 
-This generates a response with a string body and the `Location` header
-set:
+This generates a response with a string body and the `Location` header set:
 
 ```
 HTTP/1.1 301 Moved Permanently
@@ -435,8 +421,8 @@ Location: /bar
 Moved premanently. Redirecting to /bar
 ```
 
-For simplicity, the redirecting responses listed below have the default
-body type of `string` and the default headers type of `{ location: string }`:
+For simplicity, the redirecting responses listed below have the default body
+type of `string` and the default headers type of `{ location: string }`:
 
 | HTTP                   | Type                | Constructor function      |
 | ---------------------- | ------------------- | ------------------------- |
@@ -446,29 +432,31 @@ body type of `string` and the default headers type of `{ location: string }`:
 | 307 Temporary Redirect | `TemporaryRedirect` | `redirect(307, location)` |
 | 308 Permanent Redirect | `PermanentRedirect` | `redirect(308, location)` |
 
-Use the "normal" constructor functions (`movedPermanently()`, `found()`,
-...) if you want full control over the body and headers.
+Use the "normal" constructor functions (`movedPermanently()`, `found()`, ...) if
+you want full control over the body and headers.
 
 #### `Response.redirect<Status>(status: Status, location: string): Response.Response<Status, string, { location: string }>`
 
-Create a response that redirects to the given location. The response
-body will be a textual explanation of the redirect.
+Create a response that redirects to the given location. The response body will
+be a textual explanation of the redirect.
 
 ### Streaming responses
 
-Use the `Response.StreamingBody` body type and the
-`Response.streamingBody()` function to create streaming responses. The
-function takes a callback that receives a writable stream as a
-parameter:
+Use the `Response.StreamingBody` body type and the `Response.streamingBody()`
+function to create streaming responses. The function takes a callback that
+receives a writable stream as a parameter:
 
 ```typescript
-const streamingHandler: Route<Response.Ok<Response.StreamingBody>> =
-  route.get('/document.pdf').handler(async (request) => {
-    return Response.ok(Response.streamingBody(outputStream => {
-      // Assuming that the generatePDF function generates a
-      // PDF document to the given writable stream
-      generatePDF(outputStream)
-    }))
+const streamingHandler: Route<Response.Ok<Response.StreamingBody>> = route
+  .get('/document.pdf')
+  .handler(async request => {
+    return Response.ok(
+      Response.streamingBody(outputStream => {
+        // Assuming that the generatePDF function generates a
+        // PDF document to the given writable stream
+        generatePDF(outputStream)
+      })
+    )
   })
 ```
 
@@ -481,25 +469,27 @@ import { RequestBase, Middleware, ChainedMiddleware } from 'typera-koa'
 import { RequestBase, Middleware, ChainedMiddleware } from 'typera-express'
 ```
 
-Middleware are asynchronous functions that take a [typera] request
-object as a parameter, and produce either a `Response` or an object.
+Middleware are asynchronous functions that take a [typera] request object as a
+parameter, and produce either a `Response` or an object.
 
-If a middleware function produces a `Response`, then the request
-handling is stopped and that response is sent to the client. If it
-produces an object, that object is merged to the [typera] request object
-which is passed forward to the next middleware and eventually to the
-route handler.
+If a middleware function produces a `Response`, then the request handling is
+stopped and that response is sent to the client. If it produces an object, that
+object is merged to the [typera] request object which is passed forward to the
+next middleware and eventually to the route handler.
 
-A middleware function can also add a finalizer function to be called
-after the request handler has finished. This is useful if the middleware
-allocates some resources that need to be released afterwards (e.g.
-release a database connection, delete a temporary file, etc.)
+A middleware function can also add a finalizer function to be called after the
+request handler has finished. This is useful if the middleware allocates some
+resources that need to be released afterwards (e.g. release a database
+connection, delete a temporary file, etc.)
 
-For example, here's a middleware that authenticates a user and adds
-user info to the [typera] request object:
+For example, here's a middleware that authenticates a user and adds user info to
+the [typera] request object:
 
 ```typescript
-const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthorized<string>> =
+const authenticateUser: Middleware.Middleware<
+  { user: User },
+  Response.Unauthorized<string>
+> =
   //                                          ^               ^
   //                                          |               |
   // This is the object that's merged to request              |
@@ -508,7 +498,7 @@ const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthori
   //
   //
   async () => {
-    const user = await authenticateUser()  // Gets a user somehow and returns null if unauthenticated
+    const user = await authenticateUser() // Gets a user somehow and returns null if unauthenticated
     if (!user) {
       return Middleware.stop(Response.unauthorized('Login first'))
     }
@@ -516,34 +506,37 @@ const authenticateUser: Middleware.Middleware<{ user: User }, Response.Unauthori
   }
 ```
 
-Another example of a middleware that adds a database client to the
-[typera] request object. It never returns a response, so the response
-type is `never`.
+Another example of a middleware that adds a database client to the [typera]
+request object. It never returns a response, so the response type is `never`.
 
 ```typescript
 import * as pg from 'pg'
 
 const pool = new pg.Pool()
 
-const db: Middleware.Middleware<{ connection: pg.ClientBase }, never> =
-  async () => {
-    const connection = await pool.connect()
-    return Middleware.next({ connection }, () => connection.release())
-  }
+const db: Middleware.Middleware<
+  { connection: pg.ClientBase },
+  never
+> = async () => {
+  const connection = await pool.connect()
+  return Middleware.next({ connection }, () => connection.release())
+}
 ```
 
-If you write a middleware that adds nothing to the [typera] request
-object, its result type should be `unknown`:
+If you write a middleware that adds nothing to the [typera] request object, its
+result type should be `unknown`:
 
 ```typescript
-const checkOrigin: Middleware.Middleware<unknown, Response.BadRequest<string>> =
-  async (request) => {
-    // In typera-express, you can use request.req.get() to read headers
-    if (request.req.get('origin') !== 'example.com') {
-      return Middleware.stop(Response.badRequest('Invalid origin'))
-    }
-    return Middleware.next()
+const checkOrigin: Middleware.Middleware<
+  unknown,
+  Response.BadRequest<string>
+> = async request => {
+  // In typera-express, you can use request.req.get() to read headers
+  if (request.req.get('origin') !== 'example.com') {
+    return Middleware.stop(Response.badRequest('Invalid origin'))
   }
+  return Middleware.next()
+}
 ```
 
 If you need to use the result of some previous middleware, use
@@ -554,11 +547,14 @@ Let's write a middleware that writes audit entries to database, and so it
 requires a database connection from the `db` middleware above:
 
 ```typescript
-const audit: Middleware.ChainedMiddleware<{ connection: pg.ClientBase }, unknown, never> =
-  async (request) => {
-    await writeAuditLog(request.connection)
-    return Middleware.next()
-  }
+const audit: Middleware.ChainedMiddleware<
+  { connection: pg.ClientBase },
+  unknown,
+  never
+> = async request => {
+  await writeAuditLog(request.connection)
+  return Middleware.next()
+}
 ```
 
 Now, the `audit` middleware can only be used if the `db` middleware comes before
@@ -566,30 +562,29 @@ it and adds `connection` to the request object.
 
 #### `Middleware.next([value[, finalizer]])`
 
-Construct a value to be merged with the [typera] request object, and
-optionally add a finalizer to be run when the request processing has
-finished.
+Construct a value to be merged with the [typera] request object, and optionally
+add a finalizer to be run when the request processing has finished.
 
-If `Middleware.next()` is called with no arguments, nothing is added
-to the [typera] request object.
+If `Middleware.next()` is called with no arguments, nothing is added to the
+[typera] request object.
 
-The finalizer, if given, is called with no arguments. It can be an
-async function (can return a `Promise`).
+The finalizer, if given, is called with no arguments. It can be an async
+function (can return a `Promise`).
 
-If you want to run a finalizer but not add anything to the request,
-you can pass `{}` or `undefined` as the value.
+If you want to run a finalizer but not add anything to the request, you can pass
+`{}` or `undefined` as the value.
 
 #### `Middleware.stop(response)`
 
 Stop processing the request and return `response` to the client. Other
-middleware or the route handler will not be run. If other middleware
-has already run before this one, their finalizers are run.
+middleware or the route handler will not be run. If other middleware has already
+run before this one, their finalizers are run.
 
 ### Request Parsers
 
-Request parsers are built-in middleware that let you validate parts of
-the request. All request parser related types and functions live in
-the `Parser` namespace.
+Request parsers are built-in middleware that let you validate parts of the
+request. All request parser related types and functions live in the `Parser`
+namespace.
 
 ```typescript
 import * as t from 'io-ts'
@@ -598,54 +593,52 @@ import { Parser } from 'typera-express'
 import { Parser } from 'typera-koa'
 ```
 
-[typera] provides functions to build request parser middleware for
-query string and request body. These functions take an [io-ts] codec
-(`t.Type`) and return a middleware that validates the corresponding
-part of the request using the given codec. If the validation fails,
-they produce an error response with appropriate status code and error
-message in the body.
+[typera] provides functions to build request parser middleware for query string
+and request body. These functions take an [io-ts] codec (`t.Type`) and return a
+middleware that validates the corresponding part of the request using the given
+codec. If the validation fails, they produce an error response with appropriate
+status code and error message in the body.
 
 #### `Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`
 
-Validate the query string according to the given [io-ts] codec.
-Respond with `400 Bad Request` if the validation fails.
+Validate the query string according to the given [io-ts] codec. Respond with
+`400 Bad Request` if the validation fails.
 
-The input for this parser will be the query string parsed as `{ [K in string]: string }`,
-i.e. all parameter values will be strings. If you
-want to convert them to other types, you probably find the
-`FromString` codecs from [io-ts-types] useful (e.g. `IntFromString`,
-`BooleanFromString`, etc.)
+The input for this parser will be the query string parsed as
+`{ [K in string]: string }`, i.e. all parameter values will be strings. If you
+want to convert them to other types, you probably find the `FromString` codecs
+from [io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
 
 #### `Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`
 
-Validate the request body according to the given [io-ts] codec.
-Respond with `400 Bad Request` if the validation fails.
+Validate the request body according to the given [io-ts] codec. Respond with
+`400 Bad Request` if the validation fails.
 
-The input for this parser will be the request body, parsed with the
-body parser of your choice. With [Express] you probably want to use
-[body-parser], and with [Koa] the most common choice is
-[koa-bodyparser]. Note that these are native [Express] or [Koa]
-middleware, so you must attach them directly to the [Express] or [Koa]
-app rather than use them as [typera] middleware.
+The input for this parser will be the request body, parsed with the body parser
+of your choice. With [Express] you probably want to use [body-parser], and with
+[Koa] the most common choice is [koa-bodyparser]. Note that these are native
+[Express] or [Koa] middleware, so you must attach them directly to the [Express]
+or [Koa] app rather than use them as [typera] middleware.
 
 #### ~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)
 
-_Deprecated as of v0.4.0_: Only useful with the deprecated
-`routeHandler()` and `run()` functions.
+_Deprecated as of v0.4.0_: Only useful with the deprecated `routeHandler()` and
+`run()` functions.
 
-Validate the captured route params according to the given [io-ts]
-codec. Respond with `404 Not Found` if the validation fails.
+Validate the captured route params according to the given [io-ts] codec. Respond
+with `404 Not Found` if the validation fails.
 
 #### Customizing the error response
 
-Each of the above functions also have a `P` flavor that allows the
-user to override error handling. In addition to an [io-ts] codec,
-these functions take an error handler function that receives an
-[io-ts] validation error and produces an error response:
+Each of the above functions also have a `P` flavor that allows the user to
+override error handling. In addition to an [io-ts] codec, these functions take
+an error handler function that receives an [io-ts] validation error and produces
+an error response:
 
 ```typescript
-type ErrorHandler<ErrorResponse extends Response.Response<number, any, any>> =
-  (errors: t.Errors) => ErrorResponse
+type ErrorHandler<ErrorResponse extends Response.Response<number, any, any>> = (
+  errors: t.Errors
+) => ErrorResponse
 
 function queryP<
   Codec extends t.Type<any>,
@@ -683,8 +676,8 @@ import { Route, URL, applyMiddleware, route } from 'typera-koa'
 
 #### `route`
 
-A route matches a request based on HTTP method and path, and defines a
-function that serves a response for the matched request.
+A route matches a request based on HTTP method and path, and defines a function
+that serves a response for the matched request.
 
 ##### `route.get(...): Route<Response>`
 
@@ -721,30 +714,28 @@ route
 The special method `all` matches every HTTP method.
 
 The `route` functions take zero or more path segments as arguments
-(`pathSegment1, pathSegment2, ...`). Each path segment can be either a
-`string` or an [URL capture](#url-parameter-capturing). They are
-concatenated together to form the final URL pattern. The path if the
-incoming HTTP request is matched against the URL pattern to see
-whether this route is responsible for serving the response for the
-HTTP request.
+(`pathSegment1, pathSegment2, ...`). Each path segment can be either a `string`
+or an [URL capture](#url-parameter-capturing). They are concatenated together to
+form the final URL pattern. The path if the incoming HTTP request is matched
+against the URL pattern to see whether this route is responsible for serving the
+response for the HTTP request.
 
 They return an object with `.use()` and `.handler()` methods.
 
-The `.use()` method takes one or more [middleware
-functions](#middleware) (`middleware1, middleware2, ...`) which are used
-to process the incoming request and create the [typera] request object
-(`req`). You can call `.use()` many times. The result of middleware in
-previous calls will be available in the [typera] request object passed
-to the next middleware. See `ChainedMiddleware` above on how to use the
-previous middleware results in the next middleware.
+The `.use()` method takes one or more [middleware functions](#middleware)
+(`middleware1, middleware2, ...`) which are used to process the incoming request
+and create the [typera] request object (`req`). You can call `.use()` many
+times. The result of middleware in previous calls will be available in the
+[typera] request object passed to the next middleware. See `ChainedMiddleware`
+above on how to use the previous middleware results in the next middleware.
 
-The `.handler()` method takes a request handler, which is an async
-function that receives the [typera] request object returns a response.
+The `.handler()` method takes a request handler, which is an async function that
+receives the [typera] request object returns a response.
 
-The [typera] request object is created by merging the [URL
-captures](#url-parameter-capturing) and the result objects of
-[middleware functions](#middleware) given to `route` or applied before.
-It also always extends the request base:
+The [typera] request object is created by merging the
+[URL captures](#url-parameter-capturing) and the result objects of
+[middleware functions](#middleware) given to `route` or applied before. It also
+always extends the request base:
 
 ```typescript
 // typera-express
@@ -759,22 +750,21 @@ type RequestBase = {
 }
 ```
 
-In other words, in `typera-express` the [Express] req/res are always
-available as `req.req` and `req.res`, and in `typera-koa` the [Koa]
-context is always available as `req.ctx`.
+In other words, in `typera-express` the [Express] req/res are always available
+as `req.req` and `req.res`, and in `typera-koa` the [Koa] context is always
+available as `req.ctx`.
 
-The type of `request` is inferred by [typera], so there's no need for
-the user to give it an explicit type, while at the same time the
-TypeScript compiler checks that the properties of `request` are used
-correctly in the request handler.
+The type of `request` is inferred by [typera], so there's no need for the user
+to give it an explicit type, while at the same time the TypeScript compiler
+checks that the properties of `request` are used correctly in the request
+handler.
 
-`route` infers the response type by combining the error response types
-of all middleware functions, and the response types of the request
-handler. To get maximum type safety, the return type of of `route` can
-be explicitly declared in user code. This makes sure that the possible
-responses of a route don't change unexpectedly because of changes in
-your code, and documents all the possible responses from a single
-route:
+`route` infers the response type by combining the error response types of all
+middleware functions, and the response types of the request handler. To get
+maximum type safety, the return type of of `route` can be explicitly declared in
+user code. This makes sure that the possible responses of a route don't change
+unexpectedly because of changes in your code, and documents all the possible
+responses from a single route:
 
 ```typescript
 const listHandler: Route<
@@ -783,9 +773,9 @@ const listHandler: Route<
 > = route.get(...).use(...).handler(async (request) => { ... })
 ```
 
-We avoid giving the accurate type of the various `route` functions here,
-because they're quite complex due to the type inference of `request` and
-response types. Interested users can refer to the code:
+We avoid giving the accurate type of the various `route` functions here, because
+they're quite complex due to the type inference of `request` and response types.
+Interested users can refer to the code:
 [common](packages/typera-common/src/index.ts),
 [express](packages/typera-express/index.ts),
 [koa](packages/typera-koa/index.ts),
@@ -794,10 +784,9 @@ response types. Interested users can refer to the code:
 
 #### `applyMiddleware(...middleware)`
 
-If you need to apply the same middleware to many routes, you can
-create your own version of `route` by calling either `route.use()` or
-`applyMiddleware()` with the middleware that are common to all of the
-routes:
+If you need to apply the same middleware to many routes, you can create your own
+version of `route` by calling either `route.use()` or `applyMiddleware()` with
+the middleware that are common to all of the routes:
 
 ```typescript
 // db and auth are middleware functions
@@ -811,9 +800,9 @@ const listHandler: Route<...> = myRoute.get(...)
 const updateHandler: Route<...> = myRoute.put(...)
 ```
 
-The value returned by `route.use()` and `applyMiddleware()` works
-exactly the same as `route` i.e. it has the `.get()`, `.post()` etc.
-methods and can be called directly.
+The value returned by `route.use()` and `applyMiddleware()` works exactly the
+same as `route` i.e. it has the `.get()`, `.post()` etc. methods and can be
+called directly.
 
 ### URL parameter capturing
 
@@ -821,8 +810,8 @@ methods and can be called directly.
 import { URL } from 'typera-koa'
 ```
 
-URL captures make it possible to extract some parts of the HTTP
-request path for use in the route handler.
+URL captures make it possible to extract some parts of the HTTP request path for
+use in the route handler.
 
 For example, with the following path segments:
 
@@ -830,9 +819,9 @@ For example, with the following path segments:
 route.get('/user/', URL.int('id')).handler(async (request) => { ... })
 ```
 
-In the route handler function, `req.routeParams.id` will contain the
-integer that was given after `/user/` in the path (`id` is the name
-given to `URL.int()`), like this:
+In the route handler function, `req.routeParams.id` will contain the integer
+that was given after `/user/` in the path (`id` is the name given to
+`URL.int()`), like this:
 
 | Path           | `req`                            |
 | -------------- | -------------------------------- |
@@ -846,14 +835,13 @@ The following capture functions are available:
 
 #### `URL.str(name: string)`
 
-Capture a path segment as a string. `/` will not be matched, so you
-can have more path segments after this one, provided the next one
-starts with a `/`.
+Capture a path segment as a string. `/` will not be matched, so you can have
+more path segments after this one, provided the next one starts with a `/`.
 
 #### `URL.int(name: string)`
 
-Capture a non-negative integer, matching the regexp `\d+`. The
-captured value is converted to `number`.
+Capture a non-negative integer, matching the regexp `\d+`. The captured value is
+converted to `number`.
 
 ### Router
 
@@ -863,24 +851,23 @@ import { router } from 'typera-express'
 import { router } from 'typera-koa'
 ```
 
-The router is used to take a bunch of routes and turn them into a
-handler that you can then attach to your [Express] or [Koa] app.
+The router is used to take a bunch of routes and turn them into a handler that
+you can then attach to your [Express] or [Koa] app.
 
 #### `router(...routes: Route<any>[]): Router`
 
-Use the `router()` function to create a router. Give it zero or more
-routes to add.
+Use the `router()` function to create a router. Give it zero or more routes to
+add.
 
 #### `Router.add(...routes: Route<any>[]): Router`
 
-The `.add()` method adds more routes to the router. Note that it
-returns a **new** `Router` instance instead of modifying the existing
-one.
+The `.add()` method adds more routes to the router. Note that it returns a
+**new** `Router` instance instead of modifying the existing one.
 
 #### `Router.handler()`
 
-The `.handler()` method returns a handler that can be passed to
-`app.use()` for both [Express] and [Koa].
+The `.handler()` method returns a handler that can be passed to `app.use()` for
+both [Express] and [Koa].
 
 With [Express], you can mount the handler to a sub-path like this:
 
@@ -909,7 +896,8 @@ app.use(mount('/subpath', router.handler()))
 
 _Deprecaded as of v1.0.0_: Use `route(...).use(...).handler(...)` instead.
 
-In typera versions prior to 1.0.0, routes were called with a more bizarre syntax like this:
+In typera versions prior to 1.0.0, routes were called with a more bizarre syntax
+like this:
 
 ```typescript
 const updateUser: Route<
@@ -921,23 +909,23 @@ const updateUser: Route<
   })
 ```
 
-As you can see, the URL patterns, middleware, and route handler are
-there, but you added them by calling functions returned by functions.
+As you can see, the URL patterns, middleware, and route handler are there, but
+you added them by calling functions returned by functions.
 
-In v1.0.0, the `.use()` and `.handler()` were added to make the syntax a
-lot nicer, to better support code formatting ([prettier]), and to allow
-using the previous middleware result in the next middleware (middleware
-chaining).
+In v1.0.0, the `.use()` and `.handler()` were added to make the syntax a lot
+nicer, to better support code formatting ([prettier]), and to allow using the
+previous middleware result in the next middleware (middleware chaining).
 
 ### ~Route handlers~ (deprecated)
 
 _Deprecated as of v0.4.0_: Use `route()` and `router()` instead.
 
-A route handler is a function that takes the [Koa] context (in
-`typera-koa`) or [Express] req/res (in `typera-express`) as a
-parameter, and a response wrapped in a promise.
+A route handler is a function that takes the [Koa] context (in `typera-koa`) or
+[Express] req/res (in `typera-express`) as a parameter, and a response wrapped
+in a promise.
 
-Route handlers can be created using the `routeHandler` function. It is used like this:
+Route handlers can be created using the `routeHandler` function. It is used like
+this:
 
 ```typescript
 routeHandler(
@@ -949,18 +937,17 @@ routeHandler(
 ```
 
 Formally, it takes zero or more [middleware functions](#middleware)
-(`middleware1, middleware2, ...`) which are used to process the
-incoming request and create the [typera] request object (`req`). It
-returns a function that takes a request handler. This latter function
-returns the final route handler.
+(`middleware1, middleware2, ...`) which are used to process the incoming request
+and create the [typera] request object (`req`). It returns a function that takes
+a request handler. This latter function returns the final route handler.
 
-The request handler is a function that receives the [typera] request
-object (`request`) and returns a response (`(request) => { return Response.ok() }`
-in the above example).
+The request handler is a function that receives the [typera] request object
+(`request`) and returns a response (`(request) => { return Response.ok() }` in
+the above example).
 
-The [typera] request object is created by merging the output objects
-of [middleware function](#middleware) given to `routeHandler`. It also
-always extends the request base:
+The [typera] request object is created by merging the output objects of
+[middleware function](#middleware) given to `routeHandler`. It also always
+extends the request base:
 
 ```typescript
 // typera-koa
@@ -975,22 +962,20 @@ type RequestBase = {
 }
 ```
 
-In other words, in `typera-koa` the [Koa] context is always available
-via `req.ctx`, and in `typera-express` the [Express] req/res are
-always available via `req.req` and `req.res`.
+In other words, in `typera-koa` the [Koa] context is always available via
+`req.ctx`, and in `typera-express` the [Express] req/res are always available
+via `req.req` and `req.res`.
 
-The type of `req` is inferred by [typera], so there's no need for the
-user to give it an explicit type, while at the same time the
-TypeScript compiler checks that the properties of `req` are used
-correctly in the request handler.
+The type of `req` is inferred by [typera], so there's no need for the user to
+give it an explicit type, while at the same time the TypeScript compiler checks
+that the properties of `req` are used correctly in the request handler.
 
-`routeHandler` infers the response type by combining the error
-response types of all middleware functions, and the response types of
-the request handler. To get maximum type safety, the return type of of
-`routeHandler` should always be explicitly declared in user code. This
-makes sure that the possible responses of a route don't change
-unexpectedly because of changes in your code, and documents all the
-possible responses from a single route:
+`routeHandler` infers the response type by combining the error response types of
+all middleware functions, and the response types of the request handler. To get
+maximum type safety, the return type of of `routeHandler` should always be
+explicitly declared in user code. This makes sure that the possible responses of
+a route don't change unexpectedly because of changes in your code, and documents
+all the possible responses from a single route:
 
 ```typescript
 const listHandler: RouteHandler<
@@ -999,10 +984,9 @@ const listHandler: RouteHandler<
 > = routeHandler(...)(async (request) => { ... })
 ```
 
-We avoid giving the accurate type of `routeHandler` here, because it's
-quite complex due to the type inference of `req` and response types.
-Interested users can refer to the code:
-[common](packages/typera-common/src/index.ts),
+We avoid giving the accurate type of `routeHandler` here, because it's quite
+complex due to the type inference of `req` and response types. Interested users
+can refer to the code: [common](packages/typera-common/src/index.ts),
 [koa](packages/typera-koa/index.ts),
 [express](packages/typera-express/index.ts).
 
@@ -1016,9 +1000,9 @@ import { run } from 'typera-koa'
 import { run } from 'typera-express'
 ```
 
-Use the `run` function to transform the route handler to a function
-that can be passed to [@koa/router] (with `typera-koa`), or to
-[Express] routing functions (with `typera-express`).
+Use the `run` function to transform the route handler to a function that can be
+passed to [@koa/router] (with `typera-koa`), or to [Express] routing functions
+(with `typera-express`).
 
 In `typera-koa`, `run` has the following signature:
 

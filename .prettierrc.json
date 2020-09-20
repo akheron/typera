@@ -3,5 +3,5 @@
   "semi": false,
   "singleQuote": true,
   "trailingComma": "es5",
-  "embeddedLanguageFormatting": "off"
+  "proseWrap": "always"
 }

@@ -22,19 +22,22 @@
   }
   ```
 
-  typera-express middleware are not affected, as their argument already was a `{ req, res }` object.
+  typera-express middleware are not affected, as their argument already was a
+  `{ req, res }` object.
 
 - typera-express exported `ExpressContext` was renamed to `RequestBase`.
 
 **Deprecations**
 
-- The previous syntax for defining routes is now deprecated: `route(method, path)(middleware)(async request => { ... })`
+- The previous syntax for defining routes is now deprecated:
+  `route(method, path)(middleware)(async request => { ... })`
 
 **New features**
 
 - Export the `RequestBase` type from typera-express and typera-koa
 - Add `ChainedMiddleware` to use results from previous middleware
-- Add a new syntax for defining routes: `route(method, path).use(middleware).handler(async request => { ... })`
+- Add a new syntax for defining routes:
+  `route(method, path).use(middleware).handler(async request => { ... })`
 
 **Fixes**
 
@@ -46,17 +49,15 @@
 **Dependencies**
 
 - typera-express: Remove peerDependencies, depend directly on express
-- typera-koa: Remove peerDependencies, depend directly on koa utility
-  libraries
+- typera-koa: Remove peerDependencies, depend directly on koa utility libraries
 - Use @koa/router instead of the unmaintained koa-router
 
 ## 0.7.2
 
 **Fixes**
 
-- Make the `Middleware` type more lenient about the result type. Using
-  `unknown` is preferred if the middleware doesn't add anything to the
-  request.
+- Make the `Middleware` type more lenient about the result type. Using `unknown`
+  is preferred if the middleware doesn't add anything to the request.
 
 ## 0.7.1
 
@@ -73,26 +74,25 @@
 
 **Fixes**
 
-- `typera-express`: Catch promise rejections and forward the errors
-  down the middleware chain
+- `typera-express`: Catch promise rejections and forward the errors down the
+  middleware chain
 
 ## 0.6.0
 
 **New features**
 
-- Add `route.get()`, `.post()`, `.put()`, `.delete()`, `.head()`,
-  `.options()`, `.patch()`, `.all()`.
+- Add `route.get()`, `.post()`, `.put()`, `.delete()`, `.head()`, `.options()`,
+  `.patch()`, `.all()`.
 - Add `route.use()`
-- Make modules importable from `typera-*/name`, e.g.
-  `typera-koa/response`.
+- Make modules importable from `typera-*/name`, e.g. `typera-koa/response`.
 
 ## 0.5.0
 
 **Breaking change**
 
 - Middleware return type changed from `Either` to another type. Use
-  `Middleware.next()` to return a result and `Middleware.stop()` to
-  return a response from a middleware function.
+  `Middleware.next()` to return a result and `Middleware.stop()` to return a
+  response from a middleware function.
 
 **New features**
 
@@ -115,8 +115,7 @@
 
 **Deprecations**
 
-- Deprecate `routeHandler()` and `run()` in favor of `router()` and
-  `route()`.
+- Deprecate `routeHandler()` and `run()` in favor of `router()` and `route()`.
 
 ## 0.3.0
 
