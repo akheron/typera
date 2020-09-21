@@ -16,12 +16,12 @@ export type ErrorHandler<ErrorResponse extends Response.Generic> = (
 
 export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
   return function <
-    Codec extends t.Type<any>,
+    T,
     ErrorResponse extends Response.Generic
   >(
-    codec: Codec,
+    codec: t.Type<T>,
     errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<RequestBase, ParserOutput<'body', Codec>, ErrorResponse> {
+  ): Middleware.Middleware<RequestBase, { body: T }, ErrorResponse> {
     return (req: RequestBase) =>
       pipe(
         codec.decode(getBody(req)),
@@ -34,11 +34,11 @@ export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
 }
 
 export function body<RequestBase>(getBody: (req: RequestBase) => any) {
-  return <Codec extends t.Type<any>>(
-    codec: Codec
+  return <T>(
+    codec: t.Type<T>
   ): Middleware.Middleware<
     RequestBase,
-    ParserOutput<'body', Codec>,
+    { body: T },
     Response.BadRequest<string>
   > => {
     return bodyP(getBody)(codec, err =>
@@ -49,14 +49,14 @@ export function body<RequestBase>(getBody: (req: RequestBase) => any) {
 
 export function routeParamsP<RequestBase>(getRouteParams: (req: RequestBase) => any) {
   return function <
-    Codec extends t.Type<any>,
+    T,
     ErrorResponse extends Response.Generic
   >(
-    codec: Codec,
+    codec: t.Type<T>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<
     RequestBase,
-    ParserOutput<'routeParams', Codec>,
+    { routeParams: T },
     ErrorResponse
   > {
     return function (req: RequestBase) {
@@ -72,23 +72,23 @@ export function routeParamsP<RequestBase>(getRouteParams: (req: RequestBase) => 
 }
 
 export function routeParams<RequestBase>(getRouteParams: (req: RequestBase) => any) {
-  return <Codec extends t.Type<any>>(
-    codec: Codec
+  return <T>(
+    codec: t.Type<T>
   ): Middleware.Middleware<
     RequestBase,
-    ParserOutput<'routeParams', Codec>,
+    { routeParams: T },
     Response.NotFound
   > => routeParamsP(getRouteParams)(codec, _ => Response.notFound(undefined))
 }
 
 export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
   return function <
-    Codec extends t.Type<any>,
+    T,
     ErrorResponse extends Response.Generic
   >(
-    codec: Codec,
+    codec: t.Type<T>,
     errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<RequestBase, ParserOutput<'query', Codec>, ErrorResponse> {
+  ): Middleware.Middleware<RequestBase, { query: T }, ErrorResponse> {
     return function (req: RequestBase) {
       return pipe(
         codec.decode(getQuery(req)),
@@ -102,11 +102,11 @@ export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
 }
 
 export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
-  return <Codec extends t.Type<any>>(
-    codec: Codec
+  return <T>(
+    codec: t.Type<T>,
   ): Middleware.Middleware<
     RequestBase,
-    ParserOutput<'query', Codec>,
+    { query: T },
     Response.BadRequest<string>
   > =>
     queryP(getQuery)(codec, err =>
@@ -116,14 +116,14 @@ export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
 
 export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
   return function <
-    Codec extends t.Type<any>,
+    T,
     ErrorResponse extends Response.Generic
   >(
-    codec: Codec,
+    codec: t.Type<T>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<
     RequestBase,
-    ParserOutput<'headers', Codec>,
+    { headers: T },
     ErrorResponse
   > {
     return function (req: RequestBase) {
@@ -139,11 +139,11 @@ export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
 }
 
 export function headers<RequestBase>(getHeaders: (req: RequestBase) => any) {
-  return <Codec extends t.Type<any>>(
-    codec: Codec
+  return <T>(
+    codec: t.Type<T>
   ): Middleware.Middleware<
     RequestBase,
-    ParserOutput<'headers', Codec>,
+    { headers: T },
     Response.BadRequest<string>
   > =>
     headersP(getHeaders)(codec, err =>
@@ -152,10 +152,6 @@ export function headers<RequestBase>(getHeaders: (req: RequestBase) => any) {
 }
 
 // Helpers
-
-export type ParserOutput<K extends string, Codec extends t.Type<any>> = {
-  [KK in K]: t.TypeOf<Codec>
-}
 
 function errorsToString(err: t.Errors) {
   return PathReporter.report(Either.left(err))
