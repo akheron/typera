@@ -19,7 +19,7 @@ export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
     T,
     ErrorResponse extends Response.Generic
   >(
-    codec: t.Type<T>,
+    codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<RequestBase, { body: T }, ErrorResponse> {
     return (req: RequestBase) =>
@@ -35,7 +35,7 @@ export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
 
 export function body<RequestBase>(getBody: (req: RequestBase) => any) {
   return <T>(
-    codec: t.Type<T>
+    codec: t.Type<T, any, unknown>
   ): Middleware.Middleware<
     RequestBase,
     { body: T },
@@ -52,7 +52,7 @@ export function routeParamsP<RequestBase>(getRouteParams: (req: RequestBase) => 
     T,
     ErrorResponse extends Response.Generic
   >(
-    codec: t.Type<T>,
+    codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<
     RequestBase,
@@ -73,7 +73,7 @@ export function routeParamsP<RequestBase>(getRouteParams: (req: RequestBase) => 
 
 export function routeParams<RequestBase>(getRouteParams: (req: RequestBase) => any) {
   return <T>(
-    codec: t.Type<T>
+    codec: t.Type<T, any, unknown>
   ): Middleware.Middleware<
     RequestBase,
     { routeParams: T },
@@ -86,7 +86,7 @@ export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
     T,
     ErrorResponse extends Response.Generic
   >(
-    codec: t.Type<T>,
+    codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<RequestBase, { query: T }, ErrorResponse> {
     return function (req: RequestBase) {
@@ -103,7 +103,7 @@ export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
 
 export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
   return <T>(
-    codec: t.Type<T>,
+    codec: t.Type<T, any, unknown>,
   ): Middleware.Middleware<
     RequestBase,
     { query: T },
@@ -119,7 +119,7 @@ export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
     T,
     ErrorResponse extends Response.Generic
   >(
-    codec: t.Type<T>,
+    codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<
     RequestBase,
@@ -140,7 +140,7 @@ export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
 
 export function headers<RequestBase>(getHeaders: (req: RequestBase) => any) {
   return <T>(
-    codec: t.Type<T>
+    codec: t.Type<T, any, unknown>
   ): Middleware.Middleware<
     RequestBase,
     { headers: T },
