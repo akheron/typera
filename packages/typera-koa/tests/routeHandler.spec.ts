@@ -1,5 +1,4 @@
 import * as stream from 'stream'
-import * as Koa from 'koa'
 import * as koaRouter from '@koa/router'
 import * as t from 'io-ts'
 import {

@@ -44,11 +44,10 @@ describe('routeHandler', () => {
     const handler: RouteHandler<Response.Ok> = routeHandler()(
       async _request => {
         throw new Error('Unexpected error')
-        return Response.ok()
       }
     )
 
-    const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       res.status(500).send(err.message)
     }
 

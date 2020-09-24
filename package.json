@@ -10,13 +10,18 @@
   "scripts": {
     "build": "yarn workspace typera-common build && yarn workspace typera-express build && yarn workspace typera-koa build",
     "test": "yarn build && jest && yarn workspace typing-tests test",
-    "lint": "prettier --check \"**/*.{json,md}\"",
-    "lint:fix": "prettier --write '**/*.{json,md}'",
+    "lint": "eslint '**/*.ts' && prettier --check \"**/*.{json,md}\"",
+    "lint:fix": "eslint --fix '**/*.ts' && prettier --write '**/*.{json,md}'",
     "doctoc": "doctoc README.md --title '## Table of Contents' && prettier --write README.md"
   },
   "devDependencies": {
     "@types/supertest": "^2.0.10",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
     "doctoc": "^1.4.0",
+    "eslint": "^7.9.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "lerna": "^3.22.1",
     "prettier": "^2.1.2",
     "supertest": "^4.0.2",

@@ -15,10 +15,7 @@ export type ErrorHandler<ErrorResponse extends Response.Generic> = (
 ) => ErrorResponse
 
 export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
-  return function <
-    T,
-    ErrorResponse extends Response.Generic
-  >(
+  return function <T, ErrorResponse extends Response.Generic>(
     codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<RequestBase, { body: T }, ErrorResponse> {
@@ -47,18 +44,13 @@ export function body<RequestBase>(getBody: (req: RequestBase) => any) {
   }
 }
 
-export function routeParamsP<RequestBase>(getRouteParams: (req: RequestBase) => any) {
-  return function <
-    T,
-    ErrorResponse extends Response.Generic
-  >(
+export function routeParamsP<RequestBase>(
+  getRouteParams: (req: RequestBase) => any
+) {
+  return function <T, ErrorResponse extends Response.Generic>(
     codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<
-    RequestBase,
-    { routeParams: T },
-    ErrorResponse
-  > {
+  ): Middleware.Middleware<RequestBase, { routeParams: T }, ErrorResponse> {
     return function (req: RequestBase) {
       return pipe(
         codec.decode(getRouteParams(req)),
@@ -71,7 +63,9 @@ export function routeParamsP<RequestBase>(getRouteParams: (req: RequestBase) => 
   }
 }
 
-export function routeParams<RequestBase>(getRouteParams: (req: RequestBase) => any) {
+export function routeParams<RequestBase>(
+  getRouteParams: (req: RequestBase) => any
+) {
   return <T>(
     codec: t.Type<T, any, unknown>
   ): Middleware.Middleware<
@@ -82,10 +76,7 @@ export function routeParams<RequestBase>(getRouteParams: (req: RequestBase) => a
 }
 
 export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
-  return function <
-    T,
-    ErrorResponse extends Response.Generic
-  >(
+  return function <T, ErrorResponse extends Response.Generic>(
     codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
   ): Middleware.Middleware<RequestBase, { query: T }, ErrorResponse> {
@@ -103,7 +94,7 @@ export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
 
 export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
   return <T>(
-    codec: t.Type<T, any, unknown>,
+    codec: t.Type<T, any, unknown>
   ): Middleware.Middleware<
     RequestBase,
     { query: T },
@@ -115,17 +106,10 @@ export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
 }
 
 export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
-  return function <
-    T,
-    ErrorResponse extends Response.Generic
-  >(
+  return function <T, ErrorResponse extends Response.Generic>(
     codec: t.Type<T, any, unknown>,
     errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<
-    RequestBase,
-    { headers: T },
-    ErrorResponse
-  > {
+  ): Middleware.Middleware<RequestBase, { headers: T }, ErrorResponse> {
     return function (req: RequestBase) {
       return pipe(
         codec.decode(getHeaders(req)),

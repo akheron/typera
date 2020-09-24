@@ -164,7 +164,10 @@ export function routeHandler<
 function isMiddlewareResponse<Result, Response>(
   v: Middleware.MiddlewareOutput<Result, Response>
 ): v is Middleware.MiddlewareResponse<Response> {
-  return v.hasOwnProperty('response') && !v.hasOwnProperty('value')
+  return (
+    Object.prototype.hasOwnProperty.call(v, 'response') &&
+    !Object.prototype.hasOwnProperty.call(v, 'value')
+  )
 }
 
 async function runMiddleware<
