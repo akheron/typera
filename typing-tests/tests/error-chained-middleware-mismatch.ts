@@ -7,7 +7,7 @@ declare const mw2: typera.Middleware.ChainedMiddleware<
   never
 >
 
-export const handler: typera.Route<typera.Response.Ok<number>> = typera.route
+export const handler = typera.route
   .get('/foo')
   .use(mw1)
   .use(mw2)
@@ -16,4 +16,4 @@ export const handler: typera.Route<typera.Response.Ok<number>> = typera.route
   })
 
 // Expected error:
-// Type 'Response<number, any, OptionalHeaders> | Response<200, number, undefined>' is not assignable to type 'Response<200, number, undefined>'.
+// Argument of type 'Middleware<{ bar: number; }, { baz: number; }, never>' is not assignable to parameter of type 'Middleware<RequestBase & { foo: number; }, any, Response<number, any, OptionalHeaders>>'.

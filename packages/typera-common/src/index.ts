@@ -4,7 +4,6 @@ import * as Middleware from './middleware'
 import * as Parser from './parser'
 import * as Response from './response'
 import * as URL from './url'
-import { Head, Tail, Length } from './utils'
 
 export { Middleware, Parser, Response, URL }
 
@@ -37,7 +36,7 @@ type RouteFnImpl<
     method: URL.Method,
     ...segments: PathSegments
   ): MakeRoute<Request, PathSegments, OutsideMiddlewareResponse>
-  use<Middleware extends Array<Middleware.Generic<Request>>>(
+  use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
   ): RouteFn<Request, Middleware, OutsideMiddlewareResponse>
 } & {
@@ -282,21 +281,16 @@ export interface MiddlewareType<Result, Response extends Response.Generic> {
   _response: Response
 }
 
-type TypesFromMiddleware<
-  Request,
-  Middleware extends Middleware.Generic<Request>[]
-> = {
-  0: Head<Middleware> extends Middleware.Middleware<
-    Request,
-    infer Result,
-    infer Response
-  >
-    ? TypesFromMiddleware<Request, Tail<Middleware>> extends MiddlewareType<
+type TypesFromMiddleware<Request, Middleware> = Middleware extends [
+  infer First,
+  ...infer Rest
+]
+  ? First extends Middleware.Middleware<Request, infer Result, infer Response>
+    ? TypesFromMiddleware<Request, Rest> extends MiddlewareType<
         infer ResultTail,
         infer ResponseTail
       >
       ? MiddlewareType<Result & ResultTail, Response | ResponseTail>
       : never
     : never
-  1: MiddlewareType<Request, never>
-}[Length<Middleware> extends 0 ? 1 : 0]
+  : MiddlewareType<Request, never>

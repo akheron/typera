@@ -7,7 +7,6 @@ import { IntFromString } from 'io-ts-types/lib/IntFromString'
 const sequence_A_O = Array.array.sequence(Option.option)
 
 import * as Response from './response'
-import { Head, Tail, Length } from './utils'
 
 export type Method =
   | 'get'
@@ -24,14 +23,14 @@ export type PathCapture<K extends string = string, T = any> = {
   pattern: string
 }
 
-export type PathSegmentsToCaptures<
-  Segments extends Array<PathCapture | string>
-> = {
-  0: Head<Segments> extends PathCapture<infer K, infer T>
-    ? { [KK in K]: T } & PathSegmentsToCaptures<Tail<Segments>>
-    : PathSegmentsToCaptures<Tail<Segments>>
-  1: {}
-}[Length<Segments> extends 0 ? 1 : 0]
+export type PathSegmentsToCaptures<Segments> = Segments extends [
+  infer First,
+  ...infer Rest
+]
+  ? First extends PathCapture<infer K, infer T>
+    ? { [KK in K]: T } & PathSegmentsToCaptures<Rest>
+    : PathSegmentsToCaptures<Rest>
+  : {}
 
 export type URLParser<Captures> = {
   method: Method
