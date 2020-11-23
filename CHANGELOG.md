@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+
+**BREAKING CHANGES**
+
+- Requires TypeScript 4.1 or newer
+
 ## 1.0.0
 
 **BREAKING CHANGES**

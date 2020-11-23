@@ -316,6 +316,10 @@ app.use(bodyParser())
 app.use(router(updateUser /*, otherRoute, stillAnother */).handler())
 ```
 
+## Requirements
+
+Requires TypeScript 4.1 or newer.
+
 ## API Reference
 
 ### Imports
