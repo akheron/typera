@@ -1,3 +1,4 @@
+import * as stream from 'stream'
 import * as t from 'io-ts'
 import { Middleware, Parser, Response, Route, URL, router, route } from '..'
 import * as request from 'supertest'
@@ -87,6 +88,26 @@ describe('route & router', () => {
         400,
         'Invalid body: Invalid value "bar" supplied to : { foo: number }/foo: number'
       )
+  })
+
+  it('async middleware', async () => {
+    const mw: Middleware.Middleware<{ foo: number }, never> = () =>
+      new Promise((resolve, _reject) => {
+        setTimeout(() => resolve(Middleware.next({ foo: 42 })), 10)
+      })
+
+    const test: Route<Response.NoContent | Response.BadRequest<string>> = route
+      .get('/asyncmw')
+      .use(mw)
+      .handler(request => {
+        expect(request.foo).toEqual(42)
+        return Response.noContent()
+      })
+
+    const handler = router(test).handler()
+    server = makeServer(handler)
+
+    await request(server).get('/asyncmw').expect(204)
   })
 
   it('runs middleware finalizers', async () => {
@@ -192,5 +213,27 @@ describe('route & router', () => {
     expect(finalizer1).toEqual(1)
     expect(middleware2).toEqual(1)
     expect(finalizer2).toEqual(1)
+  })
+
+  it('streaming body', async () => {
+    const test: Route<
+      Response.Ok<Response.StreamingBody, { 'content-type': 'text/plain' }>
+    > = route.get('/streaming').handler(async () => {
+      const body = Response.streamingBody(outStream => {
+        const s = new stream.Readable()
+        s.pipe(outStream)
+        s.push('foo')
+        s.push('bar')
+        s.push(null)
+      })
+
+      // text/plain is required for supertest to capture the body as string
+      return Response.ok(body, { 'content-type': 'text/plain' as const })
+    })
+
+    const handler = router(test).handler()
+    server = makeServer(handler)
+
+    await request(server).get('/streaming').expect(200, 'foobar')
   })
 })

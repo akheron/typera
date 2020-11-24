@@ -1,3 +1,5 @@
+import * as stream from 'stream'
+import { Response as ExpressResponse } from 'express'
 import * as t from 'io-ts'
 import { Middleware, Parser, Response, Route, URL, router, route } from '..'
 import * as request from 'supertest'
@@ -61,6 +63,19 @@ describe('route & router', () => {
       .expect(204)
   })
 
+  it('forwards thrown errors to express error handling middleware', async () => {
+    const exception = route.get('/').handler(async () => {
+      throw new Error('Unexpected error')
+    })
+
+    const handler = router(exception).handler()
+    const app = makeApp().use(handler)
+    app.use((err: Error, _req: any, res: ExpressResponse, _next: any) => {
+      res.status(500).send('Got exception: ' + err.message)
+    })
+    await request(app).get('/').expect(500, 'Got exception: Unexpected error')
+  })
+
   it('returns errors from middleware', async () => {
     const error: Route<Response.NoContent | Response.BadRequest<string>> = route
       .post('/error')
@@ -114,6 +129,26 @@ describe('route & router', () => {
     expect(finalizer1).toEqual(1)
     expect(middleware2).toEqual(1)
     expect(finalizer2).toEqual(1)
+  })
+
+  it('async middleware', async () => {
+    const mw: Middleware.Middleware<{ foo: number }, never> = () =>
+      new Promise((resolve, _reject) => {
+        setTimeout(() => resolve(Middleware.next({ foo: 42 })), 10)
+      })
+
+    const test: Route<Response.NoContent> = route
+      .get('/asyncmw')
+      .use(mw)
+      .handler(request => {
+        expect(request.foo).toEqual(42)
+        return Response.noContent()
+      })
+
+    const handler = router(test).handler()
+    const app = makeApp().use(handler)
+
+    await request(app).get('/asyncmw').expect(204)
   })
 
   it('runs previous middleware finalizers when a middleware returns a response', async () => {
@@ -183,5 +218,23 @@ describe('route & router', () => {
     expect(finalizer1).toEqual(1)
     expect(middleware2).toEqual(1)
     expect(finalizer2).toEqual(1)
+  })
+
+  it('streaming body', async () => {
+    const test = route.get('/streaming').handler(async () => {
+      const body = Response.streamingBody(outStream => {
+        const s = new stream.Readable()
+        s.pipe(outStream)
+        s.push('foo')
+        s.push('bar')
+        s.push(null)
+      })
+      return Response.ok(body)
+    })
+
+    const handler = router(test).handler()
+    const app = makeApp().use(handler)
+
+    await request(app).get('/streaming').expect(200, 'foobar')
   })
 })

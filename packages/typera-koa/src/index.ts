@@ -48,18 +48,8 @@ export function router(...routes: Route<common.Response.Generic>[]): Router {
   return new Router(...routes)
 }
 
-export type RouteHandler<
-  Response extends common.Response.Generic
-> = common.RouteHandler<RequestBase, Response>
-
-export function routeHandler<Middleware extends Middleware.Generic[]>(
-  ...middleware: Middleware
-): common.MakeRouteHandler<RequestBase, Middleware> {
-  return common.routeHandler(middleware)
-}
-
-export function run<Response extends common.Response.Generic>(
-  handler: RouteHandler<Response>
+function run<Response extends common.Response.Generic>(
+  handler: (req: unknown) => Promise<Response>
 ): (ctx: koa.Context) => Promise<void> {
   return async ctx => {
     const response = await handler({ ctx })

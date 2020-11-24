@@ -5,6 +5,8 @@
 **BREAKING CHANGES**
 
 - Requires TypeScript 4.1 or newer
+- Remove deprecated `routeHandler()`, `run()`, `Parser.routeParams()` and
+  `Parser.routeParamsP()`.
 
 ## 1.0.0
 

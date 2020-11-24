@@ -1,6 +1,6 @@
 import * as commonParser from 'typera-common/parser'
 import * as commonResponse from 'typera-common/response'
-import { getRouteParams, RequestBase } from './context'
+import { RequestBase } from './context'
 
 export type ErrorHandler<
   ErrorResponse extends commonResponse.Generic
@@ -11,9 +11,6 @@ function getBody(req: RequestBase): any {
 }
 export const bodyP = commonParser.bodyP(getBody)
 export const body = commonParser.body(getBody)
-
-export const routeParamsP = commonParser.routeParamsP(getRouteParams)
-export const routeParams = commonParser.routeParams(getRouteParams)
 
 function getQuery(req: RequestBase): any {
   return req.ctx.request.query

@@ -44,37 +44,6 @@ export function body<RequestBase>(getBody: (req: RequestBase) => any) {
   }
 }
 
-export function routeParamsP<RequestBase>(
-  getRouteParams: (req: RequestBase) => any
-) {
-  return function <T, ErrorResponse extends Response.Generic>(
-    codec: t.Type<T, any, unknown>,
-    errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<RequestBase, { routeParams: T }, ErrorResponse> {
-    return function (req: RequestBase) {
-      return pipe(
-        codec.decode(getRouteParams(req)),
-        Either.map<any, any>(routeParams => ({ value: { routeParams } })),
-        Either.getOrElse((errors: t.Errors) => ({
-          response: errorHandler(errors),
-        }))
-      )
-    }
-  }
-}
-
-export function routeParams<RequestBase>(
-  getRouteParams: (req: RequestBase) => any
-) {
-  return <T>(
-    codec: t.Type<T, any, unknown>
-  ): Middleware.Middleware<
-    RequestBase,
-    { routeParams: T },
-    Response.NotFound
-  > => routeParamsP(getRouteParams)(codec, _ => Response.notFound(undefined))
-}
-
 export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
   return function <T, ErrorResponse extends Response.Generic>(
     codec: t.Type<T, any, unknown>,

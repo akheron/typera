@@ -13,6 +13,7 @@ It works with both [Express] and [Koa].
 
 - [The Problem](#the-problem)
 - [Tutorial](#tutorial)
+- [Requirements](#requirements)
 - [API Reference](#api-reference)
   - [Imports](#imports)
   - [Responses](#responses)
@@ -25,7 +26,6 @@ It works with both [Express] and [Koa].
   - [Request parsers](#request-parsers)
     - [`Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`](#parserquerytcodec-ttypet-middleware-query-t--responsebadrequeststring)
     - [`Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`](#parserbodytcodec-ttypet-middleware-body-t--responsebadrequeststring)
-    - [~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)](#parserrouteparamstcodec-ttypet-middleware-routeparams-t--responsenotfound-deprecated)
     - [Customizing the error response](#customizing-the-error-response)
   - [Routes](#routes)
     - [`route`](#route)
@@ -48,8 +48,6 @@ It works with both [Express] and [Koa].
     - [`Router.add(...routes: Route<any>[]): Router`](#routeraddroutes-routeany-router)
     - [`Router.handler()`](#routerhandler)
   - [~Creating routes by function chaining~ (deprecated)](#creating-routes-by-function-chaining-deprecated)
-  - [~Route handlers~ (deprecated)](#route-handlers-deprecated)
-  - [~Integration with the app~ (deprecated)](#integration-with-the-app-deprecated)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -639,14 +637,6 @@ of your choice. With [Express] you probably want to use [body-parser], and with
 [Express] or [Koa] middleware, so you must attach them directly to the [Express]
 or [Koa] app rather than use them as typera middleware.
 
-#### ~`Parser.routeParams<T>(codec: t.Type<T>): Middleware<{ routeParams: T }, Response.NotFound>`~ (deprecated)
-
-_Deprecated as of v0.4.0_: Only useful with the deprecated `routeHandler()` and
-`run()` functions.
-
-Validate the captured route params according to the given [io-ts] codec. Respond
-with `404 Not Found` if the validation fails.
-
 #### Customizing the error response
 
 Each of the above functions also have a `P` flavor that allows the user to
@@ -674,15 +664,6 @@ function bodyP<
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
 ): Middleware<{ body: t.TypeOf<Codec> }, ErrorResponse>
-
-// Deprecated
-function routeParamsP<
-  Codec extends t.Type<any>,
-  ErrorResponse extends Response.Response<number, any, any>
->(
-  codec: Codec,
-  errorHandler: ErrorHandler<ErrorResponse>
-): Middleware<{ routeParams: t.TypeOf<Codec> }, ErrorResponse>
 ```
 
 If you want to abstract your custom error handling to reuse it in multiple
@@ -960,134 +941,6 @@ you added them by calling functions returned by functions.
 In v1.0.0, the `.use()` and `.handler()` were added to make the syntax a lot
 nicer, to better support code formatting ([prettier]), and to allow using the
 previous middleware result in the next middleware (middleware chaining).
-
-### ~Route handlers~ (deprecated)
-
-_Deprecated as of v0.4.0_: Use `route()` and `router()` instead.
-
-A route handler is a function that takes the [Koa] context (in `typera-koa`) or
-[Express] req/res (in `typera-express`) as a parameter, and a response wrapped
-in a promise.
-
-Route handlers can be created using the `routeHandler` function. It is used like
-this:
-
-```typescript
-routeHandler(
-  middleware1, middleware2, ...
-)(async (request) => {
-  ...
-  return Response.ok()
-})
-```
-
-Formally, it takes zero or more [middleware functions](#middleware)
-(`middleware1, middleware2, ...`) which are used to process the incoming request
-and create the typera request object (`request`). It returns a function that
-takes a request handler. This latter function returns the final route handler.
-
-The request handler is a function that receives the typera request object
-(`request`) and returns a response (`(request) => { return Response.ok() }` in
-the above example).
-
-The typera request object is created by merging the output objects of
-[middleware function](#middleware) given to `routeHandler`. It also always
-extends the request base:
-
-```typescript
-// typera-koa
-type RequestBase = {
-  ctx: koa.Context
-}
-
-// typera-express
-type RequestBase = {
-  req: express.Request
-  res: express.Response
-}
-```
-
-In other words, in `typera-koa` the [Koa] context is always available via
-`req.ctx`, and in `typera-express` the [Express] req/res are always available
-via `req.req` and `req.res`.
-
-The type of `req` is inferred by typera, so there's no need for the user to give
-it an explicit type, while at the same time the TypeScript compiler checks that
-the properties of `req` are used correctly in the request handler.
-
-`routeHandler` infers the response type by combining the error response types of
-all middleware functions, and the response types of the request handler. To get
-maximum type safety, the return type of of `routeHandler` should always be
-explicitly declared in user code. This makes sure that the possible responses of
-a route don't change unexpectedly because of changes in your code, and documents
-all the possible responses from a single route:
-
-```typescript
-const listHandler: RouteHandler<
-  | Response.Ok<User>
-  | Response.BadRequest<string>
-> = routeHandler(...)(async (request) => { ... })
-```
-
-We avoid giving the accurate type of `routeHandler` here, because it's quite
-complex due to the type inference of `req` and response types. Interested users
-can refer to the code: [common](packages/typera-common/src/index.ts),
-[koa](packages/typera-koa/index.ts),
-[express](packages/typera-express/index.ts).
-
-### ~Integration with the app~ (deprecated)
-
-_Deprecated as of v0.4.0_: Use `route()` and `router()` instead.
-
-```typescript
-import { run } from 'typera-koa'
-// or
-import { run } from 'typera-express'
-```
-
-Use the `run` function to transform the route handler to a function that can be
-passed to [@koa/router] (with `typera-koa`), or to [Express] routing functions
-(with `typera-express`).
-
-In `typera-koa`, `run` has the following signature:
-
-```typescript
-function run<Response extends Response.Generic>(
-  handler: RouteHandler<Response>
-): (ctx: koa.Context) => Promise<void>
-```
-
-Example of usage:
-
-```typescript
-import * as Router from '@koa/router'
-import { run } from 'typera-koa'
-
-const router = new Router()
-
-// Assume that listHandler is a route handler created by routeHandler()
-router.get('/', run(listHandler))
-```
-
-In `typera-express`, `run` has the following signature:
-
-```typescript
-function run<Response extends Response.Generic>(
-  handler: RouteHandler<Response>
-): (req: express.Request, res: express.Response) => Promise<void>
-```
-
-Example of usage:
-
-```typescript
-import * as express from 'express'
-import { run } from 'typera-express'
-
-const app = express()
-
-// Assume that listHandler is a route handler created by routeHandler()
-app.get('/', run(listHandler))
-```
 
 [fp-ts]: https://github.com/gcanti/fp-ts
 [io-ts]: https://github.com/gcanti/io-ts

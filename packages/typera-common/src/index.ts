@@ -131,33 +131,6 @@ export function route<
   })) as any
 }
 
-// Create a route handler from middleware and a request handler
-
-export type RouteHandler<Request, Response extends Response.Generic> = (
-  req: Request
-) => Promise<Response>
-
-export function routeHandler<
-  RequestBase,
-  Middleware extends Middleware.Generic<RequestBase>[]
->(middleware: Middleware): MakeRouteHandler<RequestBase, Middleware> {
-  return ((handler: (req: any) => Promise<any>) => async (req: RequestBase) => {
-    const middlewareOutput = await runMiddleware(req, middleware)
-    if (Either.isLeft(middlewareOutput)) {
-      // Finalizers have already run in this case
-      return middlewareOutput.left
-    }
-
-    let response
-    try {
-      response = await handler(middlewareOutput.right.request as Request)
-    } finally {
-      await middlewareOutput.right.runFinalizers()
-    }
-    return response
-  }) as any
-}
-
 // Helpers
 
 function isMiddlewareResponse<Result, Response>(
@@ -263,18 +236,6 @@ interface RouteConstructor<
     fn: RequestHandler<Request & { routeParams: URLCaptures }, Response>
   ): Route<Response | OutsideMiddlewareResponse>
 }
-
-export type MakeRouteHandler<
-  Request,
-  Middleware extends Middleware.Generic<Request>[]
-> = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
-  infer MiddlewareResult,
-  infer MiddlewareResponse
->
-  ? <Response extends Response.Generic>(
-      handler: RequestHandler<MiddlewareResult, Response>
-    ) => RouteHandler<Request, Response | MiddlewareResponse>
-  : never
 
 export interface MiddlewareType<Result, Response extends Response.Generic> {
   _result: Result
