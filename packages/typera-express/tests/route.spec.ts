@@ -1,7 +1,7 @@
 import * as stream from 'stream'
 import { Response as ExpressResponse } from 'express'
 import * as t from 'io-ts'
-import { Middleware, Parser, Response, Route, URL, router, route } from '..'
+import { Middleware, Parser, Response, Route, router, route } from '..'
 import * as request from 'supertest'
 import { makeApp } from './utils'
 
@@ -42,7 +42,7 @@ describe('route & router', () => {
     const decode: Route<
       Response.NoContent | Response.BadRequest<string>
     > = route
-      .post('/decode/', URL.str('foo'), '/', URL.int('bar'))
+      .post('/decode/:foo/:bar(int)')
       .use(
         Parser.query(t.type({ baz: t.string })),
         Parser.body(t.type({ quux: t.boolean }))

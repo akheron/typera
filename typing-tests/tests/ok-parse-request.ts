@@ -1,27 +1,29 @@
-import { Response, Parser, Route, URL, route } from 'typera-koa'
+import { Response, Parser, Route, route } from 'typera-koa'
 import * as t from 'io-ts'
 
 interface ResponseBody {
   x: number
-  y: boolean
-  z: string
-  w: number
+  y: string
+  z: boolean
+  w: string
+  u: number
 }
 
 export const root: Route<
   Response.Ok<ResponseBody> | Response.NotFound | Response.BadRequest<string>
 > = route
-  .get('/', URL.int('x'))
+  .get('/foo/:x(int).:y-baz/bar)')
   .use(
-    Parser.query(t.type({ y: t.boolean })),
-    Parser.headers(t.type({ z: t.string })),
-    Parser.body(t.type({ w: t.number }))
+    Parser.query(t.type({ z: t.boolean })),
+    Parser.headers(t.type({ w: t.string })),
+    Parser.body(t.type({ u: t.number }))
   )
   .handler(req => {
     return Response.ok({
       x: req.routeParams.x,
-      y: req.query.y,
-      z: req.headers.z,
-      w: req.body.w,
+      y: req.routeParams.y,
+      z: req.query.z,
+      w: req.headers.w,
+      u: req.body.u,
     })
   })

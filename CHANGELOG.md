@@ -7,6 +7,12 @@
 - Requires TypeScript 4.1 or newer
 - Remove deprecated `routeHandler()`, `run()`, `Parser.routeParams()` and
   `Parser.routeParamsP()`.
+- Remove the `URL` namespace (namely `URL.int()` and `URL.str()`) in favor of
+  path patterns
+
+**New features**
+
+- Type-safe support for path patterns like `'/user/:id(num)/foo/:bar'`
 
 ## 1.0.0
 

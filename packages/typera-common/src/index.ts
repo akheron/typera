@@ -32,37 +32,38 @@ type RouteFnImpl<
   Request,
   OutsideMiddlewareResponse extends Response.Generic
 > = {
-  <PathSegments extends Array<URL.PathCapture | string>>(
-    method: URL.Method,
-    ...segments: PathSegments
-  ): MakeRoute<Request, PathSegments, OutsideMiddlewareResponse>
+  <Path extends string>(method: URL.Method, path: Path): MakeRoute<
+    Request,
+    Path,
+    OutsideMiddlewareResponse
+  >
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
   ): RouteFn<Request, Middleware, OutsideMiddlewareResponse>
 } & {
-  [M in URL.Method]: <PathSegments extends Array<URL.PathCapture | string>>(
-    ...segments: PathSegments
-  ) => MakeRoute<Request, PathSegments, OutsideMiddlewareResponse>
+  [M in URL.Method]: <Path extends string>(
+    path: Path
+  ) => MakeRoute<Request, Path, OutsideMiddlewareResponse>
 }
 
 export function applyMiddleware<
   Request,
   Middleware extends Middleware.Generic<Request>[]
 >(getRouteParams: (req: Request) => {}, outsideMiddleware: Middleware): any {
-  const routeFn = (method: URL.Method, ...segments: any[]) =>
-    makeRouteConstructor(getRouteParams, method, segments, outsideMiddleware)
+  const routeFn = (method: URL.Method, path: string) =>
+    makeRouteConstructor(getRouteParams, method, path, outsideMiddleware)
 
   routeFn.use = (...middleware: any[]) =>
     applyMiddleware(getRouteParams, [...outsideMiddleware, ...middleware])
 
-  routeFn.get = (...segments: any[]) => routeFn('get', ...segments)
-  routeFn.post = (...segments: any[]) => routeFn('post', ...segments)
-  routeFn.put = (...segments: any[]) => routeFn('put', ...segments)
-  routeFn.delete = (...segments: any[]) => routeFn('delete', ...segments)
-  routeFn.head = (...segments: any[]) => routeFn('head', ...segments)
-  routeFn.options = (...segments: any[]) => routeFn('options', ...segments)
-  routeFn.patch = (...segments: any[]) => routeFn('patch', ...segments)
-  routeFn.all = (...segments: any[]) => routeFn('all', ...segments)
+  routeFn.get = (path: string) => routeFn('get', path)
+  routeFn.post = (path: string) => routeFn('post', path)
+  routeFn.put = (path: string) => routeFn('put', path)
+  routeFn.delete = (path: string) => routeFn('delete', path)
+  routeFn.head = (path: string) => routeFn('head', path)
+  routeFn.options = (path: string) => routeFn('options', path)
+  routeFn.patch = (path: string) => routeFn('patch', path)
+  routeFn.all = (path: string) => routeFn('all', path)
 
   return routeFn as any
 }
@@ -70,16 +71,16 @@ export function applyMiddleware<
 function makeRouteConstructor<Request>(
   getRouteParams: (req: Request) => {},
   method: URL.Method,
-  segments: any[],
+  path: string,
   middleware: any[]
 ) {
-  const urlParser = URL.url(method, ...segments)()
+  const urlParser = URL.url(method, path)
 
   const routeConstructor = (...nextMiddleware: any[]) =>
     route(getRouteParams, urlParser, [...middleware, ...nextMiddleware])
 
   routeConstructor.use = (...nextMiddleware: any[]) =>
-    makeRouteConstructor(getRouteParams, method, segments, [
+    makeRouteConstructor(getRouteParams, method, path, [
       ...middleware,
       ...nextMiddleware,
     ])
@@ -196,9 +197,9 @@ async function runMiddleware<
 
 export type MakeRoute<
   Request,
-  PathSegments extends Array<URL.PathCapture | string>,
+  Path extends string,
   OutsideMiddlewareResponse extends Response.Generic = never
-> = URL.PathSegmentsToCaptures<PathSegments> extends infer URLCaptures
+> = URL.PathToCaptures<Path> extends infer URLCaptures
   ? RouteConstructor<URLCaptures, Request, OutsideMiddlewareResponse>
   : never
 

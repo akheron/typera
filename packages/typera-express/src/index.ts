@@ -8,8 +8,7 @@ import { RequestBase, getRouteParams } from './context'
 import * as Middleware from './middleware'
 import * as Parser from './parser'
 import * as Response from './response'
-import * as URL from './url'
-export { RequestBase, Middleware, Parser, Response, URL }
+export { RequestBase, Middleware, Parser, Response }
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware

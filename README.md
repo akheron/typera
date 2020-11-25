@@ -175,17 +175,16 @@ return, you let the compiler notice if reality doesn't match the expectations.
 
 ```typescript
 route
-  .put('/user/', URL.int('id')) // Capture id from the path
+  .put('/user/:id(int)') // Capture id from the path
   .use(Parser.body(userBody)) // Use the userBody decoder for the request body
   .handler(async request => {
     /* ... */
   })
 ```
 
-Here we tell that our route is going to handle `PUT` requests. The arguments of
-`route.put()` are path segments. Any of the segments can capture a part of the
-path, like `URL.int('id')` above. The `'id'` argument is the name of the
-parameter (more on that later).
+Here we tell that our route is going to handle `PUT` requests. The argument of
+`route.put()` is the path pattern. Parts of the path can be captured, like
+`:id(int)` above (more on that later).
 
 The `.use()` method adds a middleware to the route. The `userBody` [io-ts] codec
 was defined above, and passing it to the `Parser.body()` middleware instructs
@@ -201,7 +200,7 @@ In our example, `request` will have the following inferred type:
 ```typescript
 interface MyRequest {
   routeParams: {
-    // These are the URL captures, id was the name passed to URL.int()
+    // These are the URL captures, `:id(int)` in this case
     id: number
   }
   body: {
@@ -830,24 +829,19 @@ The value returned by `route.use()` and `applyMiddleware()` works exactly the
 same as `route` i.e. it has the `.get()`, `.post()` etc. methods and can be
 called directly.
 
-### URL parameter capturing
+### Path parameter capturing
+
+Path patterns make it possible to extract some parts of the HTTP request path
+for use in the route handler.
+
+For example, with the following path:
 
 ```typescript
-import { URL } from 'typera-koa'
-```
-
-URL captures make it possible to extract some parts of the HTTP request path for
-use in the route handler.
-
-For example, with the following path segments:
-
-```typescript
-route.get('/user/', URL.int('id')).handler(async (request) => { ... })
+route.get('/user/:id(int)').handler(async (request) => { ... })
 ```
 
 In the route handler function, `req.routeParams.id` will contain the integer
-that was given after `/user/` in the path (`id` is the name given to
-`URL.int()`), like this:
+that was given after `/user/`, like this:
 
 | Path           | `req`                            |
 | -------------- | -------------------------------- |
@@ -857,17 +851,18 @@ that was given after `/user/` in the path (`id` is the name given to
 | `/user/5/`     | Route is not matched             |
 | `/user/`       | Route is not matched             |
 
-The following capture functions are available:
+URL captures have the syntax `:name(conv)`, where `(conv)` specifies the
+conversion. Without a conversion, the parameter captured as a string.
 
-#### `URL.str(name: string)`
+Currently, there's one conversion available: `(int)` converts the parameter to a
+(non-negative) integer, or fails to match if something else than an integer is
+supplied.
 
-Capture a path segment as a string. `/` will not be matched, so you can have
-more path segments after this one, provided the next one starts with a `/`.
+Parameter names should only contain the `a-z`, `A-Z` and `_` characters. They
+can be separated with `-` and `.`, so these are valid path patterns:
 
-#### `URL.int(name: string)`
-
-Capture a non-negative integer, matching the regexp `\d+`. The captured value is
-converted to `number`.
+- `/flights/:from-:to`
+- `/plantae/:genus.:species`
 
 ### Router
 

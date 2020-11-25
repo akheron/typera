@@ -1,10 +1,5 @@
-import * as Array from 'fp-ts/lib/Array'
 import * as Either from 'fp-ts/lib/Either'
-import * as Option from 'fp-ts/lib/Option'
-import { pipe } from 'fp-ts/lib/pipeable'
 import { IntFromString } from 'io-ts-types/lib/IntFromString'
-
-const sequence_A_O = Array.array.sequence(Option.option)
 
 import * as Response from './response'
 
@@ -18,19 +13,31 @@ export type Method =
   | 'patch'
   | 'all'
 
-export type PathCapture<K extends string = string, T = any> = {
-  (routeParams: {}): Option.Option<{ [KK in K]: T }>
-  pattern: string
-}
+export type SplitBy<
+  Delim extends string,
+  Input
+> = Input extends `${infer First}${Delim}${infer Rest}`
+  ? [First, ...SplitBy<Delim, Rest>]
+  : [Input]
 
-export type PathSegmentsToCaptures<Segments> = Segments extends [
-  infer First,
-  ...infer Rest
+type SplitEach<Delim extends string, Input> = Input extends [
+  infer Head,
+  ...infer Tail
 ]
-  ? First extends PathCapture<infer K, infer T>
-    ? { [KK in K]: T } & PathSegmentsToCaptures<Rest>
-    : PathSegmentsToCaptures<Rest>
+  ? [...SplitBy<Delim, Head>, ...SplitEach<Delim, Tail>]
+  : []
+
+type Split<Input> = SplitEach<'-', SplitEach<'.', SplitEach<'/', [Input]>>>
+
+type ParamsFrom<Parts> = Parts extends [infer First, ...infer Rest]
+  ? First extends `:${infer Param}(int)`
+    ? { [K in Param]: number } & ParamsFrom<Rest>
+    : First extends `:${infer Param}`
+    ? { [K in Param]: string } & ParamsFrom<Rest>
+    : ParamsFrom<Rest>
   : {}
+
+export type PathToCaptures<Path> = ParamsFrom<Split<Path>>
 
 export type URLParser<Captures> = {
   method: Method
@@ -38,61 +45,36 @@ export type URLParser<Captures> = {
   parse(routeParams: {}): Either.Either<Response.Generic, Captures>
 }
 
-export function url<PathSegments extends Array<PathCapture | string>>(
+export function url<Path extends string>(
   method: Method,
-  ...segments: PathSegments
-): () => URLParser<PathSegmentsToCaptures<PathSegments>> {
-  return () => {
-    const urlPattern =
-      segments.length > 0
-        ? segments
-            .map(segment =>
-              isPathCapture(segment) ? segment.pattern : segment
-            )
-            .join('')
-        : '/'
-    const capturers: PathCapture[] = segments.filter(isPathCapture)
-    return {
-      method,
-      urlPattern,
-      parse: (routeParams: {}) =>
-        pipe(
-          capturers.map(capturer => capturer(routeParams)),
-          sequence_A_O,
-          Option.map(captures =>
-            captures.reduce((acc, obj) => ({ ...acc, ...obj }), {})
-          ),
-          Either.fromOption(Response.notFound)
-        ) as any,
-    }
+  path: Path
+): URLParser<PathToCaptures<Path>> {
+  const urlPattern = path.replace(/\(int\)/g, '(\\d+)')
+  const intCaptures = path
+    .split('/')
+    .map(s => s.split('.'))
+    .flat()
+    .map(s => s.split('-'))
+    .flat()
+    .filter(s => s.startsWith(':') && s.endsWith('(int)'))
+    .map(s => s.replace(/^:(.*?)\(int\)$/, '$1'))
+  return {
+    method,
+    urlPattern,
+    parse: (routeParams: Record<string, string>): any => {
+      let fail = false
+      const result: Record<string, string | number> = {}
+      Object.entries(routeParams).forEach(([key, value]) => {
+        if (intCaptures.includes(key)) {
+          const decoded = IntFromString.decode(value)
+          if (Either.isLeft(decoded)) fail = true
+          else result[key] = decoded.right
+        } else {
+          result[key] = value
+        }
+      })
+      if (fail) return Either.left(Response.notFound())
+      return Either.right(result)
+    },
   }
-}
-
-function isPathCapture(s: PathCapture | string): s is PathCapture {
-  return typeof s !== 'string'
-}
-
-export function str<Param extends string>(
-  param: Param
-): PathCapture<Param, string> {
-  function stringParser(routeParams: any) {
-    const value = routeParams[param]
-    if (typeof value !== 'string') return Option.none
-    return Option.some({ [param]: value } as any)
-  }
-  stringParser.pattern = `:${param}`
-  return stringParser
-}
-
-export function int<Param extends string>(
-  param: Param
-): PathCapture<Param, number> {
-  function intParser(routeParams: any) {
-    const value = routeParams[param]
-    const result = IntFromString.decode(value)
-    if (Either.isLeft(result)) return Option.none
-    return Option.some({ [param]: result.right } as any)
-  }
-  intParser.pattern = `:${param}(\\d+)`
-  return intParser
 }
