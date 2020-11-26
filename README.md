@@ -45,7 +45,6 @@ It works with both [Express] and [Koa].
     - [`router(...routes: Route<any>[]): Router`](#routerroutes-routeany-router)
     - [`Router.add(...routes: Route<any>[]): Router`](#routeraddroutes-routeany-router)
     - [`Router.handler()`](#routerhandler)
-  - [~Creating routes by function chaining~ (deprecated)](#creating-routes-by-function-chaining-deprecated)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -911,37 +910,11 @@ const app = new Koa()
 app.use(mount('/subpath', router.handler()))
 ```
 
-### ~Creating routes by function chaining~ (deprecated)
-
-_Deprecaded as of v1.0.0_: Use `route(...).use(...).handler(...)` instead.
-
-In typera versions prior to 1.0.0, routes were called with a more bizarre syntax
-like this:
-
-```typescript
-const updateUser: Route<
-  | Response.Ok<User>
-  | Response.NotFound
-  | Response.BadRequest<string>
-> = route('put', '/user/', URL.int('id'))(Parser.body(userBody))(async (request) => {
-    ...
-  })
-```
-
-As you can see, the URL patterns, middleware, and route handler are there, but
-you added them by calling functions returned by functions.
-
-In v1.0.0, the `.use()` and `.handler()` were added to make the syntax a lot
-nicer, to better support code formatting ([prettier]), and to allow using the
-previous middleware result in the next middleware (middleware chaining).
-
 [fp-ts]: https://github.com/gcanti/fp-ts
 [io-ts]: https://github.com/gcanti/io-ts
 [io-ts-types]: https://github.com/gcanti/io-ts-types
 [express]: https://expressjs.com/
 [body-parser]: https://github.com/expressjs/body-parser
 [koa]: https://koajs.com/
-[@koa/router]: https://github.com/koajs/router
 [koa-bodyparser]: https://github.com/koajs/bodyparser
 [koa-mount]: https://github.com/koajs/mount
-[prettier]: https://prettier.io

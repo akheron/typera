@@ -49,7 +49,10 @@ type RouteFnImpl<
 export function applyMiddleware<
   Request,
   Middleware extends Middleware.Generic<Request>[]
->(getRouteParams: (req: Request) => {}, outsideMiddleware: Middleware): any {
+>(
+  getRouteParams: (req: Request) => {},
+  outsideMiddleware: Middleware
+): RouteFn<Request, Middleware> {
   const routeFn = (method: URL.Method, path: string) =>
     makeRouteConstructor(getRouteParams, method, path, outsideMiddleware)
 
@@ -75,24 +78,19 @@ function makeRouteConstructor<Request>(
   middleware: any[]
 ) {
   const urlParser = URL.url(method, path)
-
-  const routeConstructor = (...nextMiddleware: any[]) =>
-    route(getRouteParams, urlParser, [...middleware, ...nextMiddleware])
-
-  routeConstructor.use = (...nextMiddleware: any[]) =>
-    makeRouteConstructor(getRouteParams, method, path, [
-      ...middleware,
-      ...nextMiddleware,
-    ])
-
-  routeConstructor.handler = route(getRouteParams, urlParser, middleware)
-
-  return routeConstructor
+  return {
+    use: (...nextMiddleware: any[]) =>
+      makeRouteConstructor(getRouteParams, method, path, [
+        ...middleware,
+        ...nextMiddleware,
+      ]),
+    handler: route(getRouteParams, urlParser, middleware),
+  }
 }
 
 export type Route<Response extends Response.Generic> = {
   method: URL.Method
-  urlPattern: string
+  path: string
   routeHandler: (req: unknown) => Promise<Response>
 }
 
@@ -102,14 +100,14 @@ export function route<
   Middleware extends Middleware.Generic<RequestBase>[]
 >(
   getRouteParams: (req: RequestBase) => {},
-  urlParser: URL.URLParser<URLCaptures>,
+  pathParser: URL.PathParser<URLCaptures>,
   middleware: Middleware
 ): any {
   return ((handler: (req: any) => any) => ({
-    method: urlParser.method,
-    urlPattern: urlParser.urlPattern,
+    method: pathParser.method,
+    path: pathParser.pattern,
     routeHandler: async (requestBase: RequestBase) => {
-      const routeParams = urlParser.parse(getRouteParams(requestBase))
+      const routeParams = pathParser.parse(getRouteParams(requestBase))
       if (Either.isLeft(routeParams)) return routeParams.left
 
       const middlewareOutput = await runMiddleware(requestBase, middleware)
@@ -208,19 +206,6 @@ interface RouteConstructor<
   Request,
   OutsideMiddlewareResponse extends Response.Generic = never
 > {
-  <Middleware extends Middleware.Generic<Request>[]>(
-    ...middleware: Middleware
-  ): TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
-    infer MiddlewareResult,
-    infer MiddlewareResponse
-  >
-    ? <Response extends Response.Generic>(
-        handler: RequestHandler<
-          MiddlewareResult & { routeParams: URLCaptures },
-          Response
-        >
-      ) => Route<Response | MiddlewareResponse | OutsideMiddlewareResponse>
-    : never
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
   ): TypesFromMiddleware<Request, Middleware> extends MiddlewareType<

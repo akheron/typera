@@ -5,8 +5,9 @@
 **BREAKING CHANGES**
 
 - Requires TypeScript 4.1 or newer
-- Remove deprecated `routeHandler()`, `run()`, `Parser.routeParams()` and
-  `Parser.routeParamsP()`.
+- Remove dhe deprecated `routeHandler()`, `run()`, `Parser.routeParams()` and
+  `Parser.routeParamsP()` functions.
+- Remvove the deprecated function chaining syntax for defining routes
 - Remove the `URL` namespace (namely `URL.int()` and `URL.str()`) in favor of
   path patterns
 

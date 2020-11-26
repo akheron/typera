@@ -39,17 +39,17 @@ type ParamsFrom<Parts> = Parts extends [infer First, ...infer Rest]
 
 export type PathToCaptures<Path> = ParamsFrom<Split<Path>>
 
-export type URLParser<Captures> = {
+export type PathParser<Captures> = {
   method: Method
-  urlPattern: string
+  pattern: string
   parse(routeParams: {}): Either.Either<Response.Generic, Captures>
 }
 
 export function url<Path extends string>(
   method: Method,
   path: Path
-): URLParser<PathToCaptures<Path>> {
-  const urlPattern = path.replace(/\(int\)/g, '(\\d+)')
+): PathParser<PathToCaptures<Path>> {
+  const pattern = path.replace(/\(int\)/g, '(\\d+)')
   const intCaptures = path
     .split('/')
     .map(s => s.split('.'))
@@ -60,7 +60,7 @@ export function url<Path extends string>(
     .map(s => s.replace(/^:(.*?)\(int\)$/, '$1'))
   return {
     method,
-    urlPattern,
+    pattern,
     parse: (routeParams: Record<string, string>): any => {
       let fail = false
       const result: Record<string, string | number> = {}
