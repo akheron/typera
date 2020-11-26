@@ -37,7 +37,7 @@ class Router {
   handler(): koa.Middleware {
     const router = new koaRouter()
     this._routes.forEach(route => {
-      router[route.method](route.urlPattern, run(route.routeHandler))
+      router[route.method](route.path, run(route.routeHandler))
     })
     return router.routes() as koa.Middleware<any, any>
   }
