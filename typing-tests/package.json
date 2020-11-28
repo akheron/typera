@@ -1,12 +1,12 @@
 {
   "private": true,
   "name": "typing-tests",
-  "version": "1.0.0",
+  "version": "2.0.0-alpha.0",
   "scripts": {
     "test": "ts-node run-typing-tests.ts"
   },
   "dependencies": {
-    "typera-express": "^1.0.0",
-    "typera-koa": "^1.0.0"
+    "typera-express": "^2.0.0-alpha.0",
+    "typera-koa": "^2.0.0-alpha.0"
   }
 }
