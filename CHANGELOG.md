@@ -8,12 +8,13 @@
 - Remove dhe deprecated `routeHandler()`, `run()`, `Parser.routeParams()` and
   `Parser.routeParamsP()` functions.
 - Remvove the deprecated function chaining syntax for defining routes
-- Remove the `URL` namespace (namely `URL.int()` and `URL.str()`) in favor of
-  path patterns
+- Remove `URL.int()` and `URL.str()` in favor of path patterns and conversions
 
 **New features**
 
-- Type-safe support for path patterns like `'/user/:id(num)/foo/:bar'`
+- Type-safe support for path patterns like `'/user/:id(num)/foo/:bar(custom)'`
+- Support for registering custom path parameter conversions with
+  `route.useParamConversions()`
 
 ## 1.0.0
 

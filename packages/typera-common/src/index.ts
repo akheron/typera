@@ -15,6 +15,7 @@ export type RequestHandler<Request, Response> = (
 
 // Create a route from url parser, middleware and a request handler
 export type RouteFn<
+  ParamConversions,
   Request,
   Middleware extends Array<Middleware.Generic<Request>>,
   OutsideMiddlewareResponse extends Response.Generic = never
@@ -23,27 +24,38 @@ export type RouteFn<
   infer MiddlewareResponse
 >
   ? RouteFnImpl<
+      ParamConversions,
       MiddlewareResult,
       MiddlewareResponse | OutsideMiddlewareResponse
     >
   : never
 
 type RouteFnImpl<
+  ParamConversions,
   Request,
   OutsideMiddlewareResponse extends Response.Generic
 > = {
   <Path extends string>(method: URL.Method, path: Path): MakeRoute<
     Request,
+    ParamConversions,
     Path,
+    OutsideMiddlewareResponse
+  >
+  useParamConversions<T extends URL.Conversions>(
+    conversions: T
+  ): RouteFn<
+    ParamConversions & URL.GetConversionTypes<T>,
+    Request,
+    [],
     OutsideMiddlewareResponse
   >
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
-  ): RouteFn<Request, Middleware, OutsideMiddlewareResponse>
+  ): RouteFn<ParamConversions, Request, Middleware, OutsideMiddlewareResponse>
 } & {
   [M in URL.Method]: <Path extends string>(
     path: Path
-  ) => MakeRoute<Request, Path, OutsideMiddlewareResponse>
+  ) => MakeRoute<Request, ParamConversions, Path, OutsideMiddlewareResponse>
 }
 
 export function applyMiddleware<
@@ -51,13 +63,30 @@ export function applyMiddleware<
   Middleware extends Middleware.Generic<Request>[]
 >(
   getRouteParams: (req: Request) => {},
-  outsideMiddleware: Middleware
-): RouteFn<Request, Middleware> {
+  outsideMiddleware: Middleware,
+  paramConversions = URL.builtinConversions
+): RouteFn<URL.BuiltinConversions, Request, Middleware> {
   const routeFn = (method: URL.Method, path: string) =>
-    makeRouteConstructor(getRouteParams, method, path, outsideMiddleware)
+    makeRouteConstructor(
+      getRouteParams,
+      paramConversions,
+      method,
+      path,
+      outsideMiddleware
+    )
+
+  routeFn.useParamConversions = (conversions: URL.Conversions) =>
+    applyMiddleware(getRouteParams, outsideMiddleware, {
+      ...paramConversions,
+      ...conversions,
+    })
 
   routeFn.use = (...middleware: any[]) =>
-    applyMiddleware(getRouteParams, [...outsideMiddleware, ...middleware])
+    applyMiddleware(
+      getRouteParams,
+      [...outsideMiddleware, ...middleware],
+      paramConversions
+    )
 
   routeFn.get = (path: string) => routeFn('get', path)
   routeFn.post = (path: string) => routeFn('post', path)
@@ -73,14 +102,15 @@ export function applyMiddleware<
 
 function makeRouteConstructor<Request>(
   getRouteParams: (req: Request) => {},
+  paramConversions: URL.Conversions,
   method: URL.Method,
   path: string,
   middleware: any[]
 ) {
-  const urlParser = URL.url(method, path)
+  const urlParser = URL.url(paramConversions, method, path)
   return {
     use: (...nextMiddleware: any[]) =>
-      makeRouteConstructor(getRouteParams, method, path, [
+      makeRouteConstructor(getRouteParams, paramConversions, method, path, [
         ...middleware,
         ...nextMiddleware,
       ]),
@@ -96,11 +126,10 @@ export type Route<Response extends Response.Generic> = {
 
 export function route<
   RequestBase,
-  URLCaptures,
   Middleware extends Middleware.Generic<RequestBase>[]
 >(
   getRouteParams: (req: RequestBase) => {},
-  pathParser: URL.PathParser<URLCaptures>,
+  pathParser: URL.PathParser,
   middleware: Middleware
 ): any {
   return ((handler: (req: any) => any) => ({
@@ -195,9 +224,10 @@ async function runMiddleware<
 
 export type MakeRoute<
   Request,
+  ParamConversions,
   Path extends string,
   OutsideMiddlewareResponse extends Response.Generic = never
-> = URL.PathToCaptures<Path> extends infer URLCaptures
+> = URL.PathToCaptures<Path, ParamConversions> extends infer URLCaptures
   ? RouteConstructor<URLCaptures, Request, OutsideMiddlewareResponse>
   : never
 

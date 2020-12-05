@@ -1,4 +1,6 @@
 import * as Either from 'fp-ts/lib/Either'
+import * as Option from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { IntFromString } from 'io-ts-types/lib/IntFromString'
 
 import * as Response from './response'
@@ -29,35 +31,50 @@ type SplitEach<Delim extends string, Input> = Input extends [
 
 type Split<Input> = SplitEach<'-', SplitEach<'.', SplitEach<'/', [Input]>>>
 
-type ParamsFrom<Parts> = Parts extends [infer First, ...infer Rest]
-  ? First extends `:${infer Param}(int)`
-    ? { [K in Param]: number } & ParamsFrom<Rest>
+type ParamsFrom<Parts, ParamConversions> = Parts extends [
+  infer First,
+  ...infer Rest
+]
+  ? First extends `:${infer Param}(${infer Conv})`
+    ? Conv extends keyof ParamConversions
+      ? { [K in Param]: ParamConversions[Conv] } &
+          ParamsFrom<Rest, ParamConversions>
+      : never // TODO: Throw a type error here when it becomes possible
     : First extends `:${infer Param}`
-    ? { [K in Param]: string } & ParamsFrom<Rest>
-    : ParamsFrom<Rest>
+    ? { [K in Param]: string } & ParamsFrom<Rest, ParamConversions>
+    : ParamsFrom<Rest, ParamConversions>
   : {}
 
-export type PathToCaptures<Path> = ParamsFrom<Split<Path>>
+export type PathToCaptures<Path, ParamConversions> = ParamsFrom<
+  Split<Path>,
+  ParamConversions
+>
 
-export type PathParser<Captures> = {
+export type PathParser = {
   method: Method
   pattern: string
-  parse(routeParams: {}): Either.Either<Response.Generic, Captures>
+  parse(routeParams: {}): Either.Either<Response.Generic, any>
 }
 
 export function url<Path extends string>(
+  paramConversions: Conversions,
   method: Method,
   path: Path
-): PathParser<PathToCaptures<Path>> {
-  const pattern = path.replace(/\(int\)/g, '(\\d+)')
-  const intCaptures = path
-    .split('/')
-    .map(s => s.split('.'))
-    .flat()
-    .map(s => s.split('-'))
-    .flat()
-    .filter(s => s.startsWith(':') && s.endsWith('(int)'))
-    .map(s => s.replace(/^:(.*?)\(int\)$/, '$1'))
+): PathParser {
+  const pattern = path.replace(/:([^-.()/]+)\(.*?\)/g, ':$1')
+
+  // Object of param -> conversion
+  const conversions = Object.fromEntries(
+    path
+      .split('/')
+      .map(s => s.split('.'))
+      .flat()
+      .map(s => s.split('-'))
+      .flat()
+      .filter(s => s.startsWith(':') && s.includes('(') && s.includes(')'))
+      .map(s => s.split(/:|\(|\)/).slice(1, 3))
+  )
+
   return {
     method,
     pattern,
@@ -65,10 +82,12 @@ export function url<Path extends string>(
       let fail = false
       const result: Record<string, string | number> = {}
       Object.entries(routeParams).forEach(([key, value]) => {
-        if (intCaptures.includes(key)) {
-          const decoded = IntFromString.decode(value)
-          if (Either.isLeft(decoded)) fail = true
-          else result[key] = decoded.right
+        const conversionName = conversions[key]
+        if (conversionName) {
+          const conversion = paramConversions[conversionName]
+          const decoded = conversion(value)
+          if (Option.isNone(decoded)) fail = true
+          else result[key] = decoded.value
         } else {
           result[key] = value
         }
@@ -77,4 +96,20 @@ export function url<Path extends string>(
       return Either.right(result)
     },
   }
+}
+
+export type Conversion<T> = (value: string) => Option.Option<T>
+
+export type Conversions = { [K in string]: Conversion<any> }
+
+export type GetConversionTypes<T extends Conversions> = {
+  [K in keyof T]: T[K] extends Conversion<infer U> ? U : never
+}
+
+export type BuiltinConversions = {
+  int: number
+}
+
+export const builtinConversions: Conversions = {
+  int: value => pipe(IntFromString.decode(value), Option.fromEither),
 }

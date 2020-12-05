@@ -189,7 +189,7 @@ typera to parse the incoming request body with that codec.
 
 The `.handler()` method adds the actual route logic, and here is where the magic
 happens. The function passed to `.handler()` gets as an argument the `request`
-object, that will contain all URL captures as well as all the results of the
+object, that will contain all path captures as well as all the results of the
 middleware you passed. And what's great is that the data is correctly typed!
 
 In our example, `request` will have the following inferred type:
@@ -197,7 +197,7 @@ In our example, `request` will have the following inferred type:
 ```typescript
 interface MyRequest {
   routeParams: {
-    // These are the URL captures, `:id(int)` in this case
+    // These are the path captures, `:id(int)` in this case
     id: number
   }
   body: {
@@ -722,7 +722,7 @@ where method is one of `get`, `post`, `put`, `delete`, `head`, `options`,
 
 ```typescript
 route
-  .get(pathSegment1, pathSegment2 /*, ... */)
+  .get(path)
   .use(middleware1, middleware2 /*, ... */)
   .handler(async request => {
     // ...
@@ -732,12 +732,10 @@ route
 
 The special method `all` matches every HTTP method.
 
-The `route` functions take zero or more path segments as arguments
-(`pathSegment1, pathSegment2, ...`). Each path segment can be either a `string`
-or an [URL capture](#url-parameter-capturing). They are concatenated together to
-form the final URL pattern. The path if the incoming HTTP request is matched
-against the URL pattern to see whether this route is responsible for serving the
-response for the HTTP request.
+The `route` functions take a path pattern as an argument. The path pattern can
+contain [path captures](#path-parameter-capturing). The path if the incoming
+HTTP request is matched against the path pattern to see whether this route is
+responsible for serving the response for the HTTP request.
 
 They return an object with `.use()` and `.handler()` methods.
 
@@ -752,7 +750,7 @@ The `.handler()` method takes a request handler, which is an async function that
 receives the typera request object returns a response.
 
 The typera request object is created by merging the
-[URL captures](#url-parameter-capturing) and the result objects of
+[path captures](#path-parameter-capturing) and the result objects of
 [middleware functions](#middleware) given to `route` or applied before. It also
 always extends the request base:
 
@@ -848,18 +846,51 @@ that was given after `/user/`, like this:
 | `/user/5/`     | Route is not matched             |
 | `/user/`       | Route is not matched             |
 
-URL captures have the syntax `:name(conv)`, where `(conv)` specifies the
-conversion. Without a conversion, the parameter captured as a string.
-
-Currently, there's one conversion available: `(int)` converts the parameter to a
-(non-negative) integer, or fails to match if something else than an integer is
-supplied.
+Path captures have the syntax `:name` or `:name(conv)`, where the optional
+`(conv)` specifies a conversion to be applied to the parameter. Without a
+conversion, the parameter is captured as a string.
 
 Parameter names should only contain the `a-z`, `A-Z` and `_` characters. They
 can be separated with `-` and `.`, so these are valid path patterns:
 
 - `/flights/:from-:to`
 - `/plantae/:genus.:species`
+
+One built-in conversion is available: `(int)` converts the parameter to a
+(non-negative) integer, or fails to match if something else than an integer is
+supplied.
+
+#### `route.useParamConversions({ ...convs })`
+
+`import * as Option from 'fp-ts/lib/Option`
+
+You can register your own conversions by calling `useParamConversions`. It has
+one argument, an object of `{ name: conversion }`, where `name` specifies the
+name of the conversion and `conversion` is a function
+`(value: string) => Option.Option<T>`. If the function returns a `some`, the
+value will be available under the `name` key in `request.routeParams`. If it
+returns a `none`, the route will return a `404 Not Found` response.
+
+The value returned by `route.useParamConversions()`works exactly the same as
+`route` i.e. it has the `.get()`, `.post()` etc. methods and can be called
+directly.
+
+Example:
+
+```typescript
+const silly: URL.Conversion<boolean> = value => Option.some(value === 'silly')
+
+const funny: URL.Conversion<number> = value =>
+  value === 'funny' ? Option.some(42) : Option.none
+
+const myRoute = route.useParamConversions({ silly, funny })
+
+const funnyRoute = myRoute
+  .get('/foo/:param(silly)/:other(funny)')
+  .handler(request => {
+    // request.routeParams is { silly: boolean, funny: number }
+  })
+```
 
 ### Router
 
