@@ -40,7 +40,8 @@ It works with both [Express] and [Koa].
       - [`route(method, ...): Route<Response>`](#routemethod--routeresponse)
     - [`route.use(...middleware)`](#routeusemiddleware)
     - [`applyMiddleware(...middleware)`](#applymiddlewaremiddleware)
-  - [Path parameter capturing](#path-parameter-capturing)
+  - [Route parameter capturing](#route-parameter-capturing)
+    - [`route.useParamConversions({ ...convs })`](#routeuseparamconversions-convs-)
   - [Router](#router)
     - [`router(...routes: Route<any>[]): Router`](#routerroutes-routeany-router)
     - [`Router.add(...routes: Route<any>[]): Router`](#routeraddroutes-routeany-router)
@@ -733,9 +734,9 @@ route
 The special method `all` matches every HTTP method.
 
 The `route` functions take a path pattern as an argument. The path pattern can
-contain [path captures](#path-parameter-capturing). The path if the incoming
-HTTP request is matched against the path pattern to see whether this route is
-responsible for serving the response for the HTTP request.
+contain [route parameter captures](#route-parameter-capturing). The path if the
+incoming HTTP request is matched against the path pattern to see whether this
+route is responsible for serving the response for the HTTP request.
 
 They return an object with `.use()` and `.handler()` methods.
 
@@ -750,7 +751,7 @@ The `.handler()` method takes a request handler, which is an async function that
 receives the typera request object returns a response.
 
 The typera request object is created by merging the
-[path captures](#path-parameter-capturing) and the result objects of
+[route parameters](#route-parameter-capturing) and the result objects of
 [middleware functions](#middleware) given to `route` or applied before. It also
 always extends the request base:
 
@@ -824,7 +825,7 @@ The value returned by `route.use()` and `applyMiddleware()` works exactly the
 same as `route` i.e. it has the `.get()`, `.post()` etc. methods and can be
 called directly.
 
-### Path parameter capturing
+### Route parameter capturing
 
 Path patterns make it possible to extract some parts of the HTTP request path
 for use in the route handler.
@@ -846,7 +847,7 @@ that was given after `/user/`, like this:
 | `/user/5/`     | Route is not matched             |
 | `/user/`       | Route is not matched             |
 
-Path captures have the syntax `:name` or `:name(conv)`, where the optional
+Route parameters have the syntax `:name` or `:name(conv)`, where the optional
 `(conv)` specifies a conversion to be applied to the parameter. Without a
 conversion, the parameter is captured as a string.
 

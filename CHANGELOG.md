@@ -13,7 +13,7 @@
 **New features**
 
 - Type-safe support for path patterns like `'/user/:id(num)/foo/:bar(custom)'`
-- Support for registering custom path parameter conversions with
+- Support for registering custom route parameter conversions with
   `route.useParamConversions()`
 
 ## 1.0.0
