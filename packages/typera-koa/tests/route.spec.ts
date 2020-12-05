@@ -1,6 +1,7 @@
+import * as Option from 'fp-ts/lib/Option'
 import * as stream from 'stream'
 import * as t from 'io-ts'
-import { Middleware, Parser, Response, Route, router, route } from '..'
+import { Middleware, Parser, Response, Route, URL, router, route } from '..'
 import * as request from 'supertest'
 import { makeServer } from './utils'
 
@@ -47,6 +48,7 @@ describe('route & router', () => {
   })
 
   it('decodes the request', async () => {
+    let callCount = 0
     const decode: Route<
       Response.NoContent | Response.BadRequest<string>
     > = route
@@ -56,6 +58,7 @@ describe('route & router', () => {
         Parser.body(t.type({ quux: t.boolean }))
       )
       .handler(request => {
+        callCount++
         expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
         expect(request.query).toEqual({ baz: 'hello' })
         expect(request.body).toEqual({ quux: true })
@@ -69,6 +72,36 @@ describe('route & router', () => {
       .post('/decode/FOO/42?baz=hello')
       .send({ quux: true })
       .expect(204)
+    expect(callCount).toEqual(1)
+  })
+
+  it('custom path conversionss', async () => {
+    const silly: URL.Conversion<boolean> = value =>
+      value === 'silly' ? Option.some(true) : Option.none
+
+    const funny: URL.Conversion<number> = value =>
+      value === 'funny' ? Option.some(42) : Option.none
+
+    let callCount = 0
+    const decode: Route<
+      Response.NoContent | Response.BadRequest<string>
+    > = route
+      .useParamConversions({ silly, funny })
+      .post('/decode/:foo(silly)/:bar(funny)')
+      .handler(request => {
+        callCount++
+        expect(request.routeParams).toEqual({ foo: true, bar: 42 })
+        return Response.noContent()
+      })
+
+    const handler = router(decode).handler()
+    server = makeServer(handler)
+
+    await request(server).post('/decode/notgonna/work').expect(404)
+    await request(server).post('/decode/silly/wrong').expect(404)
+    await request(server).post('/decode/wrong/funny').expect(404)
+    await request(server).post('/decode/silly/funny').expect(204)
+    expect(callCount).toEqual(1)
   })
 
   it('returns errors from middleware', async () => {

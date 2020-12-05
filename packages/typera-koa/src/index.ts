@@ -11,11 +11,12 @@ import { RequestBase, getRouteParams } from './context'
 import * as Middleware from './middleware'
 import * as Parser from './parser'
 import * as Response from './response'
-export { RequestBase, Middleware, Parser, Response }
+import * as URL from './url'
+export { RequestBase, Middleware, Parser, Response, URL }
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.RouteFn<RequestBase, Middleware> {
+): common.RouteFn<URL.BuiltinConversions, RequestBase, Middleware> {
   return common.applyMiddleware(getRouteParams, middleware)
 }
 
