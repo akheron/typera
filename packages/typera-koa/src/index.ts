@@ -16,7 +16,7 @@ export { RequestBase, Middleware, Parser, Response, URL }
 
 export function applyMiddleware<Middleware extends Middleware.Generic[]>(
   ...middleware: Middleware
-): common.RouteFn<URL.BuiltinConversions, RequestBase, Middleware> {
+): common.ApplyMiddleware<RequestBase, Middleware> {
   return common.applyMiddleware(getRouteParams, middleware)
 }
 

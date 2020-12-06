@@ -13,50 +13,51 @@ export type RequestHandler<Request, Response> = (
   request: Request
 ) => Response | Promise<Response>
 
-// Create a route from url parser, middleware and a request handler
 export type RouteFn<
   ParamConversions,
   Request,
-  Middleware extends Array<Middleware.Generic<Request>>,
-  OutsideMiddlewareResponse extends Response.Generic = never
-> = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
-  infer MiddlewareResult,
-  infer MiddlewareResponse
->
-  ? RouteFnImpl<
-      ParamConversions,
-      MiddlewareResult,
-      MiddlewareResponse | OutsideMiddlewareResponse
-    >
-  : never
-
-type RouteFnImpl<
-  ParamConversions,
-  Request,
-  OutsideMiddlewareResponse extends Response.Generic
+  Response extends Response.Generic
 > = {
   <Path extends string>(method: URL.Method, path: Path): MakeRoute<
     Request,
     ParamConversions,
     Path,
-    OutsideMiddlewareResponse
+    Response
   >
   useParamConversions<T extends URL.Conversions>(
     conversions: T
-  ): RouteFn<
-    ParamConversions & URL.GetConversionTypes<T>,
-    Request,
-    [],
-    OutsideMiddlewareResponse
-  >
+  ): RouteFn<ParamConversions & URL.GetConversionTypes<T>, Request, Response>
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
-  ): RouteFn<ParamConversions, Request, Middleware, OutsideMiddlewareResponse>
+  ): TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
+    infer MiddlewareResult,
+    infer MiddlewareResponse
+  >
+    ? RouteFn<
+        ParamConversions,
+        Request & MiddlewareResult,
+        Response | MiddlewareResponse
+      >
+    : never
 } & {
   [M in URL.Method]: <Path extends string>(
     path: Path
-  ) => MakeRoute<Request, ParamConversions, Path, OutsideMiddlewareResponse>
+  ) => MakeRoute<Request, ParamConversions, Path, Response>
 }
+
+export type ApplyMiddleware<
+  Request,
+  Middleware extends Middleware.Generic<Request>[]
+> = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
+  infer MiddlewareResult,
+  infer MiddlewareResponse
+>
+  ? RouteFn<
+      URL.BuiltinConversions,
+      Request & MiddlewareResult,
+      MiddlewareResponse
+    >
+  : never
 
 export function applyMiddleware<
   Request,
@@ -65,7 +66,7 @@ export function applyMiddleware<
   getRouteParams: (req: Request) => {},
   outsideMiddleware: Middleware,
   paramConversions = URL.builtinConversions
-): RouteFn<URL.BuiltinConversions, Request, Middleware> {
+): ApplyMiddleware<Request, Middleware> {
   const routeFn = (method: URL.Method, path: string) =>
     makeRouteConstructor(
       getRouteParams,
@@ -270,4 +271,4 @@ type TypesFromMiddleware<Request, Middleware> = Middleware extends [
       ? MiddlewareType<Result & ResultTail, Response | ResponseTail>
       : never
     : never
-  : MiddlewareType<Request, never>
+  : MiddlewareType<{}, never>
