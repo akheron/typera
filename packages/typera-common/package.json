@@ -13,6 +13,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch --preserveWatchOutput",
     "generate-responses": "ts-node tools/generate-responses.ts > src/response.ts && prettier --write src/response.ts",
     "prepublishOnly": "yarn build"
   },
