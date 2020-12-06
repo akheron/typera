@@ -22,6 +22,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch --preserveWatchOutput",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
