@@ -6,6 +6,8 @@ Typera (**TYPE**d **R**outing **A**ssistant) helps you build backends in a
 type-safe manner by leveraging [io-ts] and some TypeScript type inference magic.
 It works with both [Express] and [Koa].
 
+**Upgrading to version 2?** See the [upgrading instructions](docs/upgrading.md).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -46,6 +48,7 @@ It works with both [Express] and [Koa].
     - [`router(...routes: Route<any>[]): Router`](#routerroutes-routeany-router)
     - [`Router.add(...routes: Route<any>[]): Router`](#routeraddroutes-routeany-router)
     - [`Router.handler()`](#routerhandler)
+- [Upgrading](#upgrading)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -941,6 +944,11 @@ const app = new Koa()
 
 app.use(mount('/subpath', router.handler()))
 ```
+
+## Upgrading
+
+[Upgrading instructions](docs/upgrading.md) covers upgrading to new major
+versions.
 
 [fp-ts]: https://github.com/gcanti/fp-ts
 [io-ts]: https://github.com/gcanti/io-ts
