@@ -34,7 +34,7 @@ class Router {
 
   handler(): express.Router {
     const router = express.Router()
-    this._routes.forEach(route => {
+    this._routes.forEach((route) => {
       router[route.method](route.path, run(route.routeHandler))
     })
     return router

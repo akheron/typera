@@ -16,7 +16,7 @@ describe('route & router', () => {
   })
 
   it('works', async () => {
-    const foo: Route<Response.Ok<string>> = route.get('/foo').handler(_ => {
+    const foo: Route<Response.Ok<string>> = route.get('/foo').handler((_) => {
       return Response.ok('foo')
     })
     server = makeServer(router(foo).handler())
@@ -25,16 +25,16 @@ describe('route & router', () => {
   })
 
   it('supports adding multiple routes', async () => {
-    const foo: Route<Response.Ok<string>> = route.get('/foo').handler(_ => {
+    const foo: Route<Response.Ok<string>> = route.get('/foo').handler((_) => {
       return Response.ok('foo')
     })
-    const bar: Route<Response.Ok<string>> = route.get('/bar').handler(_ => {
+    const bar: Route<Response.Ok<string>> = route.get('/bar').handler((_) => {
       return Response.ok('bar')
     })
-    const baz: Route<Response.Ok<string>> = route.get('/baz').handler(_ => {
+    const baz: Route<Response.Ok<string>> = route.get('/baz').handler((_) => {
       return Response.ok('baz')
     })
-    const quux: Route<Response.Ok<string>> = route.get('/quux').handler(_ => {
+    const quux: Route<Response.Ok<string>> = route.get('/quux').handler((_) => {
       return Response.ok('quux')
     })
 
@@ -57,7 +57,7 @@ describe('route & router', () => {
         Parser.query(t.type({ baz: t.string })),
         Parser.body(t.type({ quux: t.boolean }))
       )
-      .handler(request => {
+      .handler((request) => {
         callCount++
         expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
         expect(request.query).toEqual({ baz: 'hello' })
@@ -76,10 +76,10 @@ describe('route & router', () => {
   })
 
   it('custom path conversionss', async () => {
-    const silly: URL.Conversion<boolean> = value =>
+    const silly: URL.Conversion<boolean> = (value) =>
       value === 'silly' ? Option.some(true) : Option.none
 
-    const funny: URL.Conversion<number> = value =>
+    const funny: URL.Conversion<number> = (value) =>
       value === 'funny' ? Option.some(42) : Option.none
 
     let callCount = 0
@@ -88,7 +88,7 @@ describe('route & router', () => {
     > = route
       .useParamConversions({ silly, funny })
       .post('/decode/:foo(silly)/:bar(funny)')
-      .handler(request => {
+      .handler((request) => {
         callCount++
         expect(request.routeParams).toEqual({ foo: true, bar: 42 })
         return Response.noContent()
@@ -108,7 +108,7 @@ describe('route & router', () => {
     const error: Route<Response.NoContent | Response.BadRequest<string>> = route
       .post('/error')
       .use(Parser.body(t.type({ foo: t.number })))
-      .handler(_request => {
+      .handler((_request) => {
         return Response.noContent()
       })
     const handler = router(error).handler()
@@ -132,7 +132,7 @@ describe('route & router', () => {
     const test: Route<Response.NoContent | Response.BadRequest<string>> = route
       .get('/asyncmw')
       .use(mw)
-      .handler(request => {
+      .handler((request) => {
         expect(request.foo).toEqual(42)
         return Response.noContent()
       })
@@ -165,7 +165,7 @@ describe('route & router', () => {
     const root: Route<Response.Ok> = route
       .get('/')
       .use(mw1, mw2)
-      .handler(_request => {
+      .handler((_request) => {
         return Response.ok()
       })
     const handler = router(root).handler()
@@ -198,7 +198,7 @@ describe('route & router', () => {
     const root: Route<Response.Ok | Response.Unauthorized> = route
       .get('/')
       .use(mw1, mw2)
-      .handler(_request => {
+      .handler((_request) => {
         return Response.ok()
       })
     const handler = router(root).handler()
@@ -234,7 +234,7 @@ describe('route & router', () => {
     const root: Route<Response.Ok> = route
       .get('/')
       .use(mw1, mw2)
-      .handler(_request => {
+      .handler((_request) => {
         return Response.ok()
       })
     const handler = router(root).handler()
@@ -252,7 +252,7 @@ describe('route & router', () => {
     const test: Route<
       Response.Ok<Response.StreamingBody, { 'content-type': 'text/plain' }>
     > = route.get('/streaming').handler(async () => {
-      const body = Response.streamingBody(outStream => {
+      const body = Response.streamingBody((outStream) => {
         const s = new stream.Readable()
         s.pipe(outStream)
         s.push('foo')

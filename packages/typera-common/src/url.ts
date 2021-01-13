@@ -67,12 +67,12 @@ export function url<Path extends string>(
   const conversions = Object.fromEntries(
     path
       .split('/')
-      .map(s => s.split('.'))
+      .map((s) => s.split('.'))
       .flat()
-      .map(s => s.split('-'))
+      .map((s) => s.split('-'))
       .flat()
-      .filter(s => s.startsWith(':') && s.includes('(') && s.includes(')'))
-      .map(s => s.split(/:|\(|\)/).slice(1, 3))
+      .filter((s) => s.startsWith(':') && s.includes('(') && s.includes(')'))
+      .map((s) => s.split(/:|\(|\)/).slice(1, 3))
   )
 
   return {
@@ -111,5 +111,5 @@ export type BuiltinConversions = {
 }
 
 export const builtinConversions: Conversions = {
-  int: value => pipe(IntFromString.decode(value), Option.fromEither),
+  int: (value) => pipe(IntFromString.decode(value), Option.fromEither),
 }

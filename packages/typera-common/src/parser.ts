@@ -22,7 +22,7 @@ export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
     return (req: RequestBase) =>
       pipe(
         codec.decode(getBody(req)),
-        Either.map<any, any>(body => ({ value: { body } })),
+        Either.map<any, any>((body) => ({ value: { body } })),
         Either.getOrElse((errors: t.Errors) => ({
           response: errorHandler(errors),
         }))
@@ -38,7 +38,7 @@ export function body<RequestBase>(getBody: (req: RequestBase) => any) {
     { body: T },
     Response.BadRequest<string>
   > => {
-    return bodyP(getBody)(codec, err =>
+    return bodyP(getBody)(codec, (err) =>
       Response.badRequest(`Invalid body: ${errorsToString(err)}`)
     )
   }
@@ -52,7 +52,7 @@ export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
     return function (req: RequestBase) {
       return pipe(
         codec.decode(getQuery(req)),
-        Either.map<any, any>(query => ({ value: { query } })),
+        Either.map<any, any>((query) => ({ value: { query } })),
         Either.getOrElse((errors: t.Errors) => ({
           response: errorHandler(errors),
         }))
@@ -69,7 +69,7 @@ export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
     { query: T },
     Response.BadRequest<string>
   > =>
-    queryP(getQuery)(codec, err =>
+    queryP(getQuery)(codec, (err) =>
       Response.badRequest(`Invalid query: ${errorsToString(err)}`)
     )
 }
@@ -82,7 +82,7 @@ export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
     return function (req: RequestBase) {
       return pipe(
         codec.decode(getHeaders(req)),
-        Either.map<any, any>(headers => ({ value: { headers } })),
+        Either.map<any, any>((headers) => ({ value: { headers } })),
         Either.getOrElse((errors: t.Errors) => ({
           response: errorHandler(errors),
         }))
@@ -99,7 +99,7 @@ export function headers<RequestBase>(getHeaders: (req: RequestBase) => any) {
     { headers: T },
     Response.BadRequest<string>
   > =>
-    headersP(getHeaders)(codec, err =>
+    headersP(getHeaders)(codec, (err) =>
       Response.badRequest(`Invalid headers: ${errorsToString(err)}`)
     )
 }

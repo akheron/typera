@@ -27,7 +27,7 @@ describe('applyMiddleware', () => {
     const foo: Route<Response.Ok<string> | Response.BadRequest<string>> = route(
       'get',
       '/foo'
-    ).handler(req => {
+    ).handler((req) => {
       return Response.ok(req.foo)
     })
     const app = makeApp().use(router(foo).handler())
@@ -51,7 +51,7 @@ describe('applyMiddleware', () => {
     }
     const route = applyMiddleware(mw1).use(mw2)
 
-    const foo: Route<Response.Ok> = route.get('/foo').handler(_ => {
+    const foo: Route<Response.Ok> = route.get('/foo').handler((_) => {
       return Response.ok()
     })
     const app = makeApp().use(router(foo).handler())
@@ -70,7 +70,7 @@ describe('applyMiddleware', () => {
       { num: number },
       { str: string },
       never
-    > = req => Middleware.next({ str: req.num.toString() })
+    > = (req) => Middleware.next({ str: req.num.toString() })
 
     const handler = async (req: RequestBase & { num: number; str: string }) => {
       expect(req.num).toEqual(42)

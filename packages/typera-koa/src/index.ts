@@ -37,7 +37,7 @@ class Router {
 
   handler(): koa.Middleware {
     const router = new koaRouter()
-    this._routes.forEach(route => {
+    this._routes.forEach((route) => {
       router[route.method](route.path, run(route.routeHandler))
     })
     return router.routes() as koa.Middleware<any, any>
@@ -51,7 +51,7 @@ export function router(...routes: Route<common.Response.Generic>[]): Router {
 function run<Response extends common.Response.Generic>(
   handler: (req: unknown) => Promise<Response>
 ): (ctx: koa.Context) => Promise<void> {
-  return async ctx => {
+  return async (ctx) => {
     const response = await handler({ ctx })
     ctx.response.status = response.status
     if (response.headers != null) {

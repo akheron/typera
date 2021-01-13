@@ -33,6 +33,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-use-before-define': 'off',
+    'no-constant-condition': 'off',
     'no-inner-declarations': 'off',
     'prettier/prettier': 'error',
   },

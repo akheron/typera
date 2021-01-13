@@ -24,7 +24,7 @@ describe('applyMiddleware', () => {
     const myMiddleware: Middleware.Middleware<
       { foo: string },
       Response.BadRequest<string>
-    > = req => {
+    > = (req) => {
       if (req.ctx.query.err != null) {
         return Middleware.stop(Response.badRequest('quux'))
       } else {
@@ -36,7 +36,7 @@ describe('applyMiddleware', () => {
     const foo: Route<Response.Ok<string> | Response.BadRequest<string>> = route(
       'get',
       '/foo'
-    ).handler(req => {
+    ).handler((req) => {
       return Response.ok(req.foo)
     })
     server = makeServer(router(foo).handler())
@@ -60,7 +60,7 @@ describe('applyMiddleware', () => {
     }
     const route = applyMiddleware(mw1).use(mw2)
 
-    const foo: Route<Response.Ok> = route.get('/foo').handler(_ => {
+    const foo: Route<Response.Ok> = route.get('/foo').handler((_) => {
       return Response.ok()
     })
     server = makeServer(router(foo).handler())
@@ -79,7 +79,7 @@ describe('applyMiddleware', () => {
       { num: number },
       { str: string },
       never
-    > = req => Middleware.next({ str: req.num.toString() })
+    > = (req) => Middleware.next({ str: req.num.toString() })
 
     const handler = async (req: RequestBase & { num: number; str: string }) => {
       expect(req.num).toEqual(42)

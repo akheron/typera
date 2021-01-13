@@ -115,7 +115,7 @@ const updateUser: Route<
 > = route
   .put('/user/', URL.int('id')) // Capture id from the path
   .use(Parser.body(userBody)) // Use the userBody decoder for the request body
-  .handler(async request => {
+  .handler(async (request) => {
     // This imaginary function takes the user id and data, and updates the
     // user in the database. If the user does not exist, it returns null.
     const user = await updateUserInDatabase(
@@ -178,7 +178,7 @@ return, you let the compiler notice if reality doesn't match the expectations.
 route
   .put('/user/:id(int)') // Capture id from the path
   .use(Parser.body(userBody)) // Use the userBody decoder for the request body
-  .handler(async request => {
+  .handler(async (request) => {
     /* ... */
   })
 ```
@@ -229,7 +229,7 @@ The last part is the actual route logic:
 route
   .put(/*...*/)
   .use(/*...*/)
-  .handler(async request => {
+  .handler(async (request) => {
     // This imaginary function takes the user id and data, and updates the
     // user in the database. If the user does not exist, it returns null.
     const user = await updateUserInDatabase(
@@ -431,7 +431,7 @@ setting a header. To create a redirect response, use the
 ```typescript
 const myHandler: Route<Response.MovedPermanently> = route
   .get('/foo')
-  .handler(async request => {
+  .handler(async (request) => {
     return Response.redirect(301, '/bar')
   })
 ```
@@ -473,9 +473,9 @@ receives a writable stream as a parameter:
 ```typescript
 const streamingHandler: Route<Response.Ok<Response.StreamingBody>> = route
   .get('/document.pdf')
-  .handler(async request => {
+  .handler(async (request) => {
     return Response.ok(
-      Response.streamingBody(outputStream => {
+      Response.streamingBody((outputStream) => {
         // Assuming that the generatePDF function generates a
         // PDF document to the given writable stream
         generatePDF(outputStream)
@@ -548,7 +548,7 @@ result type should be `unknown`:
 const checkOrigin: Middleware.Middleware<
   unknown,
   Response.BadRequest<string>
-> = async request => {
+> = async (request) => {
   // In typera-express, request.req is the Express request
   if (request.req.get('origin') !== 'example.com') {
     return Middleware.stop(Response.badRequest('Invalid origin'))
@@ -568,7 +568,7 @@ const audit: Middleware.ChainedMiddleware<
   { connection: pg.ClientBase },
   unknown,
   never
-> = async request => {
+> = async (request) => {
   await writeAuditLog(request.connection)
   return Middleware.next()
 }
@@ -728,7 +728,7 @@ where method is one of `get`, `post`, `put`, `delete`, `head`, `options`,
 route
   .get(path)
   .use(middleware1, middleware2 /*, ... */)
-  .handler(async request => {
+  .handler(async (request) => {
     // ...
     return Response.ok()
   })
@@ -792,7 +792,7 @@ const listHandler: Route<
 > = route
   .get(/* ... */)
   .use(/* ... */)
-  .handler(async request => {
+  .handler(async (request) => {
     // ...
   })
 ```
@@ -882,16 +882,16 @@ directly.
 Example:
 
 ```typescript
-const silly: URL.Conversion<boolean> = value => Option.some(value === 'silly')
+const silly: URL.Conversion<boolean> = (value) => Option.some(value === 'silly')
 
-const funny: URL.Conversion<number> = value =>
+const funny: URL.Conversion<number> = (value) =>
   value === 'funny' ? Option.some(42) : Option.none
 
 const myRoute = route.useParamConversions({ silly, funny })
 
 const funnyRoute = myRoute
   .get('/foo/:param(silly)/:other(funny)')
-  .handler(request => {
+  .handler((request) => {
     // request.routeParams is { silly: boolean, funny: number }
   })
 ```
