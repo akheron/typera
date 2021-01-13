@@ -1,6 +1,6 @@
 {
   "name": "typera-common",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0",
   "description": "TYPEd Route Assistant - Common",
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
