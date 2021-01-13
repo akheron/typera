@@ -1,6 +1,6 @@
 # typera - Type-safe routes
 
-![Build](https://github.com/akheron/typera/workflows/Build/badge.svg)
+![Build](https://github.com/akheron/typera/workflows/tests/badge.svg)
 
 Typera (**TYPE**d **R**outing **A**ssistant) helps you build backends in a
 type-safe manner by leveraging [io-ts] and some TypeScript type inference magic.
