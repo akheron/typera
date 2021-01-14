@@ -11,7 +11,7 @@
     "build": "yarn workspace typera-common build && yarn workspace typera-express build && yarn workspace typera-koa build",
     "watch": "concurrently -n common,express,koa 'yarn workspace typera-common watch' 'yarn workspace typera-express watch' 'yarn workspace typera-koa watch'",
     "test": "yarn build && jest && yarn workspace typing-tests test",
-    "lint": "eslint '**/*.ts' && prettier --check \"**/*.{json,md}\"",
+    "lint": "eslint --max-warnings 0 '**/*.ts' && prettier --check \"**/*.{json,md}\"",
     "lint:fix": "eslint --fix '**/*.ts' && prettier --write '**/*.{json,md}'",
     "doctoc": "doctoc README.md --title '## Table of Contents' && prettier --write README.md"
   },
