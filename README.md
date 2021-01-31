@@ -16,6 +16,7 @@ It works with both [Express] and [Koa].
 - [The Problem](#the-problem)
 - [Tutorial](#tutorial)
 - [Requirements](#requirements)
+- [Tools](#tools)
 - [API Reference](#api-reference)
   - [Imports](#imports)
   - [Responses](#responses)
@@ -317,6 +318,11 @@ app.use(router(updateUser /*, otherRoute, stillAnother */).handler())
 ## Requirements
 
 Requires TypeScript 4.1 or newer.
+
+## Tools
+
+- [typera-openapi]: Automatically generates [OpenAPI] definitions for your
+  routes
 
 ## API Reference
 
@@ -958,3 +964,5 @@ versions.
 [koa]: https://koajs.com/
 [koa-bodyparser]: https://github.com/koajs/bodyparser
 [koa-mount]: https://github.com/koajs/mount
+[openapi]: https://www.openapis.org/
+[typera-openapi]: https://github.com/akheron/typera-openapi
