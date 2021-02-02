@@ -21,8 +21,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --build",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {

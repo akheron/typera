@@ -2,5 +2,6 @@ node_modules
 yarn-error.log
 *.js
 *.d.ts
+.tsbuildinfo
 !.eslintrc.js
 !jest.config.js
