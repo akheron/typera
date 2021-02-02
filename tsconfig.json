@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
+    "composite": true,
     "module": "commonjs",
     "target": "es6",
     "lib": ["es2019"],
     "strict": true
-  }
+  },
+  "references": [
+    { "path": "packages/typera-common" },
+    { "path": "packages/typera-express" },
+    { "path": "packages/typera-koa" }
+  ],
+  "files": []
 }
