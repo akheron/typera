@@ -25,6 +25,12 @@ export const headersP = <RequestBase>(getHeaders: GetInput<RequestBase>) =>
 export const headers = <RequestBase>(getHeaders: GetInput<RequestBase>) =>
   generic(getHeaders, 'headers')
 
+export const cookiesP = <RequestBase>(getCookies: GetInput<RequestBase>) =>
+  genericP(getCookies, 'cookies')
+
+export const cookies = <RequestBase>(getCookies: GetInput<RequestBase>) =>
+  generic(getCookies, 'cookies')
+
 // Helpers
 
 export type GetInput<RequestBase> = (req: RequestBase) => any
