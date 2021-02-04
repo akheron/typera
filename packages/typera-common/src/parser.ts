@@ -7,104 +7,66 @@ import { PathReporter } from 'io-ts/lib/PathReporter'
 import * as Middleware from './middleware'
 import * as Response from './response'
 
-// Request parsers validate the input (route params, query params,
-// request body) using io-ts
+export const bodyP = <RequestBase>(getBody: GetInput<RequestBase>) =>
+  genericP(getBody, 'body')
+
+export const body = <RequestBase>(getBody: GetInput<RequestBase>) =>
+  generic(getBody, 'body')
+
+export const queryP = <RequestBase>(getQuery: GetInput<RequestBase>) =>
+  genericP(getQuery, 'query')
+
+export const query = <RequestBase>(getQuery: GetInput<RequestBase>) =>
+  generic(getQuery, 'query')
+
+export const headersP = <RequestBase>(getHeaders: GetInput<RequestBase>) =>
+  genericP(getHeaders, 'headers')
+
+export const headers = <RequestBase>(getHeaders: GetInput<RequestBase>) =>
+  generic(getHeaders, 'headers')
+
+// Helpers
+
+export type GetInput<RequestBase> = (req: RequestBase) => any
 
 export type ErrorHandler<ErrorResponse extends Response.Generic> = (
   errors: t.Errors
 ) => ErrorResponse
 
-export function bodyP<RequestBase>(getBody: (req: RequestBase) => any) {
-  return function <T, ErrorResponse extends Response.Generic>(
-    codec: t.Type<T, any, unknown>,
-    errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<RequestBase, { body: T }, ErrorResponse> {
-    return (req: RequestBase) =>
-      pipe(
-        codec.decode(getBody(req)),
-        Either.map<any, any>((body) => ({ value: { body } })),
-        Either.getOrElse((errors: t.Errors) => ({
-          response: errorHandler(errors),
-        }))
-      )
-  }
-}
-
-export function body<RequestBase>(getBody: (req: RequestBase) => any) {
-  return <T>(
-    codec: t.Type<T, any, unknown>
-  ): Middleware.Middleware<
-    RequestBase,
-    { body: T },
-    Response.BadRequest<string>
-  > => {
-    return bodyP(getBody)(codec, (err) =>
-      Response.badRequest(`Invalid body: ${errorsToString(err)}`)
+const genericP = <RequestBase, Key extends string>(
+  input: (req: RequestBase) => any,
+  key: Key
+) => <T, ErrorResponse extends Response.Generic>(
+  codec: t.Type<T, any, unknown>,
+  errorHandler: ErrorHandler<ErrorResponse>
+): Middleware.Middleware<RequestBase, Record<Key, T>, ErrorResponse> => (
+  req: RequestBase
+) =>
+  pipe(
+    codec.decode(input(req)),
+    Either.fold<
+      t.Errors,
+      T,
+      Middleware.MiddlewareOutput<Record<Key, T>, ErrorResponse>
+    >(
+      (errors) => Middleware.stop(errorHandler(errors)),
+      (result) => Middleware.next({ [key]: result } as any)
     )
-  }
-}
+  )
 
-export function queryP<RequestBase>(getQuery: (req: RequestBase) => any) {
-  return function <T, ErrorResponse extends Response.Generic>(
-    codec: t.Type<T, any, unknown>,
-    errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<RequestBase, { query: T }, ErrorResponse> {
-    return function (req: RequestBase) {
-      return pipe(
-        codec.decode(getQuery(req)),
-        Either.map<any, any>((query) => ({ value: { query } })),
-        Either.getOrElse((errors: t.Errors) => ({
-          response: errorHandler(errors),
-        }))
-      )
-    }
-  }
-}
-
-export function query<RequestBase>(getQuery: (req: RequestBase) => any) {
-  return <T>(
-    codec: t.Type<T, any, unknown>
-  ): Middleware.Middleware<
-    RequestBase,
-    { query: T },
-    Response.BadRequest<string>
-  > =>
-    queryP(getQuery)(codec, (err) =>
-      Response.badRequest(`Invalid query: ${errorsToString(err)}`)
-    )
-}
-
-export function headersP<RequestBase>(getHeaders: (req: RequestBase) => any) {
-  return function <T, ErrorResponse extends Response.Generic>(
-    codec: t.Type<T, any, unknown>,
-    errorHandler: ErrorHandler<ErrorResponse>
-  ): Middleware.Middleware<RequestBase, { headers: T }, ErrorResponse> {
-    return function (req: RequestBase) {
-      return pipe(
-        codec.decode(getHeaders(req)),
-        Either.map<any, any>((headers) => ({ value: { headers } })),
-        Either.getOrElse((errors: t.Errors) => ({
-          response: errorHandler(errors),
-        }))
-      )
-    }
-  }
-}
-
-export function headers<RequestBase>(getHeaders: (req: RequestBase) => any) {
-  return <T>(
-    codec: t.Type<T, any, unknown>
-  ): Middleware.Middleware<
-    RequestBase,
-    { headers: T },
-    Response.BadRequest<string>
-  > =>
-    headersP(getHeaders)(codec, (err) =>
-      Response.badRequest(`Invalid headers: ${errorsToString(err)}`)
-    )
-}
-
-// Helpers
+const generic = <RequestBase, Key extends string>(
+  input: (req: RequestBase) => any,
+  key: Key
+) => <T>(
+  codec: t.Type<T, any, unknown>
+): Middleware.Middleware<
+  RequestBase,
+  Record<Key, T>,
+  Response.BadRequest<string>
+> =>
+  genericP(input, key)(codec, (err) =>
+    Response.badRequest(`Invalid ${key}: ${errorsToString(err)}`)
+  )
 
 function errorsToString(err: t.Errors) {
   return PathReporter.report(Either.left(err))
