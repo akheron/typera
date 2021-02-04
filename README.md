@@ -52,6 +52,7 @@ It works with both [Express] and [Koa].
     - [`Router.add(...routes: Route<any>[]): Router`](#routeraddroutes-routeany-router)
     - [`Router.handler()`](#routerhandler)
 - [Upgrading](#upgrading)
+- [Releasing](#releasing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -997,6 +998,16 @@ app.use(mount('/subpath', router.handler()))
 
 [Upgrading instructions](docs/upgrading.md) covers upgrading to new major
 versions.
+
+## Releasing
+
+```
+$ yarn lerna bump <major|minor|patch>
+$ yarn lerna publish from-git
+```
+
+Open https://github.com/akheron/typera/releases, edit the draft release, select
+the newest version tag, adjust the description as needed.
 
 [fp-ts]: https://github.com/gcanti/fp-ts
 [io-ts]: https://github.com/gcanti/io-ts
