@@ -29,6 +29,7 @@ It works with both [Express] and [Koa].
   - [Request parsers](#request-parsers)
     - [`Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`](#parserquerytcodec-ttypet-middleware-query-t--responsebadrequeststring)
     - [`Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`](#parserbodytcodec-ttypet-middleware-body-t--responsebadrequeststring)
+    - [`Parser.cookies<T>(codec: t.Type<T>): Middleware<{ cookies: T }, Response.BadRequest<string>>`](#parsercookiestcodec-ttypet-middleware-cookies-t--responsebadrequeststring)
     - [Customizing the error response](#customizing-the-error-response)
   - [Routes](#routes)
     - [`route`](#route)
