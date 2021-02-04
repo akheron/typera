@@ -320,7 +320,7 @@ app.use(router(updateUser /*, otherRoute, stillAnother */).handler())
 
 ## Requirements
 
-Requires TypeScript 4.1 or newer.
+Requires TypeScript 4.1 or newer, and Node 12 or newer.
 
 ## Tools
 
