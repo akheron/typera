@@ -23,3 +23,9 @@ function getHeaders(e: RequestBase): any {
 }
 export const headersP = commonParser.headersP(getHeaders)
 export const headers = commonParser.headers(getHeaders)
+
+function getCookies(e: RequestBase): any {
+  return e.req.cookies
+}
+export const cookiesP = commonParser.cookiesP(getCookies)
+export const cookies = commonParser.cookies(getCookies)

@@ -23,3 +23,21 @@ function getHeaders(req: RequestBase): any {
 }
 export const headersP = commonParser.headersP(getHeaders)
 export const headers = commonParser.headers(getHeaders)
+
+function getCookies(req: RequestBase): any {
+  // koa doesn't provide a way to read all cookies into an object, so we have to
+  // parse the names from the Cookie header
+  //
+  // It would be more efficient to look up the expected cookie names from
+  // the io-ts codec, though.
+  //
+  const cookieHeader = req.ctx.get('cookie') ?? ''
+  const cookieNames = [...cookieHeader.matchAll(/(.*?)=.*?(?:$|; )/g)].map(
+    (match) => match[1]
+  )
+  return Object.fromEntries(
+    cookieNames.map((name) => [name, req.ctx.cookies.get(name)])
+  )
+}
+export const cookiesP = commonParser.cookiesP(getCookies)
+export const cookies = commonParser.cookies(getCookies)
