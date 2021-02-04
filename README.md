@@ -29,6 +29,7 @@ It works with both [Express] and [Koa].
   - [Request parsers](#request-parsers)
     - [`Parser.query<T>(codec: t.Type<T>): Middleware<{ query: T }, Response.BadRequest<string>>`](#parserquerytcodec-ttypet-middleware-query-t--responsebadrequeststring)
     - [`Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`](#parserbodytcodec-ttypet-middleware-body-t--responsebadrequeststring)
+    - [`Parser.headers<T>(codec: t.Type<T>): Middleware<{ headers: T }, Response.BadRequest<string>>`](#parserheaderstcodec-ttypet-middleware-headers-t--responsebadrequeststring)
     - [`Parser.cookies<T>(codec: t.Type<T>): Middleware<{ cookies: T }, Response.BadRequest<string>>`](#parsercookiestcodec-ttypet-middleware-cookies-t--responsebadrequeststring)
     - [Customizing the error response](#customizing-the-error-response)
   - [Routes](#routes)
@@ -647,15 +648,25 @@ or [Koa] app rather than use them as typera middleware.
 **Note:** You must use a Express or Koa body parsing middleware for
 `Parser.body` to work.
 
+#### `Parser.headers<T>(codec: t.Type<T>): Middleware<{ headers: T }, Response.BadRequest<string>>`
+
+Validate the request headers according to the given [io-ts] codec. Respond with
+`400 Bad Request` if the validation fails.
+
+The input for this parser will be the headers parsed as
+`{ [K in string]: string }`, i.e. all header values will be strings. If you want
+to convert them to other types, you probably find the `FromString` codecs from
+[io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
+
 #### `Parser.cookies<T>(codec: t.Type<T>): Middleware<{ cookies: T }, Response.BadRequest<string>>`
 
 Validate the request cookies according to the given [io-ts] codec. Respond with
 `400 Bad Request` if the validation fails.
 
-The input for this parser will be the query string parsed as
-`{ [K in string]: string }`, i.e. all parameter values will be strings. If you
-want to convert them to other types, you probably find the `FromString` codecs
-from [io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
+The input for this parser will be the cookies parsed as
+`{ [K in string]: string }`, i.e. all cookie values will be strings. If you want
+to convert them to other types, you probably find the `FromString` codecs from
+[io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
 
 #### Customizing the error response
 
@@ -684,6 +695,15 @@ function bodyP<
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
 ): Middleware<{ body: t.TypeOf<Codec> }, ErrorResponse>
+
+function headersP<
+  Codec extends t.Type<any>,
+  ErrorResponse extends Response.Response<number, any, any>
+>(
+  codec: Codec,
+  errorHandler: ErrorHandler<ErrorResponse>
+): Middleware<{ headers: t.TypeOf<Codec> }, ErrorResponse>
+
 function cookiesP<
   Codec extends t.Type<any>,
   ErrorResponse extends Response.Response<number, any, any>
