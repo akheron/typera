@@ -248,6 +248,27 @@ describe('route & router', () => {
     expect(finalizer2).toEqual(1)
   })
 
+  it('buffer body', async () => {
+    const test: Route<Response.Ok<Buffer>> = route
+      .get('/buffer')
+      .handler(async () => {
+        return Response.ok(Buffer.from('foobar', 'utf-8'))
+      })
+
+    const handler = router(test).handler()
+    server = makeServer(handler)
+
+    await request(server)
+      .get('/buffer')
+      .expect(200)
+      .expect('Content-Type', 'application/octet-stream')
+      .expect((res) => {
+        if (!(res.body as Buffer).equals(Buffer.from('foobar', 'utf-8'))) {
+          throw new Error('expected body "foobar" as a buffer')
+        }
+      })
+  })
+
   it('streaming body', async () => {
     const test: Route<
       Response.Ok<Response.StreamingBody, { 'content-type': 'text/plain' }>
