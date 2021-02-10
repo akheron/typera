@@ -738,6 +738,42 @@ const myBody = <T>(
 // etc...
 ```
 
+#### Using express middleware
+
+_This is an experimental feature, and is currently available only for
+`typera-express`._
+
+Express middleware is inherently incompatible with typera middleware, not the
+least because Express middleware cannot communicate typing information outside
+to the next middleware/handler.
+
+However, lots of useful Express middleware already exists out there.
+`typera-express` has a function that helps you wrap existing Express middleware
+in a way that it works (mostly) like typera middleware does:
+
+#### `Middleware.wrapNative<Request, Result>(middleware, options?: WrapNativeOptions<Request, Result>): Middleware<Request, never>`
+
+Given Express middleware function `middleware`, return the corresponding typera
+middleware.
+
+Optional options:
+
+- `timeout: number`: The time the middleware is waited for, in milliseconds. If
+  it doesn't call `next()` or send the response during that time, an error is
+  thrown. Defaults to 100.
+
+- `result(request: Request): Result`: Return an object to be added to be merged
+  to the typera request object. Use this function to take any data the wrapped
+  middleware adds to `req` and make it consumable by other typera middleware or
+  the route handler function.
+
+An Express middleware may either pass the control to the next middleware (or
+route handler) in the chain by calling `next()` (the third parameter of the
+middleware function), or send the response and end the middleware chain. Some
+middleware also use various tricks to hook to the point where the response is
+eventually sent, to e.g. log info about it. `wrapNative` tries to make all of
+this possible, but there might be corner cases which don't work yet.
+
 ### Routes
 
 ```typescript
