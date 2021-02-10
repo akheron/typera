@@ -11,7 +11,7 @@ export type ChainedMiddleware<
   Request,
   Result,
   Response extends commonResponse.Generic
-> = commonMiddleware.Middleware<Request, Result, Response>
+> = commonMiddleware.Middleware<RequestBase & Request, Result, Response>
 
 export type Generic = commonMiddleware.Middleware<
   RequestBase,
