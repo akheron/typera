@@ -133,9 +133,9 @@ function checkTestResults(
   testFiles: TestFile[],
   compileErrors: CompileError[]
 ): TestResult[] {
-  return testFiles.map(testFile => {
+  return testFiles.map((testFile) => {
     const compileError = compileErrors.find(
-      compileError => compileError.fileName === testFile.fileName
+      (compileError) => compileError.fileName === testFile.fileName
     )
     if (testFile.status === 'ok') {
       if (compileError) {

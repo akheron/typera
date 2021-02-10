@@ -4,7 +4,7 @@ import { Parser, Response, Route, route } from 'typera-koa'
 export const handler: Route<Response.Ok<string>> = route
   .post('/')
   .use(Parser.body(t.type({ foo: t.number })))
-  .handler(_req => {
+  .handler((_req) => {
     return Response.ok('foo')
   })
 

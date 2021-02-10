@@ -24,7 +24,7 @@ export const root: Route<
     Parser.headers(t.type({ n: t.string })),
     Parser.body(t.type({ m: t.number }))
   )
-  .handler(req => {
+  .handler((req) => {
     return Response.ok({
       x: req.routeParams.x,
       y: req.routeParams.y,
