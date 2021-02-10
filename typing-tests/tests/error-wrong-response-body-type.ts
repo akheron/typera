@@ -2,7 +2,7 @@ import { Response, Route, route } from 'typera-koa'
 
 export const handler: Route<Response.Ok<string>> = route
   .get('/')
-  .handler(_req => {
+  .handler((_req) => {
     return Response.ok(123)
   })
 

@@ -2,7 +2,7 @@ import { Response, Route, route } from 'typera-koa'
 
 export const handler: Route<
   Response.Ok<string, { 'Content-Type': 'application/json' }>
-> = route.get('/').handler(_req => {
+> = route.get('/').handler((_req) => {
   return Response.ok('foo')
 })
 
