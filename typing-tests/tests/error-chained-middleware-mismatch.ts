@@ -11,9 +11,9 @@ export const handler = typera.route
   .get('/foo')
   .use(mw1)
   .use(mw2)
-  .handler(_req => {
+  .handler((_req) => {
     return typera.Response.ok(42)
   })
 
 // Expected error:
-// Argument of type 'Middleware<{ bar: number; }, { baz: number; }, never>' is not assignable to parameter of type 'Middleware<RequestBase & { foo: number; }, any, Response<number, any, OptionalHeaders>>'.
+// Argument of type 'Middleware<RequestBase & { bar: number; }, { baz: number; }, never>' is not assignable to parameter of type 'Middleware<RequestBase & { foo: number; }, any, Response<number, any, OptionalHeaders>>'.
