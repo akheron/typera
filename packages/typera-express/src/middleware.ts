@@ -22,22 +22,15 @@ export type Generic = commonMiddleware.Middleware<
   commonResponse.Generic
 >
 
-interface NativeOptions<Request, Result> {
-  timeout?: number | null
-  result?: (request: Request) => Result
-}
-
-export const wrapNative = <Request = RequestBase, Result = unknown>(
+export const wrapNative = <Result = unknown>(
   middleware: express.Handler,
-  options?: NativeOptions<Request, Result>
-): ChainedMiddleware<Request, Result, never> => (request) =>
+  result?: (request: RequestBase) => Result
+): Middleware<Result, never> => (request) =>
   new Promise((resolve, reject) => {
-    const { timeout = 100, result = () => ({} as Result) } = options ?? {}
     const { req, res } = request
-    let timeoutHandle: NodeJS.Timeout | undefined
+    const makeResult = result ?? (() => ({} as Result))
 
     const next = (err?: unknown) => {
-      if (timeoutHandle) clearTimeout(timeoutHandle)
       restoreRes()
 
       if (err) {
@@ -45,14 +38,13 @@ export const wrapNative = <Request = RequestBase, Result = unknown>(
         reject(err)
       } else {
         // middleware called next()
-        resolve(commonMiddleware.next(result(request)))
+        resolve(commonMiddleware.next(makeResult(request)))
       }
     }
 
     const end: EndHandler = (status, method, args) => {
       // middleware sent the response
 
-      if (timeoutHandle) clearTimeout(timeoutHandle)
       restoreRes()
 
       // Abuse streamingBody to call an arbitrary res method
@@ -65,15 +57,6 @@ export const wrapNative = <Request = RequestBase, Result = unknown>(
           }),
         } as never)
       )
-    }
-
-    const timedOut = () => {
-      restoreRes()
-      reject(new Error('middleware timed out'))
-    }
-
-    if (timeout !== null) {
-      timeoutHandle = setTimeout(timedOut, timeout)
     }
 
     const restoreRes = setupResponseMock(res, end)
