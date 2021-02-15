@@ -1033,7 +1033,7 @@ versions.
 ## Releasing
 
 ```
-$ yarn lerna bump <major|minor|patch>
+$ yarn lerna version <major|minor|patch>
 $ yarn lerna publish from-git
 ```
 
