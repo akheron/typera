@@ -4523,9 +4523,9 @@ inquirer@^6.2.0:
     through "^2.3.6"
 
 io-ts-types@>=0.5.1:
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/io-ts-types/-/io-ts-types-0.5.13.tgz#f4eba9dd982152695654d1f22c39c8041e0fea44"
-  integrity sha512-zN7QTJC8DmnRcDw/QO30U4EiK7UPcPq470cKH+NBZtgfUimqIr7hT+bTVZkVW+qF1HDZ0W3qUfvl5FOd/yBRpw==
+  version "0.5.14"
+  resolved "https://registry.yarnpkg.com/io-ts-types/-/io-ts-types-0.5.14.tgz#93b744049aa8d10af17fa117e0a9dfa21b897e1e"
+  integrity sha512-wehWbf0IjCMB+5768810uiUyLi/xhWWLTzWUXvi/WBqbyokuYZUX7vnCC7Aop9duuVm6/kX94IFaCFbARCSTtw==
 
 io-ts@>=2.0.0:
   version "2.2.14"
