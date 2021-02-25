@@ -117,7 +117,7 @@ const userBody = t.type({ name: t.string, age: t.number })
 const updateUser: Route<
   Response.Ok<User> | Response.NotFound | Response.BadRequest<string>
 > = route
-  .put('/user/', URL.int('id')) // Capture id from the path
+  .put('/user/:id(int)') // Capture id from the path
   .use(Parser.body(userBody)) // Use the userBody decoder for the request body
   .handler(async (request) => {
     // This imaginary function takes the user id and data, and updates the
@@ -155,7 +155,7 @@ interface User {
 const userBody = t.type({ name: t.string, age: t.number })
 ```
 
-We fist import the stuff that is needed, and define an object type that is
+We first import the stuff that is needed, and define an object type that is
 returned from the route handler. We also define an [io-ts] codec for decoding
 incoming user data.
 
