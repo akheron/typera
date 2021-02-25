@@ -7,4 +7,4 @@ export const handler: Route<
 })
 
 // Expected error:
-// Type 'Route<Response<200, string, undefined>>' is not assignable to type 'Route<Response<200, string, { 'Content-Type': "application/json"; }>>'.
+// Type 'Route<Ok<string, undefined>>' is not assignable to type 'Route<Ok<string, { 'Content-Type': "application/json"; }>>'.

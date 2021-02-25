@@ -7,4 +7,4 @@ export const handler: Route<Response.Ok<string>> = route
   })
 
 // Expected error:
-// Type 'Route<Response<200, number, undefined>>' is not assignable to type 'Route<Response<200, string, undefined>>'.
+// Type 'Route<Ok<number, undefined>>' is not assignable to type 'Route<Ok<string, undefined>>'.
