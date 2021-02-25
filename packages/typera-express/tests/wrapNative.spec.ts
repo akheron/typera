@@ -1,6 +1,11 @@
 import * as cors from 'cors'
 import * as helmet from 'helmet'
-import { Middleware, Response, router, route } from '..'
+import * as session from 'express-session'
+import * as bodyParser from 'body-parser'
+import * as cookieParser from 'cookie-parser'
+import * as passport from 'passport'
+import { Strategy as LocalStrategy } from 'passport-local'
+import { Middleware, Response, applyMiddleware, router, route } from '..'
 import * as request from 'supertest'
 import { makeApp } from './utils'
 
@@ -69,4 +74,108 @@ describe('Middleware.wrapNative', () => {
         })
     })
   })
+
+  describe('passport', () => {
+    passport.use(
+      new LocalStrategy((username, password, done) => {
+        if (username === 'user' && password == 'pass') {
+          // Success
+          done(null, { id: 1, name: 'user' })
+        } else if (username === 'error') {
+          // Unexpected error
+          done(new Error('error here'))
+        } else {
+          // Authentication failure
+          done(null, false, { message: 'Invalid username or password' })
+        }
+      })
+    )
+
+    passport.serializeUser((user, done) => {
+      done(null, JSON.stringify(user))
+    })
+
+    passport.deserializeUser((user, done) => {
+      if (typeof user === 'string') {
+        done(null, JSON.parse(user))
+      } else {
+        done(new Error('expected string'))
+      }
+    })
+
+    const authenticate = Middleware.wrapNative(passport.authenticate('local'))
+
+    const isAuthenticated: Middleware.Middleware<
+      { authenticated: boolean },
+      never
+    > = (request) =>
+      Middleware.next({ authenticated: request.req.isAuthenticated() })
+
+    const route = applyMiddleware(
+      Middleware.wrapNative(passport.initialize()),
+      Middleware.wrapNative(passport.session()),
+      isAuthenticated
+    )
+
+    const login = route
+      .post('/login')
+      .use(authenticate)
+      .handler(async () => {
+        return Response.redirect(302, '/')
+      })
+
+    const test = route.get('/test').handler(async (request) => {
+      return Response.ok({ authenticated: request.authenticated })
+    })
+
+    const app = makeApp()
+    app.use(cookieParser())
+    app.use(bodyParser.json())
+    app.use(session({ secret: 'hush', resave: true, saveUninitialized: true }))
+    app.use(router(login, test).handler())
+
+    it('login success', async () => {
+      await request(app)
+        .post('/login')
+        .send({ username: 'user', password: 'pass' })
+        .expect(302)
+        .expect('Location', '/')
+        .expect('Set-Cookie', /=/)
+    })
+    it('login failure', async () => {
+      await request(app)
+        .post('/login')
+        .send({ username: 'user', password: 'wrong' })
+        .expect(401)
+    })
+    it('unexpected error', async () => {
+      await request(app)
+        .post('/login')
+        .send({ username: 'error', password: 'something' })
+        .expect(500, /Error: error here/)
+    })
+    it('not authenticated', async () => {
+      await request(app).get('/test').expect({ authenticated: false })
+    })
+    it('authenticated', async () => {
+      const response = await request(app)
+        .post('/login')
+        .send({ username: 'user', password: 'pass' })
+      const cookie = response.get('Set-Cookie')[0].split(';')[0]
+      await request(app)
+        .get('/test')
+        .set('Cookie', [cookie])
+        .send()
+        .expect({ authenticated: true })
+    })
+  })
 })
+
+declare global {
+  namespace Express {
+    interface User {
+      id: number
+      name: string
+    }
+  }
+}
