@@ -58,8 +58,8 @@ function run<Response extends common.Response.Generic>(
       ctx.response.set(response.headers)
     }
     if (Response.isStreamingBody(response.body)) {
-      ctx.body = new stream.PassThrough()
-      response.body.callback(ctx.body)
+      const pt = (ctx.body = new stream.PassThrough())
+      response.body.callback(pt)
     } else {
       ctx.response.body = response.body || ''
     }
