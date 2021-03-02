@@ -75,6 +75,36 @@ describe('Middleware.wrapNative', () => {
     })
   })
 
+  describe('session', () => {
+    const wrappedSession = Middleware.wrapNative(session({ secret: 'foobar' }))
+
+    const testRoute = route
+      .post('/test')
+      .use(wrappedSession)
+      .handler(async (request) => {
+        if (request.req.session.views) request.req.session.views++
+        else request.req.session.views = 1
+        request.req.session.save()
+        return Response.ok({ views: request.req.session.views })
+      })
+
+    const app = makeApp().use(router(testRoute).handler())
+
+    it('works', async () => {
+      const response = await request(app)
+        .post('/test')
+        .expect(200, { views: 1 })
+      const cookie = response.get('Set-Cookie')[0].split(';')[0]
+
+      for (let i = 2; i <= 4; i++) {
+        await request(app)
+          .post('/test')
+          .set('Cookie', cookie)
+          .expect(200, { views: i })
+      }
+    })
+  })
+
   describe('passport', () => {
     passport.use(
       new LocalStrategy((username, password, done) => {
@@ -177,5 +207,11 @@ declare global {
       id: number
       name: string
     }
+  }
+}
+
+declare module 'express-session' {
+  interface SessionData {
+    views: number
   }
 }
