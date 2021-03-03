@@ -144,6 +144,9 @@ describe('Middleware.wrapNative', () => {
       Middleware.next({ authenticated: request.req.isAuthenticated() })
 
     const route = applyMiddleware(
+      Middleware.wrapNative(
+        session({ secret: 'hush', resave: true, saveUninitialized: true })
+      ),
       Middleware.wrapNative(passport.initialize()),
       Middleware.wrapNative(passport.session()),
       isAuthenticated
@@ -162,7 +165,6 @@ describe('Middleware.wrapNative', () => {
 
     const app = makeApp()
     app.use(bodyParser.json())
-    app.use(session({ secret: 'hush', resave: true, saveUninitialized: true }))
     app.use(router(login, test).handler())
 
     it('login success', async () => {
