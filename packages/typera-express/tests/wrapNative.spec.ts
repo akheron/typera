@@ -2,6 +2,8 @@ import * as cors from 'cors'
 import * as helmet from 'helmet'
 import * as session from 'express-session'
 import * as bodyParser from 'body-parser'
+import * as cookieParser from 'cookie-parser'
+import * as csrf from 'csurf'
 import * as passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Middleware, Response, applyMiddleware, router, route } from '..'
@@ -78,7 +80,9 @@ describe('Middleware.wrapNative', () => {
   })
 
   describe('session', () => {
-    const wrappedSession = Middleware.wrapNative(session({ secret: 'foobar' }))
+    const wrappedSession = Middleware.wrapNative(
+      session({ secret: 'foobar', resave: true, saveUninitialized: true })
+    )
 
     const testRoute = route
       .post('/test')
@@ -104,6 +108,54 @@ describe('Middleware.wrapNative', () => {
           .set('Cookie', cookie)
           .expect(200, { views: i })
       }
+    })
+  })
+
+  describe('csurf', () => {
+    const route = applyMiddleware(Middleware.wrapNative(cookieParser()))
+    const csrfProtection = Middleware.wrapNative(
+      csrf({ cookie: true }),
+      ({ req }) => {
+        return { csrf: { token: () => req.csrfToken() } }
+      }
+    )
+    const parseForm = Middleware.wrapNative(
+      bodyParser.urlencoded({ extended: false })
+    )
+
+    const form = route
+      .get('/form')
+      .use(csrfProtection)
+      .handler(async (request) => {
+        return Response.ok({ csrfToken: request.csrf.token() })
+      })
+
+    const process = route
+      .post('/process')
+      .use(parseForm)
+      .use(csrfProtection)
+      .handler(async () => {
+        return Response.ok('success')
+      })
+
+    const app = makeApp().use(router(form, process).handler())
+
+    it('invalid csrf', async () => {
+      await request(app)
+        .post('/process')
+        .expect(403, /invalid csrf token/)
+    })
+
+    it('valid csrf', async () => {
+      const response = await request(app).get('/form').expect(200)
+      const cookie = parseCookie(response)
+      const csrfToken = response.body['csrfToken']
+
+      await request(app)
+        .post('/process')
+        .set('Cookie', [cookie])
+        .send(`_csrf=${csrfToken}`)
+        .expect(200, 'success')
     })
   })
 
