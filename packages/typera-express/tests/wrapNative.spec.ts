@@ -2,7 +2,6 @@ import * as cors from 'cors'
 import * as helmet from 'helmet'
 import * as session from 'express-session'
 import * as bodyParser from 'body-parser'
-import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Middleware, Response, applyMiddleware, router, route } from '..'
@@ -162,7 +161,6 @@ describe('Middleware.wrapNative', () => {
     })
 
     const app = makeApp()
-    app.use(cookieParser())
     app.use(bodyParser.json())
     app.use(session({ secret: 'hush', resave: true, saveUninitialized: true }))
     app.use(router(login, test).handler())
