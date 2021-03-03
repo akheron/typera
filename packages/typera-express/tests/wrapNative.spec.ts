@@ -9,6 +9,9 @@ import { Middleware, Response, applyMiddleware, router, route } from '..'
 import * as request from 'supertest'
 import { makeApp } from './utils'
 
+const parseCookie = (response: request.Response) =>
+  response.get('Set-Cookie')[0].split(';')[0]
+
 describe('Middleware.wrapNative', () => {
   describe('cors', () => {
     const ORIGIN = 'http://example.com'
@@ -94,7 +97,7 @@ describe('Middleware.wrapNative', () => {
       const response = await request(app)
         .post('/test')
         .expect(200, { views: 1 })
-      const cookie = response.get('Set-Cookie')[0].split(';')[0]
+      const cookie = parseCookie(response)
 
       for (let i = 2; i <= 4; i++) {
         await request(app)
@@ -191,7 +194,7 @@ describe('Middleware.wrapNative', () => {
       const response = await request(app)
         .post('/login')
         .send({ username: 'user', password: 'pass' })
-      const cookie = response.get('Set-Cookie')[0].split(';')[0]
+      const cookie = parseCookie(response)
       await request(app)
         .get('/test')
         .set('Cookie', [cookie])
