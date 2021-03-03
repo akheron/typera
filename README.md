@@ -32,6 +32,8 @@ It works with both [Express] and [Koa].
     - [`Parser.headers<T>(codec: t.Type<T>): Middleware<{ headers: T }, Response.BadRequest<string>>`](#parserheaderstcodec-ttypet-middleware-headers-t--responsebadrequeststring)
     - [`Parser.cookies<T>(codec: t.Type<T>): Middleware<{ cookies: T }, Response.BadRequest<string>>`](#parsercookiestcodec-ttypet-middleware-cookies-t--responsebadrequeststring)
     - [Customizing the error response](#customizing-the-error-response)
+    - [Using express middleware](#using-express-middleware)
+      - [`Middleware.wrapNative<Result>(middleware, result?: (request: RequestBase) => Result): Middleware<Result, never>`](#middlewarewrapnativeresultmiddleware-result-request-requestbase--result-middlewareresult-never)
   - [Routes](#routes)
     - [`route`](#route)
       - [`route.get(...): Route<Response>`](#routeget-routeresponse)
