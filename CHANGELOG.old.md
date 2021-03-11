@@ -1,5 +1,8 @@
 # Changelog
 
+Release notes for new releases are in
+[GitHub releases](https://github.com/akheron/typera/releases).
+
 ## 2.0.0
 
 **BREAKING CHANGES**
