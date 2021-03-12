@@ -19,7 +19,10 @@ export const queryP = commonParser.queryP(getQuery)
 export const query = commonParser.query(getQuery)
 
 function getHeaders(e: RequestBase): any {
-  return e.req.headers
+  return new Proxy(e.req, {
+    get: (target, field) =>
+      typeof field === 'string' ? target.get(field) : undefined,
+  })
 }
 export const headersP = commonParser.headersP(getHeaders)
 export const headers = commonParser.headers(getHeaders)

@@ -633,9 +633,9 @@ Validate the query string according to the given [io-ts] codec. Respond with
 `400 Bad Request` if the validation fails.
 
 The input for this parser will be the query string parsed as
-`{ [K in string]: string }`, i.e. all parameter values will be strings. If you
-want to convert them to other types, you probably find the `FromString` codecs
-from [io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
+`Record<string, string>`, i.e. all parameter values will be strings. If you want
+to convert them to other types, you probably find the `FromString` codecs from
+[io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
 
 #### `Parser.body<T>(codec: t.Type<T>): Middleware<{ body: T }, Response.BadRequest<string>>`
 
@@ -656,9 +656,15 @@ or [Koa] app rather than use them as typera middleware.
 Validate the request headers according to the given [io-ts] codec. Respond with
 `400 Bad Request` if the validation fails.
 
+Header matching is case-insensitive, so using e.g. `X-API-KEY`, `x-api-key` and
+`X-Api-Key` in the codec will all read the same header. However, the parse
+_result_ will of course be case sensitive. That is, the field in
+`request.headers` will have the name you specify in the [io-ts] codec you pass
+to `Parser.headers`, with case preserved.
+
 The input for this parser will be the headers parsed as
-`{ [K in string]: string }`, i.e. all header values will be strings. If you want
-to convert them to other types, you probably find the `FromString` codecs from
+`Record<string, string>`, i.e. all header values will be strings. If you want to
+convert them to other types, you probably find the `FromString` codecs from
 [io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
 
 #### `Parser.cookies<T>(codec: t.Type<T>): Middleware<{ cookies: T }, Response.BadRequest<string>>`
@@ -667,8 +673,8 @@ Validate the request cookies according to the given [io-ts] codec. Respond with
 `400 Bad Request` if the validation fails.
 
 The input for this parser will be the cookies parsed as
-`{ [K in string]: string }`, i.e. all cookie values will be strings. If you want
-to convert them to other types, you probably find the `FromString` codecs from
+`Record<string, string>`, i.e. all cookie values will be strings. If you want to
+convert them to other types, you probably find the `FromString` codecs from
 [io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
 
 #### Customizing the error response
