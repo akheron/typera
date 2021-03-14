@@ -1,6 +1,6 @@
 {
   "name": "typera-express",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "TYPEd Route Assistant - for Express",
   "repository": "https://github.com/akheron/typera",
   "author": "Petri Lehtinen <petri@digip.org>",
