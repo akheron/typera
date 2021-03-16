@@ -104,6 +104,22 @@ describe('route & router', () => {
     expect(callCount).toEqual(1)
   })
 
+  it('routeParams are available to middleware', async () => {
+    const mw: Middleware.ChainedMiddleware<
+      { routeParams: { id: number } },
+      { foo: number },
+      never
+    > = async (request) => Middleware.next({ foo: request.routeParams.id })
+
+    const test = route
+      .get('/foo/:id(int)')
+      .use(mw)
+      .handler(async (request) => Response.ok({ foo: request.foo }))
+
+    server = makeServer(router(test).handler())
+    await request(server).get('/foo/123').expect(200, { foo: 123 })
+  })
+
   it('returns errors from middleware', async () => {
     const error: Route<Response.NoContent | Response.BadRequest<string>> = route
       .post('/error')

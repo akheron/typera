@@ -16,4 +16,4 @@ export const handler = typera.route
   })
 
 // Expected error:
-// Argument of type 'ChainedMiddleware<{ bar: number; }, { baz: number; }, never>' is not assignable to parameter of type 'Generic<RequestBase & { foo: number; }>'.
+// Argument of type 'ChainedMiddleware<{ bar: number; }, { baz: number; }, never>' is not assignable to parameter of type 'Generic<RequestBase & { routeParams: {}; } & { foo: number; }>'.

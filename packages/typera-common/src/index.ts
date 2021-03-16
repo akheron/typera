@@ -140,20 +140,22 @@ export function route<
       const routeParams = pathParser.parse(getRouteParams(requestBase))
       if (Either.isLeft(routeParams)) return routeParams.left
 
-      const middlewareOutput = await runMiddleware(requestBase, middleware)
+      const middlewareOutput = await runMiddleware(
+        { ...requestBase, routeParams: routeParams.right },
+        middleware
+      )
       if (Either.isLeft(middlewareOutput)) {
         // Finalizers have already run in this case
         return middlewareOutput.left
       }
 
+      const { request, runFinalizers } = middlewareOutput.right
+
       let response
       try {
-        response = await handler({
-          ...middlewareOutput.right.request,
-          routeParams: routeParams.right,
-        })
+        response = await handler(request)
       } finally {
-        await middlewareOutput.right.runFinalizers()
+        await runFinalizers()
       }
       return response
     },
@@ -229,11 +231,13 @@ export type MakeRoute<
   Path extends string,
   OutsideMiddlewareResponse extends Response.Generic = never
 > = URL.PathToCaptures<Path, ParamConversions> extends infer URLCaptures
-  ? RouteConstructor<URLCaptures, Request, OutsideMiddlewareResponse>
+  ? RouteConstructor<
+      Request & { routeParams: URLCaptures },
+      OutsideMiddlewareResponse
+    >
   : never
 
 interface RouteConstructor<
-  URLCaptures,
   Request,
   OutsideMiddlewareResponse extends Response.Generic = never
 > {
@@ -244,13 +248,12 @@ interface RouteConstructor<
     infer MiddlewareResponse
   >
     ? RouteConstructor<
-        URLCaptures,
         Request & MiddlewareResult,
         MiddlewareResponse | OutsideMiddlewareResponse
       >
     : never
   handler<Response extends Response.Generic>(
-    fn: RequestHandler<Request & { routeParams: URLCaptures }, Response>
+    fn: RequestHandler<Request, Response>
   ): Route<Response | OutsideMiddlewareResponse>
 }
 
