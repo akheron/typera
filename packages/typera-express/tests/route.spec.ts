@@ -96,6 +96,22 @@ describe('route & router', () => {
     expect(callCount).toEqual(1)
   })
 
+  it('routeParams are available to middleware', async () => {
+    const mw: Middleware.ChainedMiddleware<
+      { routeParams: { id: number } },
+      { foo: number },
+      never
+    > = async (request) => Middleware.next({ foo: request.routeParams.id })
+
+    const test = route
+      .get('/foo/:id(int)')
+      .use(mw)
+      .handler(async (request) => Response.ok({ foo: request.foo }))
+
+    const app = makeApp().use(router(test).handler())
+    await request(app).get('/foo/123').expect(200, { foo: 123 })
+  })
+
   it('forwards thrown errors to express error handling middleware', async () => {
     const exception = route.get('/').handler(async () => {
       throw new Error('Unexpected error')
