@@ -39,40 +39,43 @@ export type ErrorHandler<ErrorResponse extends Response.Generic> = (
   errors: t.Errors
 ) => ErrorResponse
 
-const genericP = <RequestBase, Key extends string>(
-  input: (req: RequestBase) => any,
-  key: Key
-) => <T, ErrorResponse extends Response.Generic>(
-  codec: t.Type<T, any, unknown>,
-  errorHandler: ErrorHandler<ErrorResponse>
-): Middleware.Middleware<RequestBase, Record<Key, T>, ErrorResponse> => (
-  req: RequestBase
-) =>
-  pipe(
-    codec.decode(input(req)),
-    Either.fold<
-      t.Errors,
-      T,
-      Middleware.MiddlewareOutput<Record<Key, T>, ErrorResponse>
-    >(
-      (errors) => Middleware.stop(errorHandler(errors)),
-      (result) => Middleware.next({ [key]: result } as any)
+const genericP =
+  <RequestBase, Key extends string>(
+    input: (req: RequestBase) => any,
+    key: Key
+  ) =>
+  <T, ErrorResponse extends Response.Generic>(
+    codec: t.Type<T, any, unknown>,
+    errorHandler: ErrorHandler<ErrorResponse>
+  ): Middleware.Middleware<RequestBase, Record<Key, T>, ErrorResponse> =>
+  (req: RequestBase) =>
+    pipe(
+      codec.decode(input(req)),
+      Either.fold<
+        t.Errors,
+        T,
+        Middleware.MiddlewareOutput<Record<Key, T>, ErrorResponse>
+      >(
+        (errors) => Middleware.stop(errorHandler(errors)),
+        (result) => Middleware.next({ [key]: result } as any)
+      )
     )
-  )
 
-const generic = <RequestBase, Key extends string>(
-  input: (req: RequestBase) => any,
-  key: Key
-) => <T>(
-  codec: t.Type<T, any, unknown>
-): Middleware.Middleware<
-  RequestBase,
-  Record<Key, T>,
-  Response.BadRequest<string>
-> =>
-  genericP(input, key)(codec, (err) =>
-    Response.badRequest(`Invalid ${key}: ${errorsToString(err)}`)
-  )
+const generic =
+  <RequestBase, Key extends string>(
+    input: (req: RequestBase) => any,
+    key: Key
+  ) =>
+  <T>(
+    codec: t.Type<T, any, unknown>
+  ): Middleware.Middleware<
+    RequestBase,
+    Record<Key, T>,
+    Response.BadRequest<string>
+  > =>
+    genericP(input, key)(codec, (err) =>
+      Response.badRequest(`Invalid ${key}: ${errorsToString(err)}`)
+    )
 
 function errorsToString(err: t.Errors) {
   return PathReporter.report(Either.left(err))

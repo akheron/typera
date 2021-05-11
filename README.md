@@ -392,10 +392,8 @@ each valid HTTP status code.
 For example, the response type for a 200 OK is:
 
 ```typescript
-type Ok<
-  Body = undefined,
-  Headers extends OptionalHeaders = undefined
-> = Response<200, Body, Headers>
+type Ok<Body = undefined, Headers extends OptionalHeaders = undefined> =
+  Response<200, Body, Headers>
 ```
 
 The function to construct a 200 OK response has the following overloaded
@@ -543,29 +541,25 @@ import * as pg from 'pg'
 
 const pool = new pg.Pool()
 
-const db: Middleware.Middleware<
-  { connection: pg.ClientBase },
-  never
-> = async () => {
-  const connection = await pool.connect()
-  return Middleware.next({ connection }, () => connection.release())
-}
+const db: Middleware.Middleware<{ connection: pg.ClientBase }, never> =
+  async () => {
+    const connection = await pool.connect()
+    return Middleware.next({ connection }, () => connection.release())
+  }
 ```
 
 If you write a middleware that adds nothing to the typera request object, its
 result type should be `unknown`:
 
 ```typescript
-const checkOrigin: Middleware.Middleware<
-  unknown,
-  Response.BadRequest<string>
-> = async (request) => {
-  // In typera-express, request.req is the Express request
-  if (request.req.get('origin') !== 'example.com') {
-    return Middleware.stop(Response.badRequest('Invalid origin'))
+const checkOrigin: Middleware.Middleware<unknown, Response.BadRequest<string>> =
+  async (request) => {
+    // In typera-express, request.req is the Express request
+    if (request.req.get('origin') !== 'example.com') {
+      return Middleware.stop(Response.badRequest('Invalid origin'))
+    }
+    return Middleware.next()
   }
-  return Middleware.next()
-}
 ```
 
 If you need to use the result of some previous middleware, use
@@ -875,14 +869,13 @@ unexpectedly because of changes in the code, and documents all the possible
 responses from a single route:
 
 ```typescript
-const listHandler: Route<
-  Response.Ok<User> | Response.BadRequest<string>
-> = route
-  .get(/* ... */)
-  .use(/* ... */)
-  .handler(async (request) => {
-    // ...
-  })
+const listHandler: Route<Response.Ok<User> | Response.BadRequest<string>> =
+  route
+    .get(/* ... */)
+    .use(/* ... */)
+    .handler(async (request) => {
+      // ...
+    })
 ```
 
 We avoid giving the accurate type of the various `route` functions here, because

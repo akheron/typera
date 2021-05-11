@@ -2,9 +2,8 @@ import * as commonParser from 'typera-common/parser'
 import * as commonResponse from 'typera-common/response'
 import { RequestBase } from './context'
 
-export type ErrorHandler<
-  ErrorResponse extends commonResponse.Generic
-> = commonParser.ErrorHandler<ErrorResponse>
+export type ErrorHandler<ErrorResponse extends commonResponse.Generic> =
+  commonParser.ErrorHandler<ErrorResponse>
 
 function getBody(req: RequestBase): any {
   return req.ctx.request.body

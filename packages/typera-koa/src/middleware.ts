@@ -2,10 +2,8 @@ import * as commonMiddleware from 'typera-common/middleware'
 import * as commonResponse from 'typera-common/response'
 import { RequestBase } from './context'
 
-export type Middleware<
-  Result,
-  Response extends commonResponse.Generic
-> = commonMiddleware.Middleware<RequestBase, Result, Response>
+export type Middleware<Result, Response extends commonResponse.Generic> =
+  commonMiddleware.Middleware<RequestBase, Result, Response>
 
 export type ChainedMiddleware<
   Request,

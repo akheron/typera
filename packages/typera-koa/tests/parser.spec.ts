@@ -17,14 +17,13 @@ describe('parsers', () => {
     // koa's cookie parsing has extra logic
 
     const setup = <T>(codec: t.Type<T, any, unknown>) => {
-      const parseCookies: Route<
-        Response.Ok<T> | Response.BadRequest<string>
-      > = route
-        .get('/parse-cookies')
-        .use(Parser.cookies(codec))
-        .handler((request) => {
-          return Response.ok(request.cookies)
-        })
+      const parseCookies: Route<Response.Ok<T> | Response.BadRequest<string>> =
+        route
+          .get('/parse-cookies')
+          .use(Parser.cookies(codec))
+          .handler((request) => {
+            return Response.ok(request.cookies)
+          })
       server = makeServer(router(parseCookies).handler())
     }
 
