@@ -70,10 +70,8 @@ export function earlyHints(body = undefined, headers = undefined) {
   return { status: 103, body, headers }
 }
 
-export type Ok<
-  Body = undefined,
-  Headers extends OptionalHeaders = undefined
-> = Response<200, Body, Headers>
+export type Ok<Body = undefined, Headers extends OptionalHeaders = undefined> =
+  Response<200, Body, Headers>
 export function ok<Body, Headers extends OptionalHeaders>(
   body: Body,
   headers: Headers

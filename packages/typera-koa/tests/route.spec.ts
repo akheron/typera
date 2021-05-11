@@ -49,21 +49,20 @@ describe('route & router', () => {
 
   it('decodes the request', async () => {
     let callCount = 0
-    const decode: Route<
-      Response.NoContent | Response.BadRequest<string>
-    > = route
-      .post('/decode/:foo/:bar(int)')
-      .use(
-        Parser.query(t.type({ baz: t.string })),
-        Parser.body(t.type({ quux: t.boolean }))
-      )
-      .handler((request) => {
-        callCount++
-        expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
-        expect(request.query).toEqual({ baz: 'hello' })
-        expect(request.body).toEqual({ quux: true })
-        return Response.noContent()
-      })
+    const decode: Route<Response.NoContent | Response.BadRequest<string>> =
+      route
+        .post('/decode/:foo/:bar(int)')
+        .use(
+          Parser.query(t.type({ baz: t.string })),
+          Parser.body(t.type({ quux: t.boolean }))
+        )
+        .handler((request) => {
+          callCount++
+          expect(request.routeParams).toEqual({ foo: 'FOO', bar: 42 })
+          expect(request.query).toEqual({ baz: 'hello' })
+          expect(request.body).toEqual({ quux: true })
+          return Response.noContent()
+        })
 
     const handler = router(decode).handler()
     server = makeServer(handler)
@@ -83,16 +82,15 @@ describe('route & router', () => {
       value === 'funny' ? Option.some(42) : Option.none
 
     let callCount = 0
-    const decode: Route<
-      Response.NoContent | Response.BadRequest<string>
-    > = route
-      .useParamConversions({ silly, funny })
-      .post('/decode/:foo(silly)/:bar(funny)')
-      .handler((request) => {
-        callCount++
-        expect(request.routeParams).toEqual({ foo: true, bar: 42 })
-        return Response.noContent()
-      })
+    const decode: Route<Response.NoContent | Response.BadRequest<string>> =
+      route
+        .useParamConversions({ silly, funny })
+        .post('/decode/:foo(silly)/:bar(funny)')
+        .handler((request) => {
+          callCount++
+          expect(request.routeParams).toEqual({ foo: true, bar: 42 })
+          return Response.noContent()
+        })
 
     const handler = router(decode).handler()
     server = makeServer(handler)
