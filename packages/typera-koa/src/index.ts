@@ -43,6 +43,7 @@ class Router {
     return router.routes() as koa.Middleware<any, any>
   }
 }
+export type { Router }
 
 export function router(...routes: Route<common.Response.Generic>[]): Router {
   return new Router(...routes)
