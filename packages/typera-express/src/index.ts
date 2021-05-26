@@ -40,6 +40,7 @@ class Router {
     return router
   }
 }
+export type { Router }
 
 export function router(...routes: Route<common.Response.Generic>[]): Router {
   return new Router(...routes)
