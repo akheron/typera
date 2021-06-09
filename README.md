@@ -392,8 +392,10 @@ each valid HTTP status code.
 For example, the response type for a 200 OK is:
 
 ```typescript
-type Ok<Body = undefined, Headers extends OptionalHeaders = undefined> =
-  Response<200, Body, Headers>
+type Ok<
+  Body = undefined,
+  Headers extends OptionalHeaders = undefined
+> = Response<200, Body, Headers>
 ```
 
 The function to construct a 200 OK response has the following overloaded
@@ -552,14 +554,16 @@ If you write a middleware that adds nothing to the typera request object, its
 result type should be `unknown`:
 
 ```typescript
-const checkOrigin: Middleware.Middleware<unknown, Response.BadRequest<string>> =
-  async (request) => {
-    // In typera-express, request.req is the Express request
-    if (request.req.get('origin') !== 'example.com') {
-      return Middleware.stop(Response.badRequest('Invalid origin'))
-    }
-    return Middleware.next()
+const checkOrigin: Middleware.Middleware<
+  unknown,
+  Response.BadRequest<string>
+> = async (request) => {
+  // In typera-express, request.req is the Express request
+  if (request.req.get('origin') !== 'example.com') {
+    return Middleware.stop(Response.badRequest('Invalid origin'))
   }
+  return Middleware.next()
+}
 ```
 
 If you need to use the result of some previous middleware, use

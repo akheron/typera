@@ -15,10 +15,12 @@ export type Method =
   | 'patch'
   | 'all'
 
-export type SplitBy<Delim extends string, Input> =
-  Input extends `${infer First}${Delim}${infer Rest}`
-    ? [First, ...SplitBy<Delim, Rest>]
-    : [Input]
+export type SplitBy<
+  Delim extends string,
+  Input
+> = Input extends `${infer First}${Delim}${infer Rest}`
+  ? [First, ...SplitBy<Delim, Rest>]
+  : [Input]
 
 type SplitEach<Delim extends string, Input> = Input extends [
   infer Head,

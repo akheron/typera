@@ -5,8 +5,10 @@ import * as commonResponse from 'typera-common/response'
 
 export { next, stop } from 'typera-common/middleware'
 
-export type Middleware<Result, Response extends commonResponse.Generic> =
-  commonMiddleware.Middleware<RequestBase, Result, Response>
+export type Middleware<
+  Result,
+  Response extends commonResponse.Generic
+> = commonMiddleware.Middleware<RequestBase, Result, Response>
 
 export type ChainedMiddleware<
   Request,
