@@ -1830,9 +1830,9 @@
   integrity sha512-GJhpTepz2udxGexqos8wgaBx4I/zWIDPh/KOGEwAqtuGDkOUJu5eFvwmdBX4AmB8Odsr+9pHCQqiAqDL/yKMKw==
 
 "@types/koa-bodyparser@>=4.0.0":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@types/koa-bodyparser/-/koa-bodyparser-4.3.1.tgz#ec2e06f6f50cfddba035d33a3cfe75a8f0cd7fa4"
-  integrity sha512-N1cw6UpYYW01rGanfC0guqkyqKKavXygGBeSgsJOe7EkkSlRH7BNRjzyqv1TzJ3Au69aNeagpzzqAzTo6I08ow==
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@types/koa-bodyparser/-/koa-bodyparser-4.3.2.tgz#ccedc381adeb81e05cbdffb5d2df2bd99a7e7de9"
+  integrity sha512-fjNPSs3qNs/sKVT6O6VdF+RTBd5HLlFtFmAZxWGiOPwCm7+/jhia462Ni30XmCM2ziUbfx2pa79NkHDBI0TgAQ==
   dependencies:
     "@types/koa" "*"
 
