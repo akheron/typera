@@ -1858,9 +1858,9 @@
     "@types/node" "*"
 
 "@types/koa__router@>=8.0.0":
-  version "8.0.4"
-  resolved "https://registry.yarnpkg.com/@types/koa__router/-/koa__router-8.0.4.tgz#0b754a5e5be3262fc649afc7e93800f30cfc5fe0"
-  integrity sha512-SXpZy6ICU/bsTZbNhg7QMNUQuNE7ka94zeLPHXhej2QZ09u2tz5S3WlBRB85HLSUosUZFbIRgfrFtu+PSIAUVA==
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@types/koa__router/-/koa__router-8.0.5.tgz#8a58b0037e9900178367da0be2dd8fa644e40d70"
+  integrity sha512-OteVNltmeAlzf7YZfXQ1gKBFxZiCr8/EByjKd+eIkN673p70LqaetBevbHx4cQuWk/7ZHfcoLoVQvTsIm4elWA==
   dependencies:
     "@types/koa" "*"
 
