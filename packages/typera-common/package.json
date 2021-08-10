@@ -17,7 +17,7 @@
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.13",
+    "@types/jest": "^27.0.0",
     "jest": "^27.0.4",
     "ts-jest": "^27.0.3"
   },
