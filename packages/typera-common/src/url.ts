@@ -37,8 +37,10 @@ type ParamsFrom<Parts, ParamConversions> = Parts extends [
 ]
   ? First extends `:${infer Param}(${infer Conv})`
     ? Conv extends keyof ParamConversions
-      ? { [K in Param]: ParamConversions[Conv] } &
-          ParamsFrom<Rest, ParamConversions>
+      ? { [K in Param]: ParamConversions[Conv] } & ParamsFrom<
+          Rest,
+          ParamConversions
+        >
       : never // TODO: Throw a type error here when it becomes possible
     : First extends `:${infer Param}`
     ? { [K in Param]: string } & ParamsFrom<Rest, ParamConversions>
