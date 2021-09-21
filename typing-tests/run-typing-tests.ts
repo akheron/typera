@@ -1,8 +1,8 @@
 import * as child_process from 'child_process'
 import * as fs from 'fs'
 import * as path from 'path'
-import { Either, either, left, right, isLeft } from 'fp-ts/lib/Either'
-import { array } from 'fp-ts/lib/Array'
+import * as Either from 'fp-ts/lib/Either'
+import * as Array from 'fp-ts/lib/Array'
 
 type TestFile =
   | {
@@ -31,14 +31,14 @@ function main(): number {
   const testDir = 'tests'
 
   const testFiles = parseTestFiles(testDir)
-  if (isLeft(testFiles)) {
+  if (Either.isLeft(testFiles)) {
     console.log('Error reading test files:')
     console.log(testFiles.left)
     return 1
   }
 
   const compileResult = compileProject()
-  if (isLeft(compileResult)) {
+  if (Either.isLeft(compileResult)) {
     console.log('Error building test files:')
     console.log(compileResult.left)
     return 1
@@ -60,8 +60,8 @@ function main(): number {
   return exitStatus
 }
 
-function parseTestFiles(parentDir: string): Either<string, TestFile[]> {
-  return array.sequence(either)(
+function parseTestFiles(parentDir: string): Either.Either<string, TestFile[]> {
+  return Array.sequence(Either.Applicative)(
     fs
       .readdirSync(parentDir)
       .map((fileName: string) => parseTestFile(parentDir, fileName))
@@ -71,18 +71,18 @@ function parseTestFiles(parentDir: string): Either<string, TestFile[]> {
 function parseTestFile(
   parentDir: string,
   fileName: string
-): Either<string, TestFile> {
+): Either.Either<string, TestFile> {
   const match = fileName.match(/^(ok|error)-.*\.ts$/)
   if (!match) {
-    return left(`Invalid test file: ${fileName}`)
+    return Either.left(`Invalid test file: ${fileName}`)
   }
   const expectedStatus = match[1]
 
   if (expectedStatus === 'ok') {
-    return right({ fileName, status: 'ok' })
+    return Either.right({ fileName, status: 'ok' })
   }
 
-  return right({
+  return Either.right({
     fileName,
     status: 'error',
     compileError: getExpectedError(path.join(parentDir, fileName)),
@@ -95,17 +95,21 @@ function getExpectedError(path: string) {
   return lastLine.replace(/^\/\/ /, '')
 }
 
-function compileProject(): Either<string, CompileError[]> {
+function compileProject(): Either.Either<string, CompileError[]> {
   try {
     child_process.execSync(`tsc -p .`)
-    return right([])
+    return Either.right([])
   } catch (err: unknown) {
     const stdout = (err as child_process.SpawnSyncReturns<Buffer>).stdout
-    return array.sequence(either)(parseCompilerErrors(stdout.toString('utf-8')))
+    return Array.sequence(Either.Applicative)(
+      parseCompilerErrors(stdout.toString('utf-8'))
+    )
   }
 }
 
-function parseCompilerErrors(output: string): Either<string, CompileError>[] {
+function parseCompilerErrors(
+  output: string
+): Either.Either<string, CompileError>[] {
   // TypeScript compile errors have the following format:
   //
   // path/to/filename.ts(2,34) error message
@@ -118,12 +122,12 @@ function parseCompilerErrors(output: string): Either<string, CompileError>[] {
   return output.split(/(?=^\S)/gm).map((singleError: string) => {
     const match = singleError.match(/^(.+?)\(\d+,\d+\): (.+)/s)
     if (match) {
-      return right({
+      return Either.right({
         fileName: path.basename(match[1]),
         output: match[2],
       })
     } else {
-      return left(`Unable to parse compiler output: ${singleError}`)
+      return Either.left(`Unable to parse compiler output: ${singleError}`)
     }
   })
 }
