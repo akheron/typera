@@ -99,10 +99,9 @@ function compileProject(): Either<string, CompileError[]> {
   try {
     child_process.execSync(`tsc -p .`)
     return right([])
-  } catch (err) {
-    return array.sequence(either)(
-      parseCompilerErrors(err.stdout.toString('utf-8'))
-    )
+  } catch (err: unknown) {
+    const stdout = (err as child_process.SpawnSyncReturns<Buffer>).stdout
+    return array.sequence(either)(parseCompilerErrors(stdout.toString('utf-8')))
   }
 }
 
