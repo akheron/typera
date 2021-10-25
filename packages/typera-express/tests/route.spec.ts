@@ -110,6 +110,24 @@ describe('route & router', () => {
     await request(app).get('/foo/123').expect(200, { foo: 123 })
   })
 
+  it('dependencies are available to middleware', async () => {
+    const mw: Middleware.ChainedMiddleware<
+      { dep: number },
+      { foo: number },
+      never
+    > = async (request) => Middleware.next({ foo: request.dep })
+
+    const test = route
+      .get('/foo/:id(int)')
+      .dependsOn<{ dep: number }>()
+      .use(mw)
+      .handler(async (request) => Response.ok({ foo: request.foo }))
+      .inject({ dep: 123 })
+
+    const app = makeApp().use(router(test).handler())
+    await request(app).get('/foo/123').expect(200, { foo: 123 })
+  })
+
   it('forwards thrown errors to express error handling middleware', async () => {
     const exception = route.get('/').handler(async () => {
       throw new Error('Unexpected error')
@@ -265,6 +283,24 @@ describe('route & router', () => {
     expect(finalizer1).toEqual(1)
     expect(middleware2).toEqual(1)
     expect(finalizer2).toEqual(1)
+  })
+
+  it('dependencies are availale in the request', async () => {
+    const test: Route<
+      Response.Ok<{ foo: number; bar: string }>,
+      { dep: number }
+    > = route
+      .dependsOn<{ dep1: number }>()
+      .post('/deps')
+      .dependsOn<{ dep2: string }>()
+      .handler((request) => {
+        return Response.ok({ foo: request.dep1, bar: request.dep2 })
+      })
+      .inject({ dep1: 42, dep2: 'hello' })
+    const handler = router(test).handler()
+    const app = makeApp().use(handler)
+
+    await request(app).post('/deps').expect(200, { foo: 42, bar: 'hello' })
   })
 
   it('case insesitive request headers', async () => {

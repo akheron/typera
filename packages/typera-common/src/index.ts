@@ -16,17 +16,24 @@ export type RequestHandler<Request, Response> = (
 export type RouteFn<
   ParamConversions,
   Request,
-  Response extends Response.Generic
+  Response extends Response.Generic,
+  OutsideDependencies
 > = {
   <Path extends string>(method: URL.Method, path: Path): MakeRoute<
     Request,
     ParamConversions,
     Path,
-    Response
+    Response,
+    OutsideDependencies
   >
   useParamConversions<T extends URL.Conversions>(
     conversions: T
-  ): RouteFn<ParamConversions & URL.GetConversionTypes<T>, Request, Response>
+  ): RouteFn<
+    ParamConversions & URL.GetConversionTypes<T>,
+    Request,
+    Response,
+    OutsideDependencies
+  >
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
   ): TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
@@ -36,13 +43,20 @@ export type RouteFn<
     ? RouteFn<
         ParamConversions,
         Request & MiddlewareResult,
-        Response | MiddlewareResponse
+        Response | MiddlewareResponse,
+        OutsideDependencies
       >
     : never
+  dependsOn<Dependencies>(): RouteFn<
+    ParamConversions,
+    Request,
+    Response,
+    OutsideDependencies & Dependencies
+  >
 } & {
   [M in URL.Method]: <Path extends string>(
     path: Path
-  ) => MakeRoute<Request, ParamConversions, Path, Response>
+  ) => MakeRoute<Request, ParamConversions, Path, Response, OutsideDependencies>
 }
 
 export type ApplyMiddleware<
@@ -55,7 +69,8 @@ export type ApplyMiddleware<
   ? RouteFn<
       URL.BuiltinConversions,
       Request & MiddlewareResult,
-      MiddlewareResponse
+      MiddlewareResponse,
+      {}
     >
   : never
 
@@ -89,6 +104,8 @@ export function applyMiddleware<
       paramConversions
     )
 
+  routeFn.depensOn = () => routeFn
+
   routeFn.get = (path: string) => routeFn('get', path)
   routeFn.post = (path: string) => routeFn('post', path)
   routeFn.put = (path: string) => routeFn('put', path)
@@ -115,14 +132,31 @@ function makeRouteConstructor<Request>(
         ...middleware,
         ...nextMiddleware,
       ]),
+    dependsOn: () =>
+      makeRouteConstructor(
+        getRouteParams,
+        paramConversions,
+        method,
+        path,
+        middleware
+      ),
     handler: route(getRouteParams, urlParser, middleware),
   }
 }
 
-export type Route<Response extends Response.Generic> = {
-  method: URL.Method
-  path: string
-  routeHandler: (req: unknown) => Promise<Response>
+export type Route<
+  Response extends Response.Generic,
+  UnsatisfiedDependencies = {}
+> = {
+  __context: {
+    method: URL.Method
+    path: string
+    dependencies: any
+    routeHandler: (req: unknown) => Promise<Response>
+  }
+  inject: <Dependencies extends UnsatisfiedDependencies>(
+    depencencies: Dependencies
+  ) => Route<Response, Omit<UnsatisfiedDependencies, keyof Dependencies>>
 }
 
 export function route<
@@ -133,34 +167,44 @@ export function route<
   pathParser: URL.PathParser,
   middleware: Middleware
 ): any {
-  return ((handler: (req: any) => any) => ({
-    method: pathParser.method,
-    path: pathParser.pattern,
-    routeHandler: async (requestBase: RequestBase) => {
-      const routeParams = pathParser.parse(getRouteParams(requestBase))
-      if (Either.isLeft(routeParams)) return routeParams.left
+  return ((handler: (req: any) => any) => {
+    const context = {
+      method: pathParser.method,
+      path: pathParser.pattern,
+      dependencies: {},
+      routeHandler: async (requestBase: RequestBase, dependencies: any) => {
+        const routeParams = pathParser.parse(getRouteParams(requestBase))
+        if (Either.isLeft(routeParams)) return routeParams.left
 
-      const middlewareOutput = await runMiddleware(
-        { ...requestBase, routeParams: routeParams.right },
-        middleware
-      )
-      if (Either.isLeft(middlewareOutput)) {
-        // Finalizers have already run in this case
-        return middlewareOutput.left
-      }
+        const middlewareOutput = await runMiddleware(
+          { ...requestBase, ...dependencies, routeParams: routeParams.right },
+          middleware
+        )
+        if (Either.isLeft(middlewareOutput)) {
+          // Finalizers have already run in this case
+          return middlewareOutput.left
+        }
 
-      const { request, runFinalizers } = middlewareOutput.right
+        const { request, runFinalizers } = middlewareOutput.right
 
-      let response
-      try {
-        response = await handler(request)
-      } finally {
-        await runFinalizers()
-      }
-      return response
-    },
-  })) as any
+        let response
+        try {
+          response = await handler(request)
+        } finally {
+          await runFinalizers()
+        }
+        return response
+      },
+    }
+    return makeInjectableRoute(context, {})
+  }) as any
 }
+
+const makeInjectableRoute = (context: any, outsideDependencies: any) => ({
+  __context: { ...context, dependencies: outsideDependencies },
+  inject: (dependencies: any) =>
+    makeInjectableRoute(context, { ...outsideDependencies, ...dependencies }),
+})
 
 // Helpers
 
@@ -229,17 +273,20 @@ export type MakeRoute<
   Request,
   ParamConversions,
   Path extends string,
-  OutsideMiddlewareResponse extends Response.Generic = never
+  OutsideMiddlewareResponse extends Response.Generic,
+  OutsideDependencies
 > = URL.PathToCaptures<Path, ParamConversions> extends infer URLCaptures
   ? RouteConstructor<
       Request & { routeParams: URLCaptures },
-      OutsideMiddlewareResponse
+      OutsideMiddlewareResponse,
+      OutsideDependencies
     >
   : never
 
 interface RouteConstructor<
   Request,
-  OutsideMiddlewareResponse extends Response.Generic = never
+  OutsideMiddlewareResponse extends Response.Generic,
+  OutsideDependencies
 > {
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
@@ -249,12 +296,18 @@ interface RouteConstructor<
   >
     ? RouteConstructor<
         Request & MiddlewareResult,
-        MiddlewareResponse | OutsideMiddlewareResponse
+        MiddlewareResponse | OutsideMiddlewareResponse,
+        OutsideDependencies
       >
     : never
+  dependsOn<Dependencies>(): RouteConstructor<
+    Request,
+    OutsideMiddlewareResponse,
+    OutsideDependencies & Dependencies
+  >
   handler<Response extends Response.Generic>(
-    fn: RequestHandler<Request, Response>
-  ): Route<Response | OutsideMiddlewareResponse>
+    fn: RequestHandler<Request & OutsideDependencies, Response>
+  ): Route<Response | OutsideMiddlewareResponse, OutsideDependencies>
 }
 
 export interface MiddlewareType<Result, Response extends Response.Generic> {

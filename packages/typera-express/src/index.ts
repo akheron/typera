@@ -35,7 +35,10 @@ class Router {
   handler(): express.Router {
     const router = express.Router()
     this._routes.forEach((route) => {
-      router[route.method](route.path, run(route.routeHandler))
+      router[route.__context.method](
+        route.__context.path,
+        run(route.__context.routeHandler, route.__context.dependencies)
+      )
     })
     return router
   }
@@ -47,7 +50,8 @@ export function router(...routes: Route<common.Response.Generic>[]): Router {
 }
 
 function run<Response extends common.Response.Generic>(
-  handler: (req: unknown) => Promise<Response>
+  handler: (req: unknown, dependencies: unknown) => Promise<Response>,
+  dependencies: unknown
 ): (
   req: express.Request,
   res: express.Response,
@@ -56,7 +60,7 @@ function run<Response extends common.Response.Generic>(
   return async (req, res, next) => {
     let response: Response
     try {
-      response = await handler({ req, res })
+      response = await handler({ req, res }, dependencies)
     } catch (err) {
       next(err)
       return
