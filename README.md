@@ -5,7 +5,8 @@
 Typera helps you build backends in a type-safe manner by leveraging [io-ts] and
 some TypeScript type inference magic. It works with both [Express] and [Koa].
 
-**Upgrading to version 2?** See the [upgrading instructions](docs/upgrading.md).
+**Upgrading to version 2?** See the
+[upgrading instructions](https://akheron.github.io/typera/upgrading).
 
 Features of typera in a nutshell:
 
