@@ -1,0 +1,27 @@
+site_name: typera
+site_url: https://akheron.github.io/typera
+repo_url: https://github.com/akheron/typera
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.expand
+  icon:
+    repo: fontawesome/brands/github
+markdown_extensions:
+  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - toc:
+      permalink: '#'
+nav:
+  - Home: 'index.md'
+  - tutorial.md
+  - apiref.md
+  - openapi.md
+  - upgrading.md

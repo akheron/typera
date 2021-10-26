@@ -5,3 +5,4 @@ yarn-error.log
 .tsbuildinfo
 !.eslintrc.js
 !jest.config.js
+/venv
