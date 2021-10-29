@@ -240,4 +240,5 @@ app.use(router(updateUser /*, otherRoute, stillAnother */).handler())
 ```
 
 [express]: https://expressjs.com/
+[io-ts]: https://github.com/gcanti/io-ts
 [koa]: https://koajs.com/
