@@ -22,7 +22,7 @@
     "@typescript-eslint/parser": "^5.0.0",
     "concurrently": "^6.0.0",
     "doctoc": "^2.0.0",
-    "eslint": "^7.9.0",
+    "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-prettier": "^4.0.0",
     "lerna": "^4.0.0",
