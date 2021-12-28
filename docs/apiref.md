@@ -289,6 +289,10 @@ const audit: Middleware.ChainedMiddleware<
 Now, the `audit` middleware can only be used if the `db` middleware comes before
 it and adds `connection` to the request object.
 
+```typescript
+const chainedAuditMiddleware = route.use(db).use(audit);
+```
+
 ## Request parsers
 
 Request parsers are built-in middleware that let you validate parts of the
