@@ -28,7 +28,7 @@ Features of typera in a nutshell:
   or Koa app. Old routes can be migrated gradually.
 
 - Built-in support for automatically generating an OpenAPI definition from your
-  app with [typera-openapi].
+  app with [typera-openapi](https://github.com/akheron/typera-openapi).
 
 Typera is a really thin layer on top of Express or Koa. Most of its code is
 TypeScript typings, and the actual runtime stuff is minimal.
