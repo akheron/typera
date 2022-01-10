@@ -20,7 +20,7 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "concurrently": "^6.0.0",
+    "concurrently": "^7.0.0",
     "doctoc": "^2.0.0",
     "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.0.0",
