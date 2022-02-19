@@ -19,11 +19,20 @@ export const queryP = <RequestBase>(getQuery: GetInput<RequestBase>) =>
 export const query = <RequestBase>(getQuery: GetInput<RequestBase>) =>
   generic(getQuery, 'query')
 
-export const headersP = <RequestBase>(getHeaders: GetInput<RequestBase>) =>
-  genericP(getHeaders, 'headers')
+export const headersP =
+  <RequestBase>(getHeaders: GetInput<RequestBase>) =>
+  <Codec extends t.Type<any>, ErrorResponse extends Response.Generic>(
+    codec: Codec extends t.ExactType<any> ? never : Codec,
+    errorHandler: ErrorHandler<ErrorResponse>
+  ) =>
+    genericP(getHeaders, 'headers')(codec, errorHandler)
 
-export const headers = <RequestBase>(getHeaders: GetInput<RequestBase>) =>
-  generic(getHeaders, 'headers')
+export const headers =
+  <RequestBase>(getHeaders: GetInput<RequestBase>) =>
+  <Codec extends t.Type<any>>(
+    codec: Codec extends t.ExactType<any> ? never : Codec
+  ) =>
+    generic(getHeaders, 'headers')(codec)
 
 export const cookiesP = <RequestBase>(getCookies: GetInput<RequestBase>) =>
   genericP(getCookies, 'cookies')
