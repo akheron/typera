@@ -21,6 +21,13 @@ function getHeaders(e: RequestBase): any {
   return new Proxy(e.req, {
     get: (target, field) =>
       typeof field === 'string' ? target.get(field) : undefined,
+    getOwnPropertyDescriptor() {
+      return {
+        enumerable: true,
+        configurable: true,
+      }
+    },
+    ownKeys: (target) => Object.keys(target.headers),
   })
 }
 export const headersP = commonParser.headersP(getHeaders)
