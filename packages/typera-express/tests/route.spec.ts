@@ -267,7 +267,7 @@ describe('route & router', () => {
     expect(finalizer2).toEqual(1)
   })
 
-  it('case insesitive request headers', async () => {
+  it('case insensitive request headers', async () => {
     const test: Route<Response.Ok<string> | Response.BadRequest<string>> = route
       .get('/headers')
       .use(
@@ -280,11 +280,16 @@ describe('route & router', () => {
         )
       )
       .handler(async (request) =>
-        Response.ok(
-          request.headers['API-KEY'] +
-            request.headers['api-key'] +
-            request.headers['aPi-KeY']
-        )
+        Object.getOwnPropertyNames(request.headers).includes('api-key') &&
+        Object.keys(request.headers).includes('api-key')
+          ? Response.ok(
+              [
+                request.headers['API-KEY'],
+                request.headers['api-key'],
+                request.headers['aPi-KeY'],
+              ].join('')
+            )
+          : Response.badRequest('request.headers does not include api-key')
       )
 
     const handler = router(test).handler()
