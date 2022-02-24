@@ -1,5 +1,5 @@
 import * as cors from 'cors'
-import * as helmet from 'helmet'
+import helmet from 'helmet'
 import * as session from 'express-session'
 import * as bodyParser from 'body-parser'
 import * as cookieParser from 'cookie-parser'
