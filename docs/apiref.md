@@ -216,11 +216,13 @@ import * as pg from 'pg'
 
 const pool = new pg.Pool()
 
-const db: Middleware.Middleware<{ connection: pg.ClientBase }, never> =
-  async () => {
-    const connection = await pool.connect()
-    return Middleware.next({ connection }, () => connection.release())
-  }
+const db: Middleware.Middleware<
+  { connection: pg.ClientBase },
+  never
+> = async () => {
+  const connection = await pool.connect()
+  return Middleware.next({ connection }, () => connection.release())
+}
 ```
 
 If you write a middleware that adds nothing to the typera request object, its
