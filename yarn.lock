@@ -1998,9 +1998,9 @@
   integrity sha512-GJhpTepz2udxGexqos8wgaBx4I/zWIDPh/KOGEwAqtuGDkOUJu5eFvwmdBX4AmB8Odsr+9pHCQqiAqDL/yKMKw==
 
 "@types/koa-bodyparser@>=4.0.0":
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/@types/koa-bodyparser/-/koa-bodyparser-4.3.5.tgz#0c5fa44d7150202ffc16b89bd730ce1b6c7bc250"
-  integrity sha512-NRqqoTtt7cfdDk/KNo+EwCIKRuzPAu/wsaZ7tgIvSIBtNfxuZHYueaLoWdxX3ZftWavQv07NE46TcpyoZGqpgQ==
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/@types/koa-bodyparser/-/koa-bodyparser-4.3.6.tgz#99a7d215560fdc168334ebb6a259c6cec9381a56"
+  integrity sha512-keCpj2kmoooL2oHC9YIVvciN66uDT21uMp4rvrosyjLsHD1aAipn6cg3xSxav9tR2Ly/NMvs8jdlNPTTQvn8SA==
   dependencies:
     "@types/koa" "*"
 
