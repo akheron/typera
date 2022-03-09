@@ -18,20 +18,27 @@ export const queryP = commonParser.queryP(getQuery)
 export const query = commonParser.query(getQuery)
 
 function getHeaders(e: RequestBase): any {
+  const keys: Set<string> = new Set()
   return new Proxy(e.req, {
-    get: (target, field) =>
-      typeof field === 'string' ? target.get(field) : undefined,
+    get: (target, field) => {
+      if (typeof field === 'string') {
+        const value = target.get(field)
+        if (value !== undefined) keys.add(field)
+        return value
+      }
+      return undefined
+    },
     getOwnPropertyDescriptor() {
       return {
         enumerable: true,
         configurable: true,
       }
     },
-    ownKeys: (target) => Object.keys(target.headers),
+    ownKeys: () => [...keys],
   })
 }
-export const headersP = commonParser.headersP(getHeaders)
-export const headers = commonParser.headers(getHeaders)
+export const headersP = commonParser.headersP(getHeaders, true)
+export const headers = commonParser.headers(getHeaders, true)
 
 function getCookies(e: RequestBase): any {
   return e.req.cookies

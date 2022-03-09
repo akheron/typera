@@ -350,9 +350,9 @@ or [Koa] app rather than use them as typera middleware.
 
 Signature: `Parser.headers(codec)`
 
-Validate the request headers according to the given non-exact [io-ts] codec.
-Respond with `400 Bad Request` if the validation fails. The result will be
-available as `request.headers` in the route handler.
+Validate the request headers according to the given [io-ts] codec. Respond with
+`400 Bad Request` if the validation fails. The result will be available as
+`request.headers` in the route handler.
 
 Header matching is case-insensitive, so using e.g. `X-API-KEY`, `x-api-key` and
 `X-Api-Key` in the codec will all read the same header. However, the parse
@@ -364,11 +364,6 @@ The input for this parser will be the headers parsed as
 `Record<string, string>`, i.e. all header values will be strings. If you want to
 convert them to other types, you probably find the `FromString` codecs from
 [io-ts-types] useful (e.g. `IntFromString`, `BooleanFromString`, etc.)
-
-Exact codecs (eg. io-ts functions `strict` & `exact`) are not supported as their
-property stripping behavior is not compatible with typera's case-preserving
-logic. Regardless, the parsing behavior is logically similar to using exact
-codecs as `request.headers` will not contain unparsed headers.
 
 ### `cookies`
 

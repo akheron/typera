@@ -19,18 +19,15 @@ export const queryP = <RequestBase>(getQuery: GetInput<RequestBase>) =>
 export const query = <RequestBase>(getQuery: GetInput<RequestBase>) =>
   generic(getQuery, 'query')
 
-export const headersP =
-  <RequestBase>(getHeaders: GetInput<RequestBase>) =>
-  <A extends t.Props, ErrorResponse extends Response.Generic>(
-    codec: t.TypeC<A>,
-    errorHandler: ErrorHandler<ErrorResponse>
-  ) =>
-    genericP(getHeaders, 'headers')(codec, errorHandler)
+export const headersP = <RequestBase>(
+  getHeaders: GetInput<RequestBase>,
+  cloneResult: boolean
+) => genericP(getHeaders, 'headers', cloneResult)
 
-export const headers =
-  <RequestBase>(getHeaders: GetInput<RequestBase>) =>
-  <A extends t.Props>(codec: t.TypeC<A>) =>
-    generic<RequestBase, 'headers'>(getHeaders, 'headers')(codec)
+export const headers = <RequestBase>(
+  getHeaders: GetInput<RequestBase>,
+  cloneResult: boolean
+) => generic(getHeaders, 'headers', cloneResult)
 
 export const cookiesP = <RequestBase>(getCookies: GetInput<RequestBase>) =>
   genericP(getCookies, 'cookies')
@@ -49,7 +46,8 @@ export type ErrorHandler<ErrorResponse extends Response.Generic> = (
 const genericP =
   <RequestBase, Key extends string>(
     input: (req: RequestBase) => any,
-    key: Key
+    key: Key,
+    cloneResult = false
   ) =>
   <T, ErrorResponse extends Response.Generic>(
     codec: t.Type<T, any, unknown>,
@@ -64,14 +62,18 @@ const genericP =
         Middleware.MiddlewareOutput<Record<Key, T>, ErrorResponse>
       >(
         (errors) => Middleware.stop(errorHandler(errors)),
-        (result) => Middleware.next({ [key]: result } as any)
+        (result) =>
+          Middleware.next({
+            [key]: cloneResult ? { ...result } : result,
+          } as any)
       )
     )
 
 const generic =
   <RequestBase, Key extends string>(
     input: (req: RequestBase) => any,
-    key: Key
+    key: Key,
+    cloneResult = false
   ) =>
   <T>(
     codec: t.Type<T, any, unknown>
@@ -80,7 +82,11 @@ const generic =
     Record<Key, T>,
     Response.BadRequest<string>
   > =>
-    genericP(input, key)(codec, (err) =>
+    genericP(
+      input,
+      key,
+      cloneResult
+    )(codec, (err) =>
       Response.badRequest(`Invalid ${key}: ${errorsToString(err)}`)
     )
 
