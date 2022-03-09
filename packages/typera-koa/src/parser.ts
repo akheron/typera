@@ -18,20 +18,30 @@ export const queryP = commonParser.queryP(getQuery)
 export const query = commonParser.query(getQuery)
 
 function getHeaders(req: RequestBase): any {
+  const keys: Set<string> = new Set()
   return new Proxy(req.ctx, {
-    get: (target, field) =>
-      typeof field === 'string' ? target.get(field) : undefined,
+    get: (target, field) => {
+      if (typeof field === 'string') {
+        const value = target.get(field)
+        if (value === undefined || value === '') return undefined
+        keys.add(field)
+        return value
+      }
+      return undefined
+    },
     getOwnPropertyDescriptor() {
       return {
         enumerable: true,
         configurable: true,
       }
     },
-    ownKeys: (target) => Object.keys(target.headers),
+    ownKeys: () => {
+      return [...keys]
+    },
   })
 }
-export const headersP = commonParser.headersP(getHeaders)
-export const headers = commonParser.headers(getHeaders)
+export const headersP = commonParser.headersP(getHeaders, true)
+export const headers = commonParser.headers(getHeaders, true)
 
 function getCookies(req: RequestBase): any {
   // koa doesn't provide a way to read all cookies into an object, so we have to
