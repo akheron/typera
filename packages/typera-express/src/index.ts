@@ -67,9 +67,23 @@ function run<Response extends common.Response.Generic>(
     }
     if (response.body) {
       if (Response.isStreamingBody(response.body)) {
+        if (!res.get('Content-Type')) {
+          res.set('Content-Type', 'application/octet-stream')
+        }
         response.body.callback(res)
       } else {
-        res.send(response.body)
+        if (
+          typeof response.body === 'string' ||
+          typeof response.body === 'number' ||
+          typeof response.body === 'boolean'
+        ) {
+          if (!res.get('Content-Type')) {
+            res.set('Content-Type', 'text/plain')
+          }
+          res.send(response.body.toString())
+        } else {
+          res.send(response.body)
+        }
       }
     } else {
       res.end()

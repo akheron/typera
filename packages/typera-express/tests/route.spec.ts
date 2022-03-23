@@ -297,12 +297,98 @@ describe('route & router', () => {
         s.push('bar')
         s.push(null)
       })
-      return Response.ok(body)
+      return Response.ok(body, { 'Content-Type': 'text/plain' })
     })
 
     const handler = router(test).handler()
     const app = makeApp().use(handler)
 
     await request(app).get('/streaming').expect(200, 'foobar')
+  })
+
+  it('Manually set Content-Type response header', async () => {
+    // Respond with a string but set Content-Type to application/json
+    const test = route.get('/content-type').handler(async () => {
+      return Response.ok('{"hello": 42}', {
+        'Content-Type': 'application/json',
+      })
+    })
+
+    const handler = router(test).handler()
+    const app = makeApp().use(handler)
+
+    await request(app)
+      .get('/content-type')
+      // Express automatically adds charset=utf-8 to Content-Type
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200, { hello: 42 })
+  })
+
+  it('Default Content-Type', async () => {
+    const test = route.get('/type/:type').handler(async (request) => {
+      const type = request.routeParams.type
+      if (type === 'string') {
+        return Response.ok('foo')
+      } else if (type === 'number') {
+        return Response.ok(42)
+      } else if (type === 'boolean') {
+        return Response.ok(true)
+      } else if (type === 'buffer') {
+        return Response.ok(Buffer.from('foo bar', 'utf-8'))
+      } else if (type === 'stream') {
+        const body = Response.streamingBody((outStream) => {
+          const s = new stream.Readable()
+          s.pipe(outStream)
+          s.push('foo')
+          s.push(null)
+        })
+        return Response.ok(body)
+      } else if (type === 'null') {
+        return Response.ok(null)
+      } else {
+        return Response.ok(undefined)
+      }
+    })
+
+    const handler = router(test).handler()
+    const app = makeApp().use(handler)
+
+    // typera sets Content-Type to text/plain when responding with primitive types,
+    // and express automatically adds charset=utf-8. null and undefined yield an
+    // empty body.
+    await request(app)
+      .get('/type/string')
+      .expect('Content-Type', 'text/plain; charset=utf-8')
+      .expect(200, 'foo')
+
+    await request(app)
+      .get('/type/number')
+      .expect('Content-Type', 'text/plain; charset=utf-8')
+      .expect(200, '42')
+
+    await request(app)
+      .get('/type/boolean')
+      .expect('Content-Type', 'text/plain; charset=utf-8')
+      .expect(200, 'true')
+
+    await request(app)
+      .get('/type/buffer')
+      .expect('Content-Type', 'application/octet-stream')
+      .expect(200)
+
+    await request(app)
+      .get('/type/stream')
+      .expect('Content-Type', 'application/octet-stream')
+      .expect(200)
+
+    await request(app)
+      .get('/type/null')
+      .expect((res) => expect(res.get('Content-Type')).toBeUndefined())
+      .expect(200, '')
+
+    await request(app)
+      .get('/type/undefined')
+      .expect((res) => expect(res.get('Content-Type')).toBeUndefined())
+      .expect(200, '')
   })
 })

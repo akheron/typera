@@ -338,4 +338,88 @@ describe('route & router', () => {
 
     await request(server).get('/streaming').expect(200, 'foobar')
   })
+
+  it('Manually set Content-Type response header', async () => {
+    // Respond with a string but set Content-Type to application/json
+    const test = route.get('/content-type').handler(async () => {
+      return Response.ok('{"hello": 42}', {
+        'Content-Type': 'application/json',
+      })
+    })
+
+    const handler = router(test).handler()
+    server = makeServer(handler)
+
+    await request(server)
+      .get('/content-type')
+      .expect('Content-Type', 'application/json')
+      .expect(200, { hello: 42 })
+  })
+
+  it('Default Content-Type', async () => {
+    const test = route.get('/type/:type').handler(async (request) => {
+      const type = request.routeParams.type
+      if (type === 'string') {
+        return Response.ok('foo')
+      } else if (type === 'number') {
+        return Response.ok(42)
+      } else if (type === 'boolean') {
+        return Response.ok(true)
+      } else if (type === 'buffer') {
+        return Response.ok(Buffer.from('foo bar', 'utf-8'))
+      } else if (type === 'stream') {
+        const body = Response.streamingBody((outStream) => {
+          const s = new stream.Readable()
+          s.pipe(outStream)
+          s.push('foo')
+          s.push(null)
+        })
+        return Response.ok(body)
+      } else if (type === 'null') {
+        return Response.ok(null)
+      } else {
+        return Response.ok(undefined)
+      }
+    })
+
+    const handler = router(test).handler()
+    server = makeServer(handler)
+
+    // typera sets Content-Type to text/plain when responding with primitive
+    // types. null and undefined yield an empty body.
+    await request(server)
+      .get('/type/string')
+      .expect('Content-Type', 'text/plain')
+      .expect(200, 'foo')
+
+    await request(server)
+      .get('/type/number')
+      .expect('Content-Type', 'text/plain')
+      .expect(200, '42')
+
+    await request(server)
+      .get('/type/boolean')
+      .expect('Content-Type', 'text/plain')
+      .expect(200, 'true')
+
+    await request(server)
+      .get('/type/buffer')
+      .expect('Content-Type', 'application/octet-stream')
+      .expect(200)
+
+    await request(server)
+      .get('/type/stream')
+      .expect('Content-Type', 'application/octet-stream')
+      .expect(200)
+
+    await request(server)
+      .get('/type/null')
+      .expect((res) => expect(res.get('Content-Type')).toBeUndefined())
+      .expect(200, '')
+
+    await request(server)
+      .get('/type/undefined')
+      .expect((res) => expect(res.get('Content-Type')).toBeUndefined())
+      .expect(200, '')
+  })
 })

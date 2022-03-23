@@ -61,8 +61,28 @@ function run<Response extends common.Response.Generic>(
     if (Response.isStreamingBody(response.body)) {
       const pt = (ctx.body = new stream.PassThrough())
       response.body.callback(pt)
+    } else if (
+      typeof response.body === 'string' ||
+      typeof response.body === 'number' ||
+      typeof response.body === 'boolean' ||
+      response.body === null ||
+      response.body === undefined
+    ) {
+      if (response.body === null || response.body === undefined) {
+        // Leaving body as-is would make koa set it to e.g. "OK" based on status
+        // code. Set it to empty string instead, and remove the automatically
+        // added Content-Type header.
+        const userSetContentType = !!ctx.response.get('Content-Type')
+        ctx.response.body = ''
+        if (!userSetContentType) ctx.response.remove('Content-Type')
+      } else {
+        if (!ctx.response.get('Content-Type')) {
+          ctx.response.set('Content-Type', 'text/plain')
+        }
+        ctx.response.body = response.body.toString()
+      }
     } else {
-      ctx.response.body = response.body || ''
+      ctx.response.body = response.body
     }
   }
 }

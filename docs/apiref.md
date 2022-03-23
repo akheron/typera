@@ -28,7 +28,7 @@ And of course, you can also import individual items when importing directly from
 the modules:
 
 ```typescript
-import { BadRequest } from 'typera-koa/express'
+import { BadRequest } from 'typera-express/response'
 // or
 import { BadRequest } from 'typera-koa/response'
 ```
@@ -167,6 +167,25 @@ const streamingHandler: Route<Response.Ok<Response.StreamingBody>> = route
     )
   })
 ```
+
+### Response content type
+
+You can set the response content type by returning a `Content-Type` header with
+the response, e.g.:
+
+```
+return Response.ok(csvData, { 'Content-Type': 'text/csv' })
+```
+
+If you don't set the `Content-Type` header, typera defaults to the following:
+
+- `application/json` for object and array responses. The value is encoded as
+  JSON.
+- `application/octet-stream` for `Buffer` and
+  [streaming responses](#streaming-responses).
+- `text/plain` for values of primitive types (string, number, boolean). The
+  value is converted to a string by calling `value.toString()`.
+- No content type and an empty response body for `null` and `undefined`.
 
 ## Middleware
 
