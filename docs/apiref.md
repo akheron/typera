@@ -454,7 +454,7 @@ function errorToString(err: t.Errors): string {
 
 const myQuery = <T>(
   codec: t.Type<T>
-): Middleware<{ body: T }, Response.BadRequest<string>> =>
+): Middleware<{ query: T }, Response.BadRequest<string>> =>
   Parser.queryP(codec, (errors) => Response.badRequest(errorToString(errors)))
 
 // You can alse return a different response than 400 Bad Request
