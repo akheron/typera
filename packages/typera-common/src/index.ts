@@ -182,7 +182,7 @@ async function runMiddleware<
 ): Promise<
   Either.Either<
     Response.Generic,
-    { request: {}; runFinalizers: () => Promise<void> }
+    { request: RequestBase; runFinalizers: () => Promise<void> }
   >
 > {
   let request = requestBase
