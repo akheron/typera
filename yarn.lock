@@ -4850,9 +4850,9 @@ inquirer@^8.2.4:
     wrap-ansi "^7.0.0"
 
 io-ts-types@>=0.5.1:
-  version "0.5.17"
-  resolved "https://registry.yarnpkg.com/io-ts-types/-/io-ts-types-0.5.17.tgz#d58c115f699468d3e822cebebdadef95080f739f"
-  integrity sha512-W0zrePsFWAyBdvHj4b/LU4HaHfDiKQ0DvSYDeE5hgXYaEtTEqcyNTLGRcFSa32lZAQFQzyQRDVtN+B7MyBaXAw==
+  version "0.5.18"
+  resolved "https://registry.yarnpkg.com/io-ts-types/-/io-ts-types-0.5.18.tgz#017458aaf1c721d99ff059145b87971c661ccd11"
+  integrity sha512-iU+P8BC6VMzc2pOjA3hxKyzf040XlWN+VSbJcTcirYq2vDEZ7t7uah/QLKpmhEvIAk/y1G1veC5upTk/1kHfwg==
 
 io-ts@>=2.0.0:
   version "2.2.19"
