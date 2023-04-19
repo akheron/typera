@@ -3892,9 +3892,9 @@ forwarded@0.2.0:
   integrity sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==
 
 fp-ts@>=2.0.0:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.13.1.tgz#1bf2b24136cca154846af16752dc29e8fa506f2a"
-  integrity sha512-0eu5ULPS2c/jsa1lGFneEFFEdTbembJv8e4QKXeVJ3lm/5hyve06dlKZrpxmMwJt6rYen7sxmHHK2CLaXvWuWQ==
+  version "2.13.2"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.13.2.tgz#60ad54d91f16452594b1e29cd8816eed929c83a4"
+  integrity sha512-diX6PbILL9SpFxuiB2w38e/jy20h7BwOtVRuohkGGni9lBnR61CBdUpm33/5RVgkz2nkAZ9MH3DMmJdlwOyDOA==
 
 fresh@0.5.2, fresh@~0.5.2:
   version "0.5.2"
