@@ -23,7 +23,7 @@
     "concurrently": "^8.0.1",
     "doctoc": "^2.0.0",
     "eslint": "^8.5.0",
-    "eslint-config-prettier": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^4.0.0",
     "lerna": "^7.0.0",
     "prettier": "^2.1.2",
