@@ -17,14 +17,14 @@ export type Method =
 
 export type SplitBy<
   Delim extends string,
-  Input
+  Input,
 > = Input extends `${infer First}${Delim}${infer Rest}`
   ? [First, ...SplitBy<Delim, Rest>]
   : [Input]
 
 type SplitEach<Delim extends string, Input> = Input extends [
   infer Head,
-  ...infer Tail
+  ...infer Tail,
 ]
   ? [...SplitBy<Delim, Head>, ...SplitEach<Delim, Tail>]
   : []
@@ -33,7 +33,7 @@ type Split<Input> = SplitEach<'-', SplitEach<'.', SplitEach<'/', [Input]>>>
 
 type ParamsFrom<Parts, ParamConversions> = Parts extends [
   infer First,
-  ...infer Rest
+  ...infer Rest,
 ]
   ? First extends `:${infer Param}(${infer Conv})`
     ? Conv extends keyof ParamConversions

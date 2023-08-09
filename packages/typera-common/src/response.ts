@@ -14,7 +14,7 @@ export type Generic = Response<number, any, OptionalHeaders>
 
 export type Continue<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<100, Body, Headers>
 export function continue_<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -28,7 +28,7 @@ export function continue_(body = undefined, headers = undefined) {
 
 export type SwitchingProtocols<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<101, Body, Headers>
 export function switchingProtocols<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -44,7 +44,7 @@ export function switchingProtocols(body = undefined, headers = undefined) {
 
 export type Processing<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<102, Body, Headers>
 export function processing<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -58,7 +58,7 @@ export function processing(body = undefined, headers = undefined) {
 
 export type EarlyHints<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<103, Body, Headers>
 export function earlyHints<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -72,7 +72,7 @@ export function earlyHints(body = undefined, headers = undefined) {
 
 export type Ok<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<200, Body, Headers>
 export function ok<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -86,7 +86,7 @@ export function ok(body = undefined, headers = undefined) {
 
 export type Created<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<201, Body, Headers>
 export function created<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -100,7 +100,7 @@ export function created(body = undefined, headers = undefined) {
 
 export type Accepted<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<202, Body, Headers>
 export function accepted<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -114,11 +114,11 @@ export function accepted(body = undefined, headers = undefined) {
 
 export type NonAuthoritativeInformation<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<203, Body, Headers>
 export function nonAuthoritativeInformation<
   Body,
-  Headers extends OptionalHeaders
+  Headers extends OptionalHeaders,
 >(body: Body, headers: Headers): NonAuthoritativeInformation<Body, Headers>
 export function nonAuthoritativeInformation<Body>(
   body: Body
@@ -136,7 +136,7 @@ export function nonAuthoritativeInformation(
 
 export type NoContent<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<204, Body, Headers>
 export function noContent<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -150,7 +150,7 @@ export function noContent(body = undefined, headers = undefined) {
 
 export type ResetContent<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<205, Body, Headers>
 export function resetContent<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -164,7 +164,7 @@ export function resetContent(body = undefined, headers = undefined) {
 
 export type PartialContent<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<206, Body, Headers>
 export function partialContent<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -180,7 +180,7 @@ export function partialContent(body = undefined, headers = undefined) {
 
 export type MultiStatus<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<207, Body, Headers>
 export function multiStatus<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -194,7 +194,7 @@ export function multiStatus(body = undefined, headers = undefined) {
 
 export type AlreadyReported<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<208, Body, Headers>
 export function alreadyReported<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -210,7 +210,7 @@ export function alreadyReported(body = undefined, headers = undefined) {
 
 export type IMUsed<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<226, Body, Headers>
 export function iMUsed<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -224,7 +224,7 @@ export function iMUsed(body = undefined, headers = undefined) {
 
 export type MultipleChoices<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<300, Body, Headers>
 export function multipleChoices<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -240,7 +240,7 @@ export function multipleChoices(body = undefined, headers = undefined) {
 
 export type MovedPermanently<
   Body = string,
-  Headers extends OptionalHeaders = { location: string }
+  Headers extends OptionalHeaders = { location: string },
 > = Response<301, Body, Headers>
 export function movedPermanently<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -256,7 +256,7 @@ export function movedPermanently(body = undefined, headers = undefined) {
 
 export type Found<
   Body = string,
-  Headers extends OptionalHeaders = { location: string }
+  Headers extends OptionalHeaders = { location: string },
 > = Response<302, Body, Headers>
 export function found<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -270,7 +270,7 @@ export function found(body = undefined, headers = undefined) {
 
 export type SeeOther<
   Body = string,
-  Headers extends OptionalHeaders = { location: string }
+  Headers extends OptionalHeaders = { location: string },
 > = Response<303, Body, Headers>
 export function seeOther<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -284,7 +284,7 @@ export function seeOther(body = undefined, headers = undefined) {
 
 export type NotModified<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<304, Body, Headers>
 export function notModified<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -298,7 +298,7 @@ export function notModified(body = undefined, headers = undefined) {
 
 export type UseProxy<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<305, Body, Headers>
 export function useProxy<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -312,7 +312,7 @@ export function useProxy(body = undefined, headers = undefined) {
 
 export type SwitchProxy<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<306, Body, Headers>
 export function switchProxy<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -326,7 +326,7 @@ export function switchProxy(body = undefined, headers = undefined) {
 
 export type TemporaryRedirect<
   Body = string,
-  Headers extends OptionalHeaders = { location: string }
+  Headers extends OptionalHeaders = { location: string },
 > = Response<307, Body, Headers>
 export function temporaryRedirect<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -342,7 +342,7 @@ export function temporaryRedirect(body = undefined, headers = undefined) {
 
 export type PermanentRedirect<
   Body = string,
-  Headers extends OptionalHeaders = { location: string }
+  Headers extends OptionalHeaders = { location: string },
 > = Response<308, Body, Headers>
 export function permanentRedirect<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -358,7 +358,7 @@ export function permanentRedirect(body = undefined, headers = undefined) {
 
 export type BadRequest<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<400, Body, Headers>
 export function badRequest<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -372,7 +372,7 @@ export function badRequest(body = undefined, headers = undefined) {
 
 export type Unauthorized<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<401, Body, Headers>
 export function unauthorized<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -386,7 +386,7 @@ export function unauthorized(body = undefined, headers = undefined) {
 
 export type PaymentRequired<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<402, Body, Headers>
 export function paymentRequired<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -402,7 +402,7 @@ export function paymentRequired(body = undefined, headers = undefined) {
 
 export type Forbidden<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<403, Body, Headers>
 export function forbidden<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -416,7 +416,7 @@ export function forbidden(body = undefined, headers = undefined) {
 
 export type NotFound<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<404, Body, Headers>
 export function notFound<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -430,7 +430,7 @@ export function notFound(body = undefined, headers = undefined) {
 
 export type MethodNotAllowed<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<405, Body, Headers>
 export function methodNotAllowed<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -446,7 +446,7 @@ export function methodNotAllowed(body = undefined, headers = undefined) {
 
 export type NotAcceptable<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<406, Body, Headers>
 export function notAcceptable<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -460,11 +460,11 @@ export function notAcceptable(body = undefined, headers = undefined) {
 
 export type ProxyAuthenticationRequired<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<407, Body, Headers>
 export function proxyAuthenticationRequired<
   Body,
-  Headers extends OptionalHeaders
+  Headers extends OptionalHeaders,
 >(body: Body, headers: Headers): ProxyAuthenticationRequired<Body, Headers>
 export function proxyAuthenticationRequired<Body>(
   body: Body
@@ -482,7 +482,7 @@ export function proxyAuthenticationRequired(
 
 export type RequestTimeout<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<408, Body, Headers>
 export function requestTimeout<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -498,7 +498,7 @@ export function requestTimeout(body = undefined, headers = undefined) {
 
 export type Conflict<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<409, Body, Headers>
 export function conflict<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -512,7 +512,7 @@ export function conflict(body = undefined, headers = undefined) {
 
 export type Gone<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<410, Body, Headers>
 export function gone<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -526,7 +526,7 @@ export function gone(body = undefined, headers = undefined) {
 
 export type LengthRequired<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<411, Body, Headers>
 export function lengthRequired<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -542,7 +542,7 @@ export function lengthRequired(body = undefined, headers = undefined) {
 
 export type PreconditionFailed<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<412, Body, Headers>
 export function preconditionFailed<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -558,7 +558,7 @@ export function preconditionFailed(body = undefined, headers = undefined) {
 
 export type PayloadTooLarge<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<413, Body, Headers>
 export function payloadTooLarge<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -574,7 +574,7 @@ export function payloadTooLarge(body = undefined, headers = undefined) {
 
 export type URITooLong<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<414, Body, Headers>
 export function uRITooLong<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -588,7 +588,7 @@ export function uRITooLong(body = undefined, headers = undefined) {
 
 export type UnsupportedMediaType<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<415, Body, Headers>
 export function unsupportedMediaType<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -607,7 +607,7 @@ export function unsupportedMediaType(body = undefined, headers = undefined) {
 
 export type RangeNotSatisfiable<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<416, Body, Headers>
 export function rangeNotSatisfiable<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -623,7 +623,7 @@ export function rangeNotSatisfiable(body = undefined, headers = undefined) {
 
 export type ExpectationFailed<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<417, Body, Headers>
 export function expectationFailed<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -639,7 +639,7 @@ export function expectationFailed(body = undefined, headers = undefined) {
 
 export type ImATeapot<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<418, Body, Headers>
 export function imATeapot<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -653,7 +653,7 @@ export function imATeapot(body = undefined, headers = undefined) {
 
 export type MisdirectedRequest<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<421, Body, Headers>
 export function misdirectedRequest<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -669,7 +669,7 @@ export function misdirectedRequest(body = undefined, headers = undefined) {
 
 export type UnprocessableEntity<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<422, Body, Headers>
 export function unprocessableEntity<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -685,7 +685,7 @@ export function unprocessableEntity(body = undefined, headers = undefined) {
 
 export type Locked<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<423, Body, Headers>
 export function locked<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -699,7 +699,7 @@ export function locked(body = undefined, headers = undefined) {
 
 export type FailedDependency<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<424, Body, Headers>
 export function failedDependency<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -715,7 +715,7 @@ export function failedDependency(body = undefined, headers = undefined) {
 
 export type TooEarly<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<425, Body, Headers>
 export function tooEarly<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -729,7 +729,7 @@ export function tooEarly(body = undefined, headers = undefined) {
 
 export type UpgradeRequired<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<426, Body, Headers>
 export function upgradeRequired<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -745,7 +745,7 @@ export function upgradeRequired(body = undefined, headers = undefined) {
 
 export type PreconditionRequired<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<428, Body, Headers>
 export function preconditionRequired<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -764,7 +764,7 @@ export function preconditionRequired(body = undefined, headers = undefined) {
 
 export type TooManyRequests<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<429, Body, Headers>
 export function tooManyRequests<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -780,11 +780,11 @@ export function tooManyRequests(body = undefined, headers = undefined) {
 
 export type RequestHeaderFieldsTooLarge<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<431, Body, Headers>
 export function requestHeaderFieldsTooLarge<
   Body,
-  Headers extends OptionalHeaders
+  Headers extends OptionalHeaders,
 >(body: Body, headers: Headers): RequestHeaderFieldsTooLarge<Body, Headers>
 export function requestHeaderFieldsTooLarge<Body>(
   body: Body
@@ -802,11 +802,11 @@ export function requestHeaderFieldsTooLarge(
 
 export type UnavailableForLegalReasons<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<451, Body, Headers>
 export function unavailableForLegalReasons<
   Body,
-  Headers extends OptionalHeaders
+  Headers extends OptionalHeaders,
 >(body: Body, headers: Headers): UnavailableForLegalReasons<Body, Headers>
 export function unavailableForLegalReasons<Body>(
   body: Body
@@ -824,7 +824,7 @@ export function unavailableForLegalReasons(
 
 export type InternalServerError<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<500, Body, Headers>
 export function internalServerError<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -840,7 +840,7 @@ export function internalServerError(body = undefined, headers = undefined) {
 
 export type NotImplemented<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<501, Body, Headers>
 export function notImplemented<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -856,7 +856,7 @@ export function notImplemented(body = undefined, headers = undefined) {
 
 export type BadGateway<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<502, Body, Headers>
 export function badGateway<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -870,7 +870,7 @@ export function badGateway(body = undefined, headers = undefined) {
 
 export type ServiceUnavailable<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<503, Body, Headers>
 export function serviceUnavailable<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -886,7 +886,7 @@ export function serviceUnavailable(body = undefined, headers = undefined) {
 
 export type GatewayTimeout<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<504, Body, Headers>
 export function gatewayTimeout<Body, Headers extends OptionalHeaders>(
   body: Body,
@@ -902,7 +902,7 @@ export function gatewayTimeout(body = undefined, headers = undefined) {
 
 export type HTTPVersionNotSupported<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<505, Body, Headers>
 export function hTTPVersionNotSupported<Body, Headers extends OptionalHeaders>(
   body: Body,

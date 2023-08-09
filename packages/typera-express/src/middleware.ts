@@ -7,13 +7,13 @@ export { next, stop } from 'typera-common/middleware'
 
 export type Middleware<
   Result,
-  Response extends commonResponse.Generic
+  Response extends commonResponse.Generic,
 > = commonMiddleware.Middleware<RequestBase, Result, Response>
 
 export type ChainedMiddleware<
   Request,
   Result,
-  Response extends commonResponse.Generic
+  Response extends commonResponse.Generic,
 > = commonMiddleware.Middleware<RequestBase & Request, Result, Response>
 
 export type Generic = commonMiddleware.Middleware<
@@ -39,7 +39,7 @@ export const wrapNative =
           reject(err)
         } else {
           // middleware called next()
-          const makeResult = result ?? (() => ({} as Result))
+          const makeResult = result ?? (() => ({}) as Result)
           resolve(commonMiddleware.next(makeResult(request)))
         }
       }
