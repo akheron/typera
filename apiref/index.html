@@ -1,0 +1,1525 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://akheron.github.io/typera/apiref/">
+      
+      
+        <link rel="prev" href="../tutorial/">
+      
+      
+        <link rel="next" href="../openapi/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
+    
+    
+      
+        <title>API Reference - typera</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.eebd395e.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="typera" class="md-header__button md-logo" aria-label="typera" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            typera
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/akheron/typera" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="typera" class="md-nav__button md-logo" aria-label="typera" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    typera
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/akheron/typera" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        Tutorial
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          API Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        API Reference
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#imports" class="md-nav__link">
+    Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#responses" class="md-nav__link">
+    Responses
+  </a>
+  
+    <nav class="md-nav" aria-label="Responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-responses" class="md-nav__link">
+    Common responses
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redirects" class="md-nav__link">
+    Redirects
+  </a>
+  
+    <nav class="md-nav" aria-label="Redirects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redirect" class="md-nav__link">
+    redirect
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-responses" class="md-nav__link">
+    Streaming responses
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-content-type" class="md-nav__link">
+    Response content type
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#middleware" class="md-nav__link">
+    Middleware
+  </a>
+  
+    <nav class="md-nav" aria-label="Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    next
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop" class="md-nav__link">
+    stop
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chainedmiddleware" class="md-nav__link">
+    ChainedMiddleware
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-parsers" class="md-nav__link">
+    Request parsers
+  </a>
+  
+    <nav class="md-nav" aria-label="Request parsers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query" class="md-nav__link">
+    query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#body" class="md-nav__link">
+    body
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headers" class="md-nav__link">
+    headers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cookies" class="md-nav__link">
+    cookies
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-error-response" class="md-nav__link">
+    Customizing the error response
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-express-middleware" class="md-nav__link">
+    Using express middleware
+  </a>
+  
+    <nav class="md-nav" aria-label="Using express middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wrapnative" class="md-nav__link">
+    wrapNative
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#routes" class="md-nav__link">
+    Routes
+  </a>
+  
+    <nav class="md-nav" aria-label="Routes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#route" class="md-nav__link">
+    route
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routeuse" class="md-nav__link">
+    route.use
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applymiddleware" class="md-nav__link">
+    applyMiddleware
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route-parameter-capturing" class="md-nav__link">
+    Route parameter capturing
+  </a>
+  
+    <nav class="md-nav" aria-label="Route parameter capturing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#useparamconversions" class="md-nav__link">
+    useParamConversions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#router" class="md-nav__link">
+    Router
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openapi/" class="md-nav__link">
+        Generating OpenAPI definitions
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upgrading/" class="md-nav__link">
+        Upgrading to version 2
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#imports" class="md-nav__link">
+    Imports
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#responses" class="md-nav__link">
+    Responses
+  </a>
+  
+    <nav class="md-nav" aria-label="Responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-responses" class="md-nav__link">
+    Common responses
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redirects" class="md-nav__link">
+    Redirects
+  </a>
+  
+    <nav class="md-nav" aria-label="Redirects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redirect" class="md-nav__link">
+    redirect
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-responses" class="md-nav__link">
+    Streaming responses
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-content-type" class="md-nav__link">
+    Response content type
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#middleware" class="md-nav__link">
+    Middleware
+  </a>
+  
+    <nav class="md-nav" aria-label="Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    next
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop" class="md-nav__link">
+    stop
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chainedmiddleware" class="md-nav__link">
+    ChainedMiddleware
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-parsers" class="md-nav__link">
+    Request parsers
+  </a>
+  
+    <nav class="md-nav" aria-label="Request parsers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#query" class="md-nav__link">
+    query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#body" class="md-nav__link">
+    body
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headers" class="md-nav__link">
+    headers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cookies" class="md-nav__link">
+    cookies
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-the-error-response" class="md-nav__link">
+    Customizing the error response
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-express-middleware" class="md-nav__link">
+    Using express middleware
+  </a>
+  
+    <nav class="md-nav" aria-label="Using express middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wrapnative" class="md-nav__link">
+    wrapNative
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#routes" class="md-nav__link">
+    Routes
+  </a>
+  
+    <nav class="md-nav" aria-label="Routes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#route" class="md-nav__link">
+    route
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#routeuse" class="md-nav__link">
+    route.use
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applymiddleware" class="md-nav__link">
+    applyMiddleware
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route-parameter-capturing" class="md-nav__link">
+    Route parameter capturing
+  </a>
+  
+    <nav class="md-nav" aria-label="Route parameter capturing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#useparamconversions" class="md-nav__link">
+    useParamConversions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#router" class="md-nav__link">
+    Router
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">#</a></h1>
+<h2 id="imports">Imports<a class="headerlink" href="#imports" title="Permanent link">#</a></h2>
+<p>typera exposes its contents in various modules, e.g. <code>Response</code>, <code>Middleware</code>,
+<code>Parser</code>, etc. In the examples below, they are imported from the top-level
+module like this:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">,</span><span class="w"> </span><span class="nx">Parser</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">,</span><span class="w"> </span><span class="nx">Parser</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa&#39;</span>
+</code></pre></div>
+<p>You can also import from the individual modules:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Response</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express/response&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Middleware</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express/middleware&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Parser</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express/parser&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Response</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa/response&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Middleware</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa/middleware&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Parser</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa/parser&#39;</span>
+</code></pre></div>
+<p>And of course, you can also import individual items when importing directly from
+the modules:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BadRequest</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express/response&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BadRequest</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa/response&#39;</span>
+</code></pre></div>
+<h2 id="responses">Responses<a class="headerlink" href="#responses" title="Permanent link">#</a></h2>
+<p>All response related types and functions live in the <code>Response</code> namespace.</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Response</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Response</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa&#39;</span>
+</code></pre></div>
+<p>The generic <code>Response</code> type looks like this:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">type</span><span class="w"> </span><span class="nx">OptionalHeaders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">Response</span><span class="o">&lt;</span><span class="nx">Status</span><span class="p">,</span><span class="w"> </span><span class="nx">Body</span><span class="p">,</span><span class="w"> </span><span class="nx">Headers</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">OptionalHeaders</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">Status</span>
+<span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">Body</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="kt">Headers</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>There is a separate type and a function to construct a response of that type for
+each valid HTTP status code.</p>
+<p>For example, the response type for a 200 OK is:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">type</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="nx">Body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">Headers</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">OptionalHeaders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Response</span><span class="o">&lt;</span><span class="mf">200</span><span class="p">,</span><span class="w"> </span><span class="nx">Body</span><span class="p">,</span><span class="w"> </span><span class="nx">Headers</span><span class="o">&gt;</span>
+</code></pre></div>
+<p>The function to construct a 200 OK response has the following overloaded
+signatures:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">ok</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Ok</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">ok</span><span class="o">&lt;</span><span class="nx">Body</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">Body</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">Body</span><span class="o">&gt;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">ok</span><span class="o">&lt;</span><span class="nx">Body</span><span class="p">,</span><span class="w"> </span><span class="nx">Headers</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">OptionalHeaders</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">Body</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="kt">Headers</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">Body</span><span class="p">,</span><span class="w"> </span><span class="nx">Headers</span><span class="o">&gt;</span>
+</code></pre></div>
+<p>All response types have the <code>Body</code> and <code>Headers</code> type parameters. With other
+than <a href="#redirects">redirect responses</a>, both default to <code>undefined</code>. All response
+constructor functions have the same 3 signatures.</p>
+<h3 id="common-responses">Common responses<a class="headerlink" href="#common-responses" title="Permanent link">#</a></h3>
+<p>Here's a list of most common responses:</p>
+<table>
+<thead>
+<tr>
+<th>HTTP</th>
+<th>Type</th>
+<th>Constructor function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 OK</td>
+<td><code>Ok</code></td>
+<td><code>ok</code></td>
+</tr>
+<tr>
+<td>201 Created</td>
+<td><code>Created</code></td>
+<td><code>created</code></td>
+</tr>
+<tr>
+<td>204 No Content</td>
+<td><code>NoContent</code></td>
+<td><code>noContent</code></td>
+</tr>
+<tr>
+<td>301 Moved Permanently</td>
+<td><code>MovedPermanently</code></td>
+<td><code>movedPermanently</code></td>
+</tr>
+<tr>
+<td>302 Found</td>
+<td><code>Found</code></td>
+<td><code>found</code></td>
+</tr>
+<tr>
+<td>304 Not Modified</td>
+<td><code>NotModified</code></td>
+<td><code>notModified</code></td>
+</tr>
+<tr>
+<td>400 Bad Request</td>
+<td><code>BadRequest</code></td>
+<td><code>badRequest</code></td>
+</tr>
+<tr>
+<td>401 Unauthorized</td>
+<td><code>Unauthorized</code></td>
+<td><code>unauthorized</code></td>
+</tr>
+<tr>
+<td>403 Forbidden</td>
+<td><code>Forbidden</code></td>
+<td><code>forbidden</code></td>
+</tr>
+<tr>
+<td>404 Not Found</td>
+<td><code>NotFound</code></td>
+<td><code>notFound</code></td>
+</tr>
+<tr>
+<td>405 Method Not Allowed</td>
+<td><code>MethodNotAllowed</code></td>
+<td><code>methodNotAllowed</code></td>
+</tr>
+</tbody>
+</table>
+<p>For the full list of supported responses, see
+<a href="https://github.com/akheron/typera/tree/main/packages/typera-common/src/response.ts">response.ts</a>.</p>
+<h3 id="redirects">Redirects<a class="headerlink" href="#redirects" title="Permanent link">#</a></h3>
+<p>Redirecting the client to another URL is a common thing to do and requires
+setting a header. To create a redirect response, use the
+<code>redirect(status, location)</code> helper:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">Route</span><span class="o">&lt;</span><span class="nx">Response</span><span class="p">.</span><span class="nx">MovedPermanently</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="mf">301</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;/bar&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">})</span>
+</code></pre></div>
+<p>This generates a response with a string body and the <code>Location</code> header set:</p>
+<div class="highlight"><pre><span></span><code>HTTP/1.1 301 Moved Permanently
+Location: /bar
+
+Moved premanently. Redirecting to /bar
+</code></pre></div>
+<p>For simplicity, the redirecting responses listed below have the default body
+type of <code>string</code> and the default headers type of <code>{ location: string }</code>:</p>
+<table>
+<thead>
+<tr>
+<th>HTTP</th>
+<th>Type</th>
+<th>Constructor function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>301 Moved Permanently</td>
+<td><code>MovedPermanently</code></td>
+<td><code>redirect(301, location)</code></td>
+</tr>
+<tr>
+<td>302 Found</td>
+<td><code>Found</code></td>
+<td><code>redirect(302, location)</code></td>
+</tr>
+<tr>
+<td>303 See Other</td>
+<td><code>SeeOther</code></td>
+<td><code>redirect(303, location)</code></td>
+</tr>
+<tr>
+<td>307 Temporary Redirect</td>
+<td><code>TemporaryRedirect</code></td>
+<td><code>redirect(307, location)</code></td>
+</tr>
+<tr>
+<td>308 Permanent Redirect</td>
+<td><code>PermanentRedirect</code></td>
+<td><code>redirect(308, location)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use the "normal" constructor functions (<code>movedPermanently()</code>, <code>found()</code>, ...) if
+you want full control over the body and headers.</p>
+<h4 id="redirect"><code>redirect</code><a class="headerlink" href="#redirect" title="Permanent link">#</a></h4>
+<p>Signature: <code>Response.redirect(status, location)</code></p>
+<p>Creates a response that redirects to the given location. The response body will
+be a textual explanation of the redirect.</p>
+<h3 id="streaming-responses">Streaming responses<a class="headerlink" href="#streaming-responses" title="Permanent link">#</a></h3>
+<p>Use the <code>Response.StreamingBody</code> body type and the <code>Response.streamingBody()</code>
+function to create streaming responses. The function takes a callback that
+receives a writable stream as a parameter:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">streamingHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">Route</span><span class="o">&lt;</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">Response</span><span class="p">.</span><span class="nx">StreamingBody</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/document.pdf&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">ok</span><span class="p">(</span>
+<span class="w">      </span><span class="nx">Response</span><span class="p">.</span><span class="nx">streamingBody</span><span class="p">((</span><span class="nx">outputStream</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Assuming that the generatePDF function generates a</span>
+<span class="w">        </span><span class="c1">// PDF document to the given writable stream</span>
+<span class="w">        </span><span class="nx">generatePDF</span><span class="p">(</span><span class="nx">outputStream</span><span class="p">)</span>
+<span class="w">      </span><span class="p">})</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">})</span>
+</code></pre></div>
+<h3 id="response-content-type">Response content type<a class="headerlink" href="#response-content-type" title="Permanent link">#</a></h3>
+<p>You can set the response content type by returning a <code>Content-Type</code> header with
+the response, e.g.:</p>
+<div class="highlight"><pre><span></span><code>return Response.ok(csvData, { &#39;Content-Type&#39;: &#39;text/csv&#39; })
+</code></pre></div>
+<p>If you don't set the <code>Content-Type</code> header, typera defaults to the following:</p>
+<ul>
+<li><code>application/json</code> for object and array responses. The value is encoded as
+  JSON.</li>
+<li><code>application/octet-stream</code> for <code>Buffer</code> and
+  <a href="#streaming-responses">streaming responses</a>.</li>
+<li><code>text/plain</code> for values of primitive types (string, number, boolean). The
+  value is converted to a string by calling <code>value.toString()</code>.</li>
+<li>No content type and an empty response body for <code>null</code> and <code>undefined</code>.</li>
+</ul>
+<h2 id="middleware">Middleware<a class="headerlink" href="#middleware" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Either</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;fp-ts/lib/Either&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">RequestBase</span><span class="p">,</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">,</span><span class="w"> </span><span class="nx">ChainedMiddleware</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">RequestBase</span><span class="p">,</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">,</span><span class="w"> </span><span class="nx">ChainedMiddleware</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express&#39;</span>
+</code></pre></div>
+<p>Middleware are asynchronous functions that take a typera request object as a
+parameter, and produce either a <code>Response</code> or an object.</p>
+<p>If a middleware function produces a <code>Response</code>, then the request handling is
+stopped and that response is sent to the client. If it produces an object, that
+object is merged to the typera request object which is passed forward to the
+next middleware and eventually to the route handler.</p>
+<p>A middleware function can also add a finalizer function to be called after the
+request handler has finished. This is useful if the middleware allocates some
+resources that need to be released afterwards (e.g. release a database
+connection, delete a temporary file, etc.)</p>
+<p>For example, here's a middleware that authenticates a user and adds user info to
+the typera request object:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">authenticateUser</span><span class="o">:</span><span class="w"> </span><span class="kt">Middleware.Middleware</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="c1">// This is the object that&#39;s merged to request on success</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="c1">// This is the response that is be returned by the middleware on failure</span>
+<span class="w">  </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Unauthorized</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">authenticateUser</span><span class="p">()</span><span class="w"> </span><span class="c1">// Gets a user somehow and returns null if unauthenticated</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">Response</span><span class="p">.</span><span class="nx">unauthorized</span><span class="p">(</span><span class="s1">&#39;Login first&#39;</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">.</span><span class="nx">next</span><span class="p">({</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Another example of a middleware that adds a database client to the typera
+request object. It never returns a response, so the response type is <code>never</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">pg</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;pg&#39;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">pg</span><span class="p">.</span><span class="nx">Pool</span><span class="p">()</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">db</span><span class="o">:</span><span class="w"> </span><span class="kt">Middleware.Middleware</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">connection</span><span class="o">:</span><span class="w"> </span><span class="kt">pg.ClientBase</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">never</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">connection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">pool</span><span class="p">.</span><span class="nx">connect</span><span class="p">()</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">.</span><span class="nx">next</span><span class="p">({</span><span class="w"> </span><span class="nx">connection</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">connection</span><span class="p">.</span><span class="nx">release</span><span class="p">())</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>If you write a middleware that adds nothing to the typera request object, its
+result type should be <code>unknown</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">checkOrigin</span><span class="o">:</span><span class="w"> </span><span class="kt">Middleware.Middleware</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="nx">unknown</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">Response</span><span class="p">.</span><span class="nx">BadRequest</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// In typera-express, request.req is the Express request</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;origin&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;example.com&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">.</span><span class="nx">stop</span><span class="p">(</span><span class="nx">Response</span><span class="p">.</span><span class="nx">badRequest</span><span class="p">(</span><span class="s1">&#39;Invalid origin&#39;</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="next"><code>next</code><a class="headerlink" href="#next" title="Permanent link">#</a></h3>
+<p>Signatures:</p>
+<ul>
+<li><code>Middleware.next()</code></li>
+<li><code>Middleware.next(value)</code></li>
+<li><code>Middleware.next(value, finalizer)</code></li>
+</ul>
+<p>Construct a value to be merged with the typera request object, and optionally
+add a finalizer to be run when the request processing has finished.</p>
+<p>If <code>Middleware.next()</code> is called with no arguments, nothing is added to the
+typera request object.</p>
+<p>The finalizer, if given, is called with no arguments. It can be an async
+function (can return a <code>Promise</code>).</p>
+<p>If you want to run a finalizer but not add anything to the request, you can pass
+<code>{}</code> or <code>undefined</code> as the value.</p>
+<h3 id="stop"><code>stop</code><a class="headerlink" href="#stop" title="Permanent link">#</a></h3>
+<p>Signature: <code>Middleware.stop(response)</code></p>
+<p>Stop processing the request and return <code>response</code> to the client. Other
+middleware or the route handler will not be run. If other middleware have
+already run before this one, their finalizers are run.</p>
+<h3 id="chainedmiddleware"><code>ChainedMiddleware</code><a class="headerlink" href="#chainedmiddleware" title="Permanent link">#</a></h3>
+<p>If you need to use the result of some previous middleware, use
+<code>ChainedMiddleware</code>. It's like <code>Middleware</code> but takes as first type parameter
+the type that previous middleware should produce. This middleware writes audit
+entries to database, so it requires a database connection from the <code>db</code>
+middleware above:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">audit</span><span class="o">:</span><span class="w"> </span><span class="kt">Middleware.ChainedMiddleware</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">connection</span><span class="o">:</span><span class="w"> </span><span class="kt">pg.ClientBase</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">unknown</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">never</span>
+<span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">writeAuditLog</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">connection</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">Middleware</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now, the <code>audit</code> middleware can only be used if the <code>db</code> middleware comes before
+it and adds <code>connection</code> to the request object.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">db</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">audit</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="request-parsers">Request parsers<a class="headerlink" href="#request-parsers" title="Permanent link">#</a></h2>
+<p>Request parsers are built-in middleware that let you validate parts of the
+request. All request parser related types and functions live in the <code>Parser</code>
+namespace.</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;io-ts&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Parser</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Parser</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa&#39;</span>
+</code></pre></div>
+<p>typera provides functions to build request parser middleware for query string
+and request body. These functions take an <a href="https://github.com/gcanti/io-ts">io-ts</a> codec (<code>t.Type</code>) and return a
+middleware that validates the corresponding part of the request using the given
+codec. If the validation fails, they produce an error response with appropriate
+status code and error message in the body.</p>
+<h3 id="query"><code>query</code><a class="headerlink" href="#query" title="Permanent link">#</a></h3>
+<p>Signature: <code>Parser.query(codec)</code></p>
+<p>Validate the query string according to the given <a href="https://github.com/gcanti/io-ts">io-ts</a> codec. Respond with
+<code>400 Bad Request</code> if the validation fails. The result will be available as
+<code>request.query</code> in the route handler.</p>
+<p>The input for this parser will be the query string parsed as
+<code>Record&lt;string, string&gt;</code>, i.e. all parameter values will be strings. If you want
+to convert them to other types, you probably find the <code>FromString</code> codecs from
+<a href="https://github.com/gcanti/io-ts-types">io-ts-types</a> useful (e.g. <code>IntFromString</code>, <code>BooleanFromString</code>, etc.)</p>
+<h3 id="body"><code>body</code><a class="headerlink" href="#body" title="Permanent link">#</a></h3>
+<p>Signature: <code>Parser.body(codec)</code></p>
+<p>Validate the request body according to the given <a href="https://github.com/gcanti/io-ts">io-ts</a> codec. Respond with
+<code>400 Bad Request</code> if the validation fails. Ther result will be available as
+<code>request.body</code> in the route handler.</p>
+<p>The input for this parser will be the request body, parsed with the body parser
+of your choice. With <a href="https://expressjs.com/">Express</a> you probably want to use <a href="https://github.com/expressjs/body-parser">body-parser</a>, and with
+<a href="https://koajs.com/">Koa</a> the most common choice is <a href="https://github.com/koajs/bodyparser">koa-bodyparser</a>. Note that these are native
+<a href="https://expressjs.com/">Express</a> or <a href="https://koajs.com/">Koa</a> middleware, so you must attach them directly to the <a href="https://expressjs.com/">Express</a>
+or <a href="https://koajs.com/">Koa</a> app rather than use them as typera middleware.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You must use a Express or Koa body parsing middleware for
+<code>Parser.body</code> to work.</p>
+</div>
+<h3 id="headers"><code>headers</code><a class="headerlink" href="#headers" title="Permanent link">#</a></h3>
+<p>Signature: <code>Parser.headers(codec)</code></p>
+<p>Validate the request headers according to the given <a href="https://github.com/gcanti/io-ts">io-ts</a> codec. Respond with
+<code>400 Bad Request</code> if the validation fails. The result will be available as
+<code>request.headers</code> in the route handler.</p>
+<p>Header matching is case-insensitive, so using e.g. <code>X-API-KEY</code>, <code>x-api-key</code> and
+<code>X-Api-Key</code> in the codec will all read the same header. However, the parse
+<em>result</em> will of course be case sensitive. That is, the field in
+<code>request.headers</code> will have the name you specify in the <a href="https://github.com/gcanti/io-ts">io-ts</a> codec you pass
+to <code>Parser.headers</code>, with case preserved.</p>
+<p>The input for this parser will be the headers parsed as
+<code>Record&lt;string, string&gt;</code>, i.e. all header values will be strings. If you want to
+convert them to other types, you probably find the <code>FromString</code> codecs from
+<a href="https://github.com/gcanti/io-ts-types">io-ts-types</a> useful (e.g. <code>IntFromString</code>, <code>BooleanFromString</code>, etc.)</p>
+<h3 id="cookies"><code>cookies</code><a class="headerlink" href="#cookies" title="Permanent link">#</a></h3>
+<p>Signature: <code>Parser.cookies(codec)</code></p>
+<p>Validate the request cookies according to the given <a href="https://github.com/gcanti/io-ts">io-ts</a> codec. Respond with
+<code>400 Bad Request</code> if the validation fails. The result will be available as
+<code>request.cookies</code> in the route handler.</p>
+<p>The input for this parser will be the cookies parsed as
+<code>Record&lt;string, string&gt;</code>, i.e. all cookie values will be strings. If you want to
+convert them to other types, you probably find the <code>FromString</code> codecs from
+<a href="https://github.com/gcanti/io-ts-types">io-ts-types</a> useful (e.g. <code>IntFromString</code>, <code>BooleanFromString</code>, etc.)</p>
+<h3 id="customizing-the-error-response">Customizing the error response<a class="headerlink" href="#customizing-the-error-response" title="Permanent link">#</a></h3>
+<p>Each of the above functions also have a <code>P</code> flavor that allows the user to
+override error handling. In addition to an <a href="https://github.com/gcanti/io-ts">io-ts</a> codec, these functions take
+an error handler function that receives an <a href="https://github.com/gcanti/io-ts">io-ts</a> validation error and produces
+an error response:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">type</span><span class="w"> </span><span class="nx">ErrorHandler</span><span class="o">&lt;</span><span class="nx">ErrorResponse</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Response</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="nx">errors</span><span class="o">:</span><span class="w"> </span><span class="kt">t.Errors</span>
+<span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">ErrorResponse</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">queryP</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="nx">Codec</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Type</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">ErrorResponse</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Response</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">codec</span><span class="o">:</span><span class="w"> </span><span class="kt">Codec</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">errorHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">ErrorHandler</span><span class="o">&lt;</span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Middleware</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="kt">t.TypeOf</span><span class="o">&lt;</span><span class="nx">Codec</span><span class="o">&gt;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">bodyP</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="nx">Codec</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Type</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">ErrorResponse</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Response</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">codec</span><span class="o">:</span><span class="w"> </span><span class="kt">Codec</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">errorHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">ErrorHandler</span><span class="o">&lt;</span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Middleware</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">t.TypeOf</span><span class="o">&lt;</span><span class="nx">Codec</span><span class="o">&gt;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">headersP</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="nx">Codec</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Type</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">ErrorResponse</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Response</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">codec</span><span class="o">:</span><span class="w"> </span><span class="kt">Codec</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">errorHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">ErrorHandler</span><span class="o">&lt;</span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Middleware</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="kt">t.TypeOf</span><span class="o">&lt;</span><span class="nx">Codec</span><span class="o">&gt;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">cookiesP</span><span class="o">&lt;</span>
+<span class="w">  </span><span class="nx">Codec</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Type</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">ErrorResponse</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Response</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="p">,</span><span class="w"> </span><span class="nx">any</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">codec</span><span class="o">:</span><span class="w"> </span><span class="kt">Codec</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">errorHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">ErrorHandler</span><span class="o">&lt;</span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Middleware</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">cookies</span><span class="o">:</span><span class="w"> </span><span class="kt">t.TypeOf</span><span class="o">&lt;</span><span class="nx">Codec</span><span class="o">&gt;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">ErrorResponse</span><span class="o">&gt;</span>
+</code></pre></div>
+<p>If you want to abstract your custom error handling to reuse it in multiple
+routes, you can create your own parser functions like this:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;io-ts&#39;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">errorToString</span><span class="p">(</span><span class="nx">err</span><span class="o">:</span><span class="w"> </span><span class="kt">t.Errors</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Turn err to string the way you like</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">codec</span><span class="o">:</span><span class="w"> </span><span class="kt">t.Type</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Middleware</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">BadRequest</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">Parser</span><span class="p">.</span><span class="nx">queryP</span><span class="p">(</span><span class="nx">codec</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">errors</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">badRequest</span><span class="p">(</span><span class="nx">errorToString</span><span class="p">(</span><span class="nx">errors</span><span class="p">)))</span>
+
+<span class="c1">// You can alse return a different response than 400 Bad Request</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myBody</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">codec</span><span class="o">:</span><span class="w"> </span><span class="kt">t.Type</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Middleware</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">Conflict</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">Parser</span><span class="p">.</span><span class="nx">bodyP</span><span class="p">(</span><span class="nx">codec</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">errors</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">conflict</span><span class="p">(</span><span class="nx">errorToString</span><span class="p">(</span><span class="nx">errors</span><span class="p">)))</span>
+
+<span class="c1">// etc...</span>
+</code></pre></div>
+<h3 id="using-express-middleware">Using express middleware<a class="headerlink" href="#using-express-middleware" title="Permanent link">#</a></h3>
+<p><em>This is an experimental feature, and is currently available only for
+<code>typera-express</code>. It can change without a corresponding semver bump.</em></p>
+<p>Express middleware is inherently incompatible with typera middleware, because
+typera runs its middlewares independently of the Express middleware. This makes
+it possible to pass typed data to the next middleware and the route handler.</p>
+<p>However, lots of useful Express middleware already exists out there.
+<code>typera-express</code> has a function that helps you wrap existing Express middleware
+in a way that it works (mostly) like typera middleware does:</p>
+<h4 id="wrapnative"><code>wrapNative</code><a class="headerlink" href="#wrapnative" title="Permanent link">#</a></h4>
+<p>Signatures:</p>
+<ul>
+<li><code>Middleware.wrapNative(expressMiddleware)</code></li>
+<li><code>Middleware.wrapNative(expressMiddleware, mapResult)</code></li>
+</ul>
+<p>Given Express middleware function <code>expressMiddleware</code>, return the corresponding
+typera middleware.</p>
+<p>If the <code>mapResult</code> function is given, its called after the middleware has run,
+and its return value is merged to the typera request object. Use this function
+to take any data the wrapped middleware produces and make it consumable by other
+typera middleware or the route handler function.</p>
+<p>The wrapped Express middleware may either pass the control to the next
+middleware (or route handler) in the chain by calling <code>next()</code>, the third
+parameter of the middleware function, or send the response and end the
+middleware chain. Some middleware use various tricks to hook to the point where
+the response is eventually sent, to e.g. log info about it. <code>wrapNative</code> tries
+to make all of this possible, but there might be corner cases which don't work
+yet.</p>
+<h2 id="routes">Routes<a class="headerlink" href="#routes" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Route</span><span class="p">,</span><span class="w"> </span><span class="nx">URL</span><span class="p">,</span><span class="w"> </span><span class="nx">applyMiddleware</span><span class="p">,</span><span class="w"> </span><span class="nx">route</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Route</span><span class="p">,</span><span class="w"> </span><span class="nx">URL</span><span class="p">,</span><span class="w"> </span><span class="nx">applyMiddleware</span><span class="p">,</span><span class="w"> </span><span class="nx">route</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa&#39;</span>
+</code></pre></div>
+<h3 id="route"><code>route</code><a class="headerlink" href="#route" title="Permanent link">#</a></h3>
+<p>A route matches a request based on HTTP method and path, and defines a function
+that serves a response for the matched request.</p>
+<p>Routes are created using the <code>route.[method](...)</code> or <code>route(method, ...)</code>,
+where method is one of <code>get</code>, <code>post</code>, <code>put</code>, <code>delete</code>, <code>head</code>, <code>options</code>,
+<code>patch</code> or <code>all</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">route</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">middleware1</span><span class="p">,</span><span class="w"> </span><span class="nx">middleware2</span><span class="w"> </span><span class="cm">/*, ... */</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">ok</span><span class="p">()</span>
+<span class="w">  </span><span class="p">})</span>
+</code></pre></div>
+<p>The special method <code>all</code> matches every HTTP method.</p>
+<p>The <code>route</code> functions take a path pattern as an argument. The path pattern can
+contain <a href="#route-parameter-capturing">route parameter captures</a>. The path if the
+incoming HTTP request is matched against the path pattern to see whether this
+route is responsible for serving the response for the HTTP request.</p>
+<p>They return an object with <code>.use()</code> and <code>.handler()</code> methods.</p>
+<p>The <code>.use()</code> method takes one or more <a href="#middleware">middleware functions</a> which
+are used to process the incoming request and create the typera request object
+(<code>request</code>). You can call <code>.use()</code> many times. The result of middleware in
+previous calls will be available in the typera request object passed to the next
+middleware. See <a href="#chainedmiddleware"><code>ChainedMiddleware</code></a> above on how to use
+the previous middleware results in the next middleware.</p>
+<p>The <code>.handler()</code> method takes a request handler, which is an async function that
+receives the typera request object returns a response.</p>
+<p>The typera request object is created by merging the
+<a href="#route-parameter-capturing">route parameters</a> and the result objects of
+<a href="#middleware">middleware functions</a> given to <code>route</code> or applied before. It also
+always extends the request base:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// typera-express</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">RequestBase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">req</span><span class="o">:</span><span class="w"> </span><span class="kt">express.Request</span>
+<span class="w">  </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">express.Response</span>
+<span class="p">}</span>
+
+<span class="c1">// typera-koa</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">RequestBase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">ctx</span><span class="o">:</span><span class="w"> </span><span class="kt">koa.Context</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>In other words, in <code>typera-express</code> the <a href="https://expressjs.com/">Express</a> req/res are always available
+as <code>request.req</code> and <code>request.res</code>, and in <code>typera-koa</code> the <a href="https://koajs.com/">Koa</a> context is
+always available as <code>request.ctx</code>.</p>
+<p>The type of <code>request</code> is inferred by typera, so there's no need for the user to
+give it an explicit type, while at the same time the TypeScript compiler checks
+that the properties of <code>request</code> are used correctly in the request handler.</p>
+<p><code>route</code> infers the response type by combining the error response types of all
+middleware functions, and the response types of the request handler. To get
+maximum type safety, you should explicitly declare the return type of <code>route</code> in
+your code. This makes sure that the possible responses of a route don't change
+unexpectedly because of changes in the code, and documents all the possible
+responses from a single route:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">listHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">Route</span><span class="o">&lt;</span><span class="nx">Response</span><span class="p">.</span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Response</span><span class="p">.</span><span class="nx">BadRequest</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="nx">route</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">handler</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">})</span>
+</code></pre></div>
+<p>We avoid giving the accurate type of the various <code>route</code> functions here, because
+they're quite complex due to the type inference of <code>request</code> and response types.
+Interested readers can refer to the code:
+<a href="https://github.com/akheron/typera/tree/main/packages/typera-common/src/index.ts">common</a>,
+<a href="https://github.com/akheron/typera/tree/main/packages/typera-express/index.ts">express</a>,
+<a href="https://github.com/akheron/typera/tree/main/packages/typera-koa/index.ts">koa</a>,</p>
+<h3 id="routeuse"><code>route.use</code><a class="headerlink" href="#routeuse" title="Permanent link">#</a></h3>
+<h3 id="applymiddleware"><code>applyMiddleware</code><a class="headerlink" href="#applymiddleware" title="Permanent link">#</a></h3>
+<p>Signatures:</p>
+<ul>
+<li><code>route.use(...middlewares)</code></li>
+<li><code>applyMiddleware(...middlewares)</code></li>
+</ul>
+<p>If you need to apply the same middleware to many routes, you can create your own
+version of <code>route</code> by calling either <code>route.use()</code> or <code>applyMiddleware()</code> with
+the middleware that are common to all of the routes:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// db and auth are middleware functions</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span><span class="w"> </span><span class="nx">auth</span><span class="p">)</span>
+<span class="c1">// or</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">db</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">auth</span><span class="p">)</span>
+<span class="c1">// or</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">myRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">applyMiddleware</span><span class="p">(</span><span class="nx">db</span><span class="p">,</span><span class="w"> </span><span class="nx">auth</span><span class="p">)</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">listHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">Route</span><span class="o">&lt;</span><span class="p">...</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">myRoute</span><span class="p">.</span><span class="nx">get</span><span class="p">(...)</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">updateHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">Route</span><span class="o">&lt;</span><span class="p">...</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">myRoute</span><span class="p">.</span><span class="nx">put</span><span class="p">(...)</span>
+</code></pre></div>
+<p>The value returned by <code>route.use()</code> and <code>applyMiddleware()</code> works exactly the
+same as <code>route</code> i.e. it has the <code>.get()</code>, <code>.post()</code> etc. methods and can be
+called directly.</p>
+<h2 id="route-parameter-capturing">Route parameter capturing<a class="headerlink" href="#route-parameter-capturing" title="Permanent link">#</a></h2>
+<p>Path patterns make it possible to extract some parts of the HTTP request path
+for use in the route handler.</p>
+<p>For example, with the following path:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">route</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/user/:id(int)&#39;</span><span class="p">).</span><span class="nx">handler</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">})</span>
+</code></pre></div>
+<p>In the route handler function, <code>req.routeParams.id</code> will contain the integer
+that was given after <code>/user/</code>, like this:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th><code>req</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/user/5</code></td>
+<td><code>{ routeParams: { id: 5 }}</code></td>
+</tr>
+<tr>
+<td><code>/user/528472</code></td>
+<td><code>{ routeParams: { id: 528472 }}</code></td>
+</tr>
+<tr>
+<td><code>/user/foo</code></td>
+<td>Route is not matched</td>
+</tr>
+<tr>
+<td><code>/user/5/</code></td>
+<td>Route is not matched</td>
+</tr>
+<tr>
+<td><code>/user/</code></td>
+<td>Route is not matched</td>
+</tr>
+</tbody>
+</table>
+<p>Route parameters have the syntax <code>:name</code> or <code>:name(conv)</code>, where the optional
+<code>(conv)</code> specifies a conversion to be applied to the parameter. Without a
+conversion, the parameter is captured as a string.</p>
+<p>Parameter names should only contain the <code>a-z</code>, <code>A-Z</code> and <code>_</code> characters. They
+can be separated with <code>-</code> and <code>.</code>, so these are valid path patterns:</p>
+<ul>
+<li><code>/flights/:from-:to</code></li>
+<li><code>/plantae/:genus.:species</code></li>
+</ul>
+<p>One built-in conversion is available: <code>(int)</code> converts the parameter to a
+(non-negative) integer, or fails to match if something else than an integer is
+supplied.</p>
+<h3 id="useparamconversions"><code>useParamConversions</code><a class="headerlink" href="#useparamconversions" title="Permanent link">#</a></h3>
+<p>Signature: <code>route.useParamConversions({ ...convs })</code></p>
+<p><code>import * as Option from 'fp-ts/lib/Option</code></p>
+<p>You can register your own conversions by calling <code>useParamConversions</code>. It has
+one argument, an object of <code>{ name: conversion }</code>, where <code>name</code> specifies the
+name of the conversion and <code>conversion</code> is a function
+<code>(value: string) =&gt; Option.Option&lt;T&gt;</code>. If the function returns a <code>some</code>, the
+value will be available under the <code>name</code> key in <code>request.routeParams</code>. If it
+returns a <code>none</code>, the route will return a <code>404 Not Found</code> response.</p>
+<p>The value returned by <code>route.useParamConversions()</code>works exactly the same as
+<code>route</code> i.e. it has the <code>.get()</code>, <code>.post()</code> etc. methods and can be called
+directly.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">silly</span><span class="o">:</span><span class="w"> </span><span class="kt">URL.Conversion</span><span class="o">&lt;</span><span class="kt">boolean</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Option</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">value</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;silly&#39;</span><span class="p">)</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">funny</span><span class="o">:</span><span class="w"> </span><span class="kt">URL.Conversion</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">value</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;funny&#39;</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">Option</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="mf">42</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">Option</span><span class="p">.</span><span class="nx">none</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">myRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">useParamConversions</span><span class="p">({</span><span class="w"> </span><span class="nx">silly</span><span class="p">,</span><span class="w"> </span><span class="nx">funny</span><span class="w"> </span><span class="p">})</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">funnyRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">myRoute</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/foo/:param(silly)/:other(funny)&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">handler</span><span class="p">((</span><span class="nx">request</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// request.routeParams is { silly: boolean, funny: number }</span>
+<span class="w">  </span><span class="p">})</span>
+</code></pre></div>
+<h2 id="router">Router<a class="headerlink" href="#router" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">router</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-express&#39;</span>
+<span class="c1">// or</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">router</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;typera-koa&#39;</span>
+</code></pre></div>
+<p>The router is used to take a bunch of routes and turn them into a handler that
+you can then attach to your <a href="https://expressjs.com/">Express</a> or <a href="https://koajs.com/">Koa</a> app.</p>
+<p>Available functions:</p>
+<ul>
+<li><code>router(...routes)</code></li>
+<li><code>r.add(...routes)</code></li>
+<li><code>r.handler()</code></li>
+</ul>
+<p>Use the <code>router()</code> function to create a router. Give it zero or more routes to
+add.</p>
+<p>The <code>.add()</code> method adds more routes to the router. Note that it returns a
+<strong>new</strong> <code>Router</code> instance instead of modifying the existing one.</p>
+<p>The <code>.handler()</code> method returns a handler that can be passed to <code>app.use()</code> for
+both <a href="https://expressjs.com/">Express</a> and <a href="https://koajs.com/">Koa</a>.</p>
+<p>With <a href="https://expressjs.com/">Express</a>, you can mount the handler to a sub-path like this:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;express&#39;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">()</span>
+<span class="c1">// ...</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">&#39;/subpath&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">router</span><span class="p">.</span><span class="nx">handler</span><span class="p">())</span>
+</code></pre></div>
+<p>With <a href="https://koajs.com/">Koa</a>, you need to use <a href="https://github.com/koajs/mount">koa-mount</a> to mount your routes to a sub-path:</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Koa</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;koa&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">mount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;koa-mount&#39;</span><span class="p">)</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Koa</span><span class="p">()</span>
+<span class="c1">// ...</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">mount</span><span class="p">(</span><span class="s1">&#39;/subpath&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">router</span><span class="p">.</span><span class="nx">handler</span><span class="p">()))</span>
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.expand"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>
