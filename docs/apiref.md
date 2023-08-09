@@ -63,7 +63,7 @@ For example, the response type for a 200 OK is:
 ```typescript
 type Ok<
   Body = undefined,
-  Headers extends OptionalHeaders = undefined
+  Headers extends OptionalHeaders = undefined,
 > = Response<200, Body, Headers>
 ```
 
@@ -411,7 +411,7 @@ type ErrorHandler<ErrorResponse extends Response.Response<number, any, any>> = (
 
 function queryP<
   Codec extends t.Type<any>,
-  ErrorResponse extends Response.Response<number, any, any>
+  ErrorResponse extends Response.Response<number, any, any>,
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
@@ -419,7 +419,7 @@ function queryP<
 
 function bodyP<
   Codec extends t.Type<any>,
-  ErrorResponse extends Response.Response<number, any, any>
+  ErrorResponse extends Response.Response<number, any, any>,
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
@@ -427,7 +427,7 @@ function bodyP<
 
 function headersP<
   Codec extends t.Type<any>,
-  ErrorResponse extends Response.Response<number, any, any>
+  ErrorResponse extends Response.Response<number, any, any>,
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
@@ -435,7 +435,7 @@ function headersP<
 
 function cookiesP<
   Codec extends t.Type<any>,
-  ErrorResponse extends Response.Response<number, any, any>
+  ErrorResponse extends Response.Response<number, any, any>,
 >(
   codec: Codec,
   errorHandler: ErrorHandler<ErrorResponse>
@@ -452,13 +452,13 @@ function errorToString(err: t.Errors): string {
   // Turn err to string the way you like
 }
 
-const myQuery = <T>(
+const myQuery = <T,>(
   codec: t.Type<T>
 ): Middleware<{ query: T }, Response.BadRequest<string>> =>
   Parser.queryP(codec, (errors) => Response.badRequest(errorToString(errors)))
 
 // You can alse return a different response than 400 Bad Request
-const myBody = <T>(
+const myBody = <T,>(
   codec: t.Type<T>
 ): Middleware<{ body: T }, Response.Conflict<string>> =>
   Parser.bodyP(codec, (errors) => Response.conflict(errorToString(errors)))

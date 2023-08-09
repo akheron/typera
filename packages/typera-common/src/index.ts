@@ -16,14 +16,12 @@ export type RequestHandler<Request, Response> = (
 export type RouteFn<
   ParamConversions,
   Request,
-  Response extends Response.Generic
+  Response extends Response.Generic,
 > = {
-  <Path extends string>(method: URL.Method, path: Path): MakeRoute<
-    Request,
-    ParamConversions,
-    Path,
-    Response
-  >
+  <Path extends string>(
+    method: URL.Method,
+    path: Path
+  ): MakeRoute<Request, ParamConversions, Path, Response>
   useParamConversions<T extends URL.Conversions>(
     conversions: T
   ): RouteFn<ParamConversions & URL.GetConversionTypes<T>, Request, Response>
@@ -47,7 +45,7 @@ export type RouteFn<
 
 export type ApplyMiddleware<
   Request,
-  Middleware extends Middleware.Generic<Request>[]
+  Middleware extends Middleware.Generic<Request>[],
 > = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
   infer MiddlewareResult,
   infer MiddlewareResponse
@@ -61,7 +59,7 @@ export type ApplyMiddleware<
 
 export function applyMiddleware<
   Request,
-  Middleware extends Middleware.Generic<Request>[]
+  Middleware extends Middleware.Generic<Request>[],
 >(
   getRouteParams: (req: Request) => {},
   outsideMiddleware: Middleware,
@@ -127,7 +125,7 @@ export type Route<Response extends Response.Generic> = {
 
 export function route<
   RequestBase,
-  Middleware extends Middleware.Generic<RequestBase>[]
+  Middleware extends Middleware.Generic<RequestBase>[],
 >(
   getRouteParams: (req: RequestBase) => {},
   pathParser: URL.PathParser,
@@ -175,7 +173,7 @@ function isMiddlewareResponse<Result, Response>(
 
 async function runMiddleware<
   RequestBase,
-  Middleware extends Middleware.Generic<RequestBase>[]
+  Middleware extends Middleware.Generic<RequestBase>[],
 >(
   requestBase: RequestBase,
   middleware: Middleware
@@ -229,7 +227,7 @@ export type MakeRoute<
   Request,
   ParamConversions,
   Path extends string,
-  OutsideMiddlewareResponse extends Response.Generic = never
+  OutsideMiddlewareResponse extends Response.Generic = never,
 > = URL.PathToCaptures<Path, ParamConversions> extends infer URLCaptures
   ? RouteConstructor<
       Request & { routeParams: URLCaptures },
@@ -239,7 +237,7 @@ export type MakeRoute<
 
 interface RouteConstructor<
   Request,
-  OutsideMiddlewareResponse extends Response.Generic = never
+  OutsideMiddlewareResponse extends Response.Generic = never,
 > {
   use<Middleware extends Middleware.Generic<Request>[]>(
     ...middleware: Middleware
@@ -264,7 +262,7 @@ export interface MiddlewareType<Result, Response extends Response.Generic> {
 
 type TypesFromMiddleware<Request, Middleware> = Middleware extends [
   infer First,
-  ...infer Rest
+  ...infer Rest,
 ]
   ? First extends Middleware.Middleware<Request, infer Result, infer Response>
     ? TypesFromMiddleware<Request, Rest> extends MiddlewareType<
