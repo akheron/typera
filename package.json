@@ -17,7 +17,7 @@
     "doctoc": "doctoc README.md --title '## Table of Contents' && prettier --write README.md"
   },
   "devDependencies": {
-    "@types/supertest": "^2.0.10",
+    "@types/supertest": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "concurrently": "^8.0.1",
