@@ -23,7 +23,7 @@ database:
 
 ```typescript
 // Change 'typera-express' to 'typera-koa' if you're using Koa
-import { Parser, Response, Route, URL, route } from 'typera-express'
+import { Parser, Response, Route, route } from 'typera-express'
 import * as t from 'io-ts'
 
 interface User {
@@ -64,7 +64,7 @@ Let's go through it in detail.
 
 ```typescript
 // Change 'typera-express' to 'typera-koa' if you're using Koa
-import { Parser, Response, Route, URL, route } from 'typera-express'
+import { Parser, Response, Route, route } from 'typera-express'
 
 interface User {
   id: number
