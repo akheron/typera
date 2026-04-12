@@ -43,8 +43,8 @@ type ParamsFrom<Parts, ParamConversions> = Parts extends [
         >
       : never // TODO: Throw a type error here when it becomes possible
     : First extends `:${infer Param}`
-    ? { [K in Param]: string } & ParamsFrom<Rest, ParamConversions>
-    : ParamsFrom<Rest, ParamConversions>
+      ? { [K in Param]: string } & ParamsFrom<Rest, ParamConversions>
+      : ParamsFrom<Rest, ParamConversions>
   : {}
 
 export type PathToCaptures<Path, ParamConversions> = ParamsFrom<

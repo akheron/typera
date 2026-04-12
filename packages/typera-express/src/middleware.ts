@@ -45,7 +45,7 @@ export const wrapNative =
       }
 
       const originalEnd = res.end
-      res.end = (...args: any): void => {
+      res.end = ((...args: any) => {
         if (!resolved) {
           resolved = true
           // Abuse streamingBody to call an arbitrary res method
@@ -60,7 +60,8 @@ export const wrapNative =
         } else {
           originalEnd.apply(res, args)
         }
-      }
+        return res
+      }) as typeof res.end
 
       middleware(req, res, next)
     })

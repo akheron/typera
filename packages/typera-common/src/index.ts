@@ -46,16 +46,17 @@ export type RouteFn<
 export type ApplyMiddleware<
   Request,
   Middleware extends Middleware.Generic<Request>[],
-> = TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
-  infer MiddlewareResult,
-  infer MiddlewareResponse
->
-  ? RouteFn<
-      URL.BuiltinConversions,
-      Request & MiddlewareResult,
-      MiddlewareResponse
-    >
-  : never
+> =
+  TypesFromMiddleware<Request, Middleware> extends MiddlewareType<
+    infer MiddlewareResult,
+    infer MiddlewareResponse
+  >
+    ? RouteFn<
+        URL.BuiltinConversions,
+        Request & MiddlewareResult,
+        MiddlewareResponse
+      >
+    : never
 
 export function applyMiddleware<
   Request,
@@ -228,12 +229,13 @@ export type MakeRoute<
   ParamConversions,
   Path extends string,
   OutsideMiddlewareResponse extends Response.Generic = never,
-> = URL.PathToCaptures<Path, ParamConversions> extends infer URLCaptures
-  ? RouteConstructor<
-      Request & { routeParams: URLCaptures },
-      OutsideMiddlewareResponse
-    >
-  : never
+> =
+  URL.PathToCaptures<Path, ParamConversions> extends infer URLCaptures
+    ? RouteConstructor<
+        Request & { routeParams: URLCaptures },
+        OutsideMiddlewareResponse
+      >
+    : never
 
 interface RouteConstructor<
   Request,

@@ -452,13 +452,13 @@ function errorToString(err: t.Errors): string {
   // Turn err to string the way you like
 }
 
-const myQuery = <T,>(
+const myQuery = <T>(
   codec: t.Type<T>
 ): Middleware<{ query: T }, Response.BadRequest<string>> =>
   Parser.queryP(codec, (errors) => Response.badRequest(errorToString(errors)))
 
 // You can alse return a different response than 400 Bad Request
-const myBody = <T,>(
+const myBody = <T>(
   codec: t.Type<T>
 ): Middleware<{ body: T }, Response.Conflict<string>> =>
   Parser.bodyP(codec, (errors) => Response.conflict(errorToString(errors)))

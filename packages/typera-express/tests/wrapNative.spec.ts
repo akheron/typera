@@ -11,7 +11,7 @@ import * as request from 'supertest'
 import { makeApp } from './utils'
 
 const parseCookie = (response: request.Response) =>
-  response.get('Set-Cookie')[0].split(';')[0]
+  response.get('Set-Cookie')![0].split(';')[0]
 
 describe('Middleware.wrapNative', () => {
   describe('cors', () => {
